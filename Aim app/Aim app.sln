@@ -12,6 +12,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL.Abstractions", "DAL.Abs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PL.Console", "PL.Console\PL.Console.csproj", "{4E5D3EFA-218D-489B-8BA8-682BB88638A0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "API\API.csproj", "{1ABCB85D-9390-4490-A3BE-8ACD5943286F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PL.WPF", "PL.WPF\PL.WPF.csproj", "{50D33DFF-8932-4B43-88CA-7E0E1531026D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +46,13 @@ Global
 		{4E5D3EFA-218D-489B-8BA8-682BB88638A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E5D3EFA-218D-489B-8BA8-682BB88638A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E5D3EFA-218D-489B-8BA8-682BB88638A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1ABCB85D-9390-4490-A3BE-8ACD5943286F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1ABCB85D-9390-4490-A3BE-8ACD5943286F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1ABCB85D-9390-4490-A3BE-8ACD5943286F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1ABCB85D-9390-4490-A3BE-8ACD5943286F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50D33DFF-8932-4B43-88CA-7E0E1531026D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50D33DFF-8932-4B43-88CA-7E0E1531026D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50D33DFF-8932-4B43-88CA-7E0E1531026D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50D33DFF-8932-4B43-88CA-7E0E1531026D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
