@@ -1,6 +1,8 @@
-﻿namespace DAL.Worker
+﻿using DAL.Abstractions.Interfaces;
+
+namespace DAL.Worker
 {
-    public class JsonWorker
+    public class JsonWorker : IWorker
     {
         
     }
