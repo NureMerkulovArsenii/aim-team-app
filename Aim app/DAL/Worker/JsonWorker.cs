@@ -17,7 +17,6 @@ namespace DAL.Worker
 
         public T LoadFromFile<T>(string filePath)
         {
-            var writeStream = File.OpenRead(filePath);
             var json = JsonConvert.DeserializeObject<T>(filePath);
             return json;
         }
