@@ -15,7 +15,6 @@ namespace DAL.Repository
         private readonly AppSettings _appSettings;
         private readonly IJsonWorker _jsonWorker;
         private List<TEntity> _allData;
-
         public GenericRepositoryJson(IJsonWorker serializer, IOptions<AppSettings> appSettings)
         {
             _appSettings = appSettings?.Value ?? throw new ArgumentNullException(nameof(appSettings));

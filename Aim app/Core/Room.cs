@@ -8,7 +8,6 @@ namespace Core
     public class Room : BaseEntity
     {
         private string _filePath;
-        public int Id { get; set; }
         public string RoomName { get; set; }
 
         [JsonIgnore] public ReadOnlyCollection<byte> Photo { get; set; }

@@ -1,4 +1,6 @@
-﻿using BLL;
+﻿using System.IO;
+using BLL;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace PL.Console
@@ -15,8 +17,14 @@ namespace PL.Console
         
         private static void ConfigureServices(IServiceCollection services)
         {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false)
+                .AddEnvironmentVariables()
+                .Build();
             services.AddScoped<App>();
             DependencyRegistrar.ConfigureServices(services);
+            
         }
     }
 }
