@@ -1,22 +1,30 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using Newtonsoft.Json;
 
 namespace Core
 {
-    public class Room
+    public class Room : BaseEntity
     {
         private string _filePath;
-        public int RoomId { get; set; }
+        public int Id { get; set; }
         public string RoomName { get; set; }
-        public Bitmap Photo { get; set; }
 
-        public string FilePath
+        [JsonIgnore] public ReadOnlyCollection<byte> Photo { get; set; }
+
+        public string PhotoSource
         {
-            get { return _filePath; }
-            set
+            get
             {
-                _filePath = value;
-                Photo = new Bitmap(_filePath);
+                if (this.Photo != null)
+                {
+                    return Convert.ToBase64String(this.Photo.ToArray());
+                }
+
+                return string.Empty;
             }
+            set { this.Photo = Array.AsReadOnly(Convert.FromBase64String(value)); }
         }
     }
 }

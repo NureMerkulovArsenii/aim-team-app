@@ -1,4 +1,5 @@
 ﻿using DAL.Abstractions.Interfaces;
+using DAL.Repository;
 using DAL.Worker;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -6,9 +7,9 @@ namespace DAL
 {
     public static class DependencyRegistrar
     {
-        public static void ConfigureServices(IServiceCollection services) 
+        public static void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IWorker, JsonWorker>();
+            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositoryJson<>));
         }
     }
 }

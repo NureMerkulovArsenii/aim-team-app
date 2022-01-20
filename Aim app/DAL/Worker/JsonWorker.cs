@@ -1,24 +1,23 @@
 ﻿using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using DAL.Abstractions.Interfaces;
 
 namespace DAL.Worker
 {
-    public class JsonWorker : IWorker
+    public class JsonWorker : IJsonWorker
     {
-        public void SaveToFile<T>(string filePath, T obj)
+        public async Task SaveToFileAsync<T>(T obj, string fileName)
         {
-            var writeStream = File.OpenWrite(filePath);
             var json = JsonConvert.SerializeObject(obj);
-            writeStream.Write(Encoding.UTF8.GetBytes(json));
+            await File.WriteAllTextAsync(fileName,json);
         }
 
-
-        public T LoadFromFile<T>(string filePath)
+        public async Task<T> LoadFromFileAsync<T>(string fileName)
         {
-            var json = JsonConvert.DeserializeObject<T>(filePath);
-            return json;
+            var json = await File.ReadAllTextAsync(fileName);
+            return JsonConvert.DeserializeObject<T>(json);
         }
     }
 }
