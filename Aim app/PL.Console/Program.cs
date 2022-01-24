@@ -1,7 +1,9 @@
 ﻿using System.IO;
 using BLL;
+using Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PL.Console.Authorization;
 
 namespace PL.Console
 {
@@ -13,18 +15,23 @@ namespace PL.Console
             ConfigureServices(services);
             var serviceProvider = services.BuildServiceProvider();
             serviceProvider.GetService<App>()?.StartApp();
+            //serviceProvider.GetService<Registration>();
         }
         
         private static void ConfigureServices(IServiceCollection services)
         {
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false)
+                .AddJsonFile(@"..\..\..\appsettings.json", optional: false)
                 .AddEnvironmentVariables()
                 .Build();
-            services.AddScoped<App>();
-            DependencyRegistrar.ConfigureServices(services);
             
+            //ToDo: add smtp host settings to appsettings.json
+            services.Configure<AppSettings>(configuration.GetSection("AppSettings")); 
+            
+            services.AddScoped<App>();
+            services.AddScoped<Registration>();
+            DependencyRegistrar.ConfigureServices(services);
         }
     }
 }

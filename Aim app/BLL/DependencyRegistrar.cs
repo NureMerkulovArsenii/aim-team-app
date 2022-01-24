@@ -9,6 +9,7 @@ namespace BLL
         public static void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IRegistrationService, RegistrationService>();
             DAL.DependencyRegistrar.ConfigureServices(services);
         }
     }

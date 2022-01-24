@@ -22,8 +22,10 @@ namespace DAL.Repository
             _allData = new List<TEntity>();
         }
 
+        
         public async Task<IEnumerable<TEntity>> FindAllAsync()
         {
+            
             return await _jsonWorker.LoadFromFileAsync<IEnumerable<TEntity>>(_appSettings.TempDir);
         }
 
