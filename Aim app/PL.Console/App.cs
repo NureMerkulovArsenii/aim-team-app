@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using BLL.Services;
 using PL.Console.Authorization;
@@ -18,7 +19,7 @@ namespace PL.Console
             _registration = new Registration(registrationService);
         }
 
-        public void StartApp()
+        public async Task StartApp()
         {
             var userKeys = new[] {"y", "n"};
             string key;
@@ -30,8 +31,10 @@ namespace PL.Console
 
             if (key == "y")
             {
-                _registration.RegisterUserAsync();
+                 await _registration.RegisterUserAsync();
             }
+
+            System.Console.WriteLine("Success");
         }
     }
 }

@@ -5,33 +5,39 @@ using System.Net.Mail;
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using Core;
+using Microsoft.Extensions.Options;
 
 namespace BLL.Services
 {
     public class RegistrationService : IRegistrationService
-    { public string Code { get; set; }
-        private readonly SmtpClient _smtpClient;
+    {
+        public string Code { get; set; }
+        //private readonly SmtpClient _smtpClient;
         private readonly AppSettings _appSettings;
-        
-        
 
-        public RegistrationService()
+        public RegistrationService(IOptions<AppSettings> options)
         {
-            _appSettings = new AppSettings();
-            
-            _smtpClient = new SmtpClient
+            _appSettings = options.Value;
+
+            // _smtpClient = new SmtpClient
+            // {
+            //     Host = _appSettings.SmtpSettings.Host,
+            //     Port = _appSettings.SmtpSettings.Port,
+            //     EnableSsl = _appSettings.SmtpSettings.EnableSsl,
+            //     DeliveryMethod = SmtpDeliveryMethod.Network,
+            //     UseDefaultCredentials = _appSettings.SmtpSettings.UseDefaultCredentials
+            // };
+        }
+
+        public async Task RegisterAsync(string emailTo, string passwordHash)
+        {
+            var smtpClient = new SmtpClient(_appSettings.SmtpSettings.Host, _appSettings.SmtpSettings.Port)
             {
-                Host = _appSettings.SmtpSettings.Host,
-                Port = _appSettings.SmtpSettings.Port,
                 EnableSsl = _appSettings.SmtpSettings.EnableSsl,
                 DeliveryMethod = SmtpDeliveryMethod.Network,
                 UseDefaultCredentials = _appSettings.SmtpSettings.UseDefaultCredentials
             };
 
-        }
-
-        public async Task RegisterAsync(string emailTo, string passwordHash)
-        {
             try
             {
                 var random = new Random();
@@ -41,16 +47,12 @@ namespace BLL.Services
                 var toAddress = new MailAddress(emailTo);
                 var password = "xjzloridcwckfutg";
 
-                _smtpClient.Credentials = new NetworkCredential(fromAddress.Address, password);
+                smtpClient.Credentials = new NetworkCredential(fromAddress.Address, password);
 
 
-                using var message = new MailMessage(fromAddress, toAddress)
-                {
-                    Subject = "Verify account",
-                    Body = Code
-                };
+                using var message = new MailMessage(fromAddress, toAddress) {Subject = "Verify account", Body = Code};
 
-                await _smtpClient.SendMailAsync(message);
+                await smtpClient.SendMailAsync(message);
             }
             catch (Exception e)
             {
@@ -63,7 +65,7 @@ namespace BLL.Services
         {
             return input;
         }
-        
+
         public bool CompareCodes(string userCode)
         {
             if (Code == userCode)
