@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Threading.Tasks;
 using BLL;
 using Core;
 using Microsoft.Extensions.Configuration;
@@ -9,14 +10,14 @@ namespace PL.Console
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             var services = new ServiceCollection();
             ConfigureServices(services);
             var serviceProvider = services.BuildServiceProvider();
-            serviceProvider.GetService<App>()?.StartApp();
+            await serviceProvider.GetService<App>()?.StartApp();
         }
-        
+
         private static void ConfigureServices(IServiceCollection services)
         {
             var configuration = new ConfigurationBuilder()
@@ -24,10 +25,10 @@ namespace PL.Console
                 .AddJsonFile("appsettings.json", optional: false)
                 .AddEnvironmentVariables()
                 .Build();
-            
+
             //ToDo: add smtp host settings to appsettings.json
-            services.Configure<AppSettings>(configuration.GetSection("AppSettings")); 
-            
+            services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
+
             services.AddScoped<App>();
             services.AddScoped<Registration>();
             DependencyRegistrar.ConfigureServices(services);
