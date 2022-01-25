@@ -1,4 +1,5 @@
-﻿using DAL.Abstractions.Interfaces;
+﻿using Core;
+using DAL.Abstractions.Interfaces;
 using DAL.Repository;
 using DAL.Worker;
 using Microsoft.Extensions.DependencyInjection;

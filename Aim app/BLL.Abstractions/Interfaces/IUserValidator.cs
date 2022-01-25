@@ -1,6 +1,6 @@
 ﻿namespace BLL.Abstractions.Interfaces
 {
-    public interface IValidator
+    public interface IUserValidator
     {
         bool IsEmailValid(string email);
     }

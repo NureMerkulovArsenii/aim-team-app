@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Net;
 using BLL.Abstractions.Interfaces;
 using BLL.Helpers;
 using BLL.Services;
@@ -14,7 +15,7 @@ namespace BLL
             services.AddScoped<IRegistrationService, RegistrationService>();
             services.AddScoped<IAuthorizationService, AuthorizationService>();
             services.AddScoped<IPasswordService, PasswordService>();
-            services.AddScoped<IValidator, Validator>();
+            services.AddScoped<IUserValidator, UserValidator>();
             services.AddScoped<IMailWorker, MailWorker>();
             DAL.DependencyRegistrar.ConfigureServices(services);
         }

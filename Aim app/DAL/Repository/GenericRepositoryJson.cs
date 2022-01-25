@@ -26,7 +26,12 @@ namespace DAL.Repository
 
         public async Task<IEnumerable<TEntity>> FindAllAsync()
         {
-            return await _jsonWorker.LoadFromFileAsync<IEnumerable<TEntity>>(_appSettings.TempDir);
+            var file = string.Empty;
+            if (typeof(TEntity) == typeof(User))
+            {
+                file = "user.json";
+            }
+            return await _jsonWorker.LoadFromFileAsync<IEnumerable<TEntity>>(_appSettings.JsonDirectory + file);
         }
 
         public async Task<IEnumerable<TEntity>> FindByConditionAsync(Expression<Func<TEntity, bool>> expression)
@@ -37,9 +42,23 @@ namespace DAL.Repository
 
         public async Task CreateAsync(TEntity entity)
         {
-            _allData = (await FindAllAsync()).ToList();
-            _allData.Add(entity);
-            await _jsonWorker.SaveToFileAsync(_allData, _appSettings.TempDir);
+            var file = string.Empty;
+            if (typeof(TEntity) == typeof(User))
+            {
+                file = "user.json";
+            }
+            try
+            {
+                _allData = (await FindAllAsync()).ToList();
+                _allData.Add(entity);
+                await _jsonWorker.SaveToFileAsync(_allData, _appSettings.JsonDirectory + file);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+           
         }
 
         public async Task UpdateAsync(TEntity entity)
@@ -53,7 +72,7 @@ namespace DAL.Repository
             _allData = (await FindAllAsync()).ToList();
             var k = _allData.FirstOrDefault(o => o.Id == entity.Id);
             _allData.Remove(k);
-            await _jsonWorker.SaveToFileAsync(_allData, _appSettings.TempDir);
+            await _jsonWorker.SaveToFileAsync(_allData, _appSettings.JsonDirectory);
         }
     }
 }

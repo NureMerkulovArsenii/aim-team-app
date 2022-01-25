@@ -12,6 +12,7 @@ namespace DAL.Worker
         {
             var json = JsonConvert.SerializeObject(obj);
             await File.WriteAllTextAsync(fileName,json);
+            
         }
 
         public async Task<T> LoadFromFileAsync<T>(string fileName)
