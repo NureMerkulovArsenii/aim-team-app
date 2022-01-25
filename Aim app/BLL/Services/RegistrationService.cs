@@ -12,21 +12,11 @@ namespace BLL.Services
     public class RegistrationService : IRegistrationService
     {
         public string Code { get; set; }
-        //private readonly SmtpClient _smtpClient;
         private readonly AppSettings _appSettings;
 
-        public RegistrationService(IOptions<AppSettings> options)
+        public RegistrationService(IOptions<AppSettings> appSetting)
         {
-            _appSettings = options.Value;
-
-            // _smtpClient = new SmtpClient
-            // {
-            //     Host = _appSettings.SmtpSettings.Host,
-            //     Port = _appSettings.SmtpSettings.Port,
-            //     EnableSsl = _appSettings.SmtpSettings.EnableSsl,
-            //     DeliveryMethod = SmtpDeliveryMethod.Network,
-            //     UseDefaultCredentials = _appSettings.SmtpSettings.UseDefaultCredentials
-            // };
+            _appSettings = appSetting.Value;
         }
 
         public async Task RegisterAsync(string emailTo, string passwordHash)

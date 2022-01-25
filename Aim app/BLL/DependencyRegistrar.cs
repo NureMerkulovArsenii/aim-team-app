@@ -1,4 +1,5 @@
-﻿using BLL.Abstractions.Interfaces;
+﻿using System.Net;
+using BLL.Abstractions.Interfaces;
 using BLL.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,6 +11,7 @@ namespace BLL
         {
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IRegistrationService, RegistrationService>();
+            services.AddScoped<IAuthorizationService, AuthorizationService>();
             DAL.DependencyRegistrar.ConfigureServices(services);
         }
     }

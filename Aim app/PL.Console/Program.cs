@@ -13,7 +13,7 @@ namespace PL.Console
         static async Task Main(string[] args)
         {
             var services = new ServiceCollection();
-            ConfigureServices(services);
+            ConfigureServices(services);    
             var serviceProvider = services.BuildServiceProvider();
             await serviceProvider.GetService<App>()?.StartApp();
         }
@@ -25,12 +25,9 @@ namespace PL.Console
                 .AddJsonFile("appsettings.json", optional: false)
                 .AddEnvironmentVariables()
                 .Build();
-
-            //ToDo: add smtp host settings to appsettings.json
             services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
 
             services.AddScoped<App>();
-            services.AddScoped<Registration>();
             DependencyRegistrar.ConfigureServices(services);
         }
     }

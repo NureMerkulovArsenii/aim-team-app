@@ -1,12 +1,11 @@
 ﻿using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
-using BLL.Services;
 
-namespace PL.Console.Authorization
+namespace PL.Console.Registration
 {
     public class Registration
     {
-        private IRegistrationService _registrationService;
+        private readonly IRegistrationService _registrationService;
 
         public Registration(IRegistrationService registrationService)
         {

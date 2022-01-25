@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Core;
 using DAL.Abstractions.Interfaces;
+using DAL.Worker;
 using Microsoft.Extensions.Options;
 
 namespace DAL.Repository
@@ -15,17 +16,17 @@ namespace DAL.Repository
         private readonly AppSettings _appSettings;
         private readonly IJsonWorker _jsonWorker;
         private List<TEntity> _allData;
-        public GenericRepositoryJson(IJsonWorker serializer, IOptions<AppSettings> appSettings)
+        
+        // public GenericRepositoryJson(IJsonWorker jsonWorker, IOptions<AppSettings> appSettings)
+        public GenericRepositoryJson(IOptions<AppSettings> appSettings)
         {
             _appSettings = appSettings?.Value ?? throw new ArgumentNullException(nameof(appSettings));
-            _jsonWorker = serializer;
+            _jsonWorker = new JsonWorker();
             _allData = new List<TEntity>();
         }
 
-        
         public async Task<IEnumerable<TEntity>> FindAllAsync()
         {
-            
             return await _jsonWorker.LoadFromFileAsync<IEnumerable<TEntity>>(_appSettings.TempDir);
         }
 
