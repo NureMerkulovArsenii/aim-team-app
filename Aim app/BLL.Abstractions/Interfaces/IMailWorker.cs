@@ -9,6 +9,8 @@ namespace BLL.Abstractions.Interfaces
 
         Task<string> SendCodeByEmailAsync(string emailTo);
 
+        Task<string> SendCodeByEmailAsync(string emailTo, string code);
+        
         Task<bool> SendMailMessageAsync(MailAddress mailAddressTo, string subject, string body);
     }
 }

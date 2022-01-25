@@ -69,10 +69,16 @@ namespace DAL.Repository
 
         public async Task DeleteAsync(TEntity entity)
         {
+            var file = string.Empty;
+            if (typeof(TEntity) == typeof(User))
+            {
+                file = "user.json";
+            }
+            
             _allData = (await FindAllAsync()).ToList();
             var k = _allData.FirstOrDefault(o => o.Id == entity.Id);
             _allData.Remove(k);
-            await _jsonWorker.SaveToFileAsync(_allData, _appSettings.JsonDirectory);
+            await _jsonWorker.SaveToFileAsync(_allData, _appSettings.JsonDirectory + file);
         }
     }
 }

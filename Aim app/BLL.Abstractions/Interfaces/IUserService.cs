@@ -1,4 +1,7 @@
-﻿namespace BLL.Abstractions.Interfaces
+﻿using System.Threading.Tasks;
+using Core;
+
+namespace BLL.Abstractions.Interfaces
 {
     public interface IUserService
     {

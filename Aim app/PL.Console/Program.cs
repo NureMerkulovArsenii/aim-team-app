@@ -31,6 +31,7 @@ namespace PL.Console
 
             services.AddScoped<App>();
             services.AddScoped<IRegistration, Registration.Registration>();
+            services.AddScoped<IAuthorization, Authorization.Authorization>();
             DependencyRegistrar.ConfigureServices(services);
         }
     }

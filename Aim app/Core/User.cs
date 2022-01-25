@@ -17,8 +17,8 @@ namespace Core
         public string Password { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        
         public bool IsVerified { get; set; }
+        public DateTime LastAuth { get; set; }
         //public Bitmap Photo { get; set; }
 
         // public string FilePath

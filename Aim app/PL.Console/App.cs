@@ -12,13 +12,13 @@ namespace PL.Console
     {
         private readonly IUserService _userService;
         private readonly IRegistration _registration;
-        private readonly Authorization.Authorization _authorization;
+        private readonly IAuthorization _authorization;
 
-        public App(IUserService userService, IAuthorizationService authorizationService,IRegistration registration)
+        public App(IUserService userService, IAuthorization authorization, IRegistration registration)
         {
             _userService = userService;
             _registration = registration;
-            _authorization = new Authorization.Authorization(authorizationService);
+            _authorization = authorization;
         }
 
         public async Task StartApp()

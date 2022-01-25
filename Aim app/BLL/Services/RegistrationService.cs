@@ -32,7 +32,8 @@ namespace BLL.Services
                 FirstName = name,
                 LastName = surname,
                 UserName = userName,
-                IsVerified = isVerified
+                IsVerified = isVerified,
+                LastAuth = DateTime.Now
             };
 
             _passwordService.SetPassword(user, password);
