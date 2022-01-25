@@ -6,7 +6,6 @@ namespace DAL.Abstractions.Interfaces
     {
         public Task SaveToFileAsync<T>(T obj, string fileName);
 
-
         public Task<T> LoadFromFileAsync<T>(string fileName);
     }
 }

@@ -10,6 +10,7 @@ namespace DAL
         public static void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositoryJson<>));
+            services.AddScoped<IJsonWorker, JsonWorker>();
         }
     }
 }
