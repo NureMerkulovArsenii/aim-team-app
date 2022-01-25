@@ -2,19 +2,22 @@
 using System.Linq;
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
+using BLL.Helpers;
+using PL.Console.Interfaces;
+using PL.Console.Registration;
 
 namespace PL.Console
 {
     public class App
     {
         private readonly IUserService _userService;
-        private readonly Registration.Registration _registration;
+        private readonly IRegistration _registration;
         private readonly Authorization.Authorization _authorization;
 
-        public App(IUserService userService, IRegistrationService registrationService, IAuthorizationService authorizationService)
+        public App(IUserService userService, IAuthorizationService authorizationService,IRegistration registration)
         {
             _userService = userService;
-            _registration = new Registration.Registration(registrationService);
+            _registration = registration;
             _authorization = new Authorization.Authorization(authorizationService);
         }
 
@@ -24,13 +27,13 @@ namespace PL.Console
             string key;
             do
             {
-                System.Console.WriteLine("Wanna sign up (press \"y\"), wanna sign in (press) \"n\"");
+                System.Console.WriteLine("Wanna sign up (press \"y\"), wanna sign in (press \"n\")");
                 key = System.Console.ReadLine();
             } while (key?.Length != 1 && !userKeys.Contains(key));
 
             if (key == "y")
             {
-                 await _registration.RegisterUserAsync();
+                await _registration.RegisterUserAsync();
             }
             else if (key == "n")
             {

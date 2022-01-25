@@ -5,6 +5,8 @@ using Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PL.Console.Authorization;
+using PL.Console.Registration;
+using PL.Console.Interfaces;
 
 namespace PL.Console
 {
@@ -28,6 +30,7 @@ namespace PL.Console
             services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
 
             services.AddScoped<App>();
+            services.AddScoped<IRegistration, Registration.Registration>();
             DependencyRegistrar.ConfigureServices(services);
         }
     }

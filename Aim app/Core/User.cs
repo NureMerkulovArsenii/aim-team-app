@@ -1,8 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace Core
 {
+    public class Users
+    {
+        public List<User> ListOfUsers { get; set; }
+    }
+    
     public class User : BaseEntity
     {
         private string _filePath;

@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using BLL.Abstractions.Interfaces;
+using BLL.Helpers;
 using BLL.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,6 +14,8 @@ namespace BLL
             services.AddScoped<IRegistrationService, RegistrationService>();
             services.AddScoped<IAuthorizationService, AuthorizationService>();
             services.AddScoped<IPasswordService, PasswordService>();
+            services.AddScoped<IValidator, Validator>();
+            services.AddScoped<IMailWorker, MailWorker>();
             DAL.DependencyRegistrar.ConfigureServices(services);
         }
     }
