@@ -12,6 +12,7 @@ namespace BLL
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IRegistrationService, RegistrationService>();
             services.AddScoped<IAuthorizationService, AuthorizationService>();
+            services.AddScoped<IPasswordService, PasswordService>();
             DAL.DependencyRegistrar.ConfigureServices(services);
         }
     }

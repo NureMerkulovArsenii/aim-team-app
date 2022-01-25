@@ -26,14 +26,6 @@ namespace BLL.Services
             return false;
         }
 
-        private string GetHash(string password)
-        {
-            var passBytes = Encoding.UTF8.GetBytes(password);
-            var passHash = SHA256.Create().ComputeHash(passBytes);
-
-            return Encoding.UTF8.GetString(passHash);
-        }
-
         public bool HasPasswordCorrectFormat(User user, string password)
         {
             if (!string.IsNullOrWhiteSpace(password) && password.Length >= 8 && password.Length <= 24)
@@ -55,6 +47,14 @@ namespace BLL.Services
             var passHash = GetHash(password);
 
             return passHash == user.Password;
+        }
+
+        private string GetHash(string password)
+        {
+            var passBytes = Encoding.UTF8.GetBytes(password);
+            var passHash = SHA256.Create().ComputeHash(passBytes);
+
+            return Encoding.UTF8.GetString(passHash);
         }
     }
 }
