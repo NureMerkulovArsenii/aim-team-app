@@ -15,7 +15,7 @@ namespace BLL.Services
 
         public bool SetPassword(User user, string password)
         {
-            if (HasPasswordCorrectFormat(user, password))
+            if (HasPasswordCorrectFormat(user.Email, password))
             {
                 user.Password = GetHash(password);
                 //TODO: Save User
@@ -26,14 +26,14 @@ namespace BLL.Services
             return false;
         }
 
-        public bool HasPasswordCorrectFormat(User user, string password)
+        public bool HasPasswordCorrectFormat(string email, string password)
         {
             if (!string.IsNullOrWhiteSpace(password) && password.Length >= 8 && password.Length <= 24)
             {
                 Regex regex = new("([A-Za-z0-9!\"#%&'()*,\\-./:;?@[\\\\\\]_{}¡«·»¿;])*");
                 var searchedString = regex.Match(password).Value;
 
-                if (searchedString == password && user.Email != password)
+                if (searchedString == password && email != password)
                 {
                     return true;
                 }

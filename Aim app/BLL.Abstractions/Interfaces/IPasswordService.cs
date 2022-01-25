@@ -8,7 +8,7 @@ namespace BLL.Abstractions.Interfaces
 
         bool SetPassword(User user, string password);
 
-        bool HasPasswordCorrectFormat(User user, string password);
+        bool HasPasswordCorrectFormat(string email, string password);
 
         bool IsPasswordCorrect(User user, string password);
     }
