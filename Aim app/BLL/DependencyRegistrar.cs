@@ -18,6 +18,7 @@ namespace BLL
             services.AddScoped<IUserValidator, UserValidator>();
             services.AddScoped<IMailWorker, MailWorker>();
             services.AddScoped<IRoomCreationService, RoomCreationService>();
+            services.AddSingleton<ICurrentUser, CurrentUserConsole>();
             DAL.DependencyRegistrar.ConfigureServices(services);
         }
     }
