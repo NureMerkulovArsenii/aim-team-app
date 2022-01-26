@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Core;
 
 namespace BLL.Abstractions.Interfaces
 {
@@ -8,8 +9,10 @@ namespace BLL.Abstractions.Interfaces
         
         Task<string> GetEmailByUsernameOrEmail(string usernameOrEmail);
 
-        Task<bool> IsLastAuthWasLongAgo(string usernameOrEmail, int numberOfDays);
+        Task<bool> IsLastAuthWasLongAgo(User user, int numberOfDays);
         
-        Task UpdateLastAuth(string usernameOrEmail);
+        Task UpdateLastAuth(User user);
+
+        Task<User> GetInfoAboutUser(string usernameOrEmail);
     }
 }

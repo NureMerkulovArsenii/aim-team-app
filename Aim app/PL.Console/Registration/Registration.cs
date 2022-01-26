@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Net.Mail;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,13 +17,15 @@ namespace PL.Console.Registration
         private readonly IPasswordService _passwordService;
         private readonly IUserValidator _validator;
         private readonly IMailWorker _mailWorker;
+        private readonly ICurrentUser _currentUser;
 
-        public Registration(IRegistrationService registrationService, IPasswordService passwordService, IUserValidator validator, IMailWorker mailWorker)
+        public Registration(IRegistrationService registrationService, IPasswordService passwordService, IUserValidator validator, IMailWorker mailWorker, ICurrentUser currentUser)
         {
             this._passwordService = passwordService;
             this._registrationService = registrationService;
             this._validator = validator;
             this._mailWorker = mailWorker;
+            this._currentUser = currentUser;
         }
 
         public async Task RegisterUserAsync()
@@ -79,6 +82,19 @@ namespace PL.Console.Registration
             }
 
             await _registrationService.RegisterAsync(email, name, surName, nickName, password, true);
+            
+            var tempUser = new User()
+            {
+                UserName = nickName,
+                Email = email,
+                FirstName = name,
+                LastName = surName,
+                IsVerified = true,
+                LastAuth = DateTime.Now
+            };
+            _passwordService.SetPassword(tempUser, password);
+            _currentUser.User = tempUser;
+            
             System.Console.WriteLine("You have just registered successfully");
         }
     }

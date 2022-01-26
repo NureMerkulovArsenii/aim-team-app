@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
+using Core;
 using PL.Console.Interfaces;
 
 namespace PL.Console.Authorization
@@ -8,11 +9,13 @@ namespace PL.Console.Authorization
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IMailWorker _mailWorker;
+        private readonly ICurrentUser _currentUser;
 
-        public Authorization(IAuthorizationService authorizationService, IMailWorker mailWorker)
+        public Authorization(IAuthorizationService authorizationService, IMailWorker mailWorker, ICurrentUser currentUser)
         {
             _authorizationService = authorizationService;
             _mailWorker = mailWorker;
+            _currentUser = currentUser;
         }
         
         public async Task<bool> AuthorizeUserAsync()
@@ -38,7 +41,9 @@ namespace PL.Console.Authorization
                 isUserDataValid = await _authorizationService.CheckUserDataForAuthAsync(usernameOrEmail, password);
             }
 
-            if (await _authorizationService.IsLastAuthWasLongAgo(usernameOrEmail, 10))
+            var tempUser = await _authorizationService.GetInfoAboutUser(usernameOrEmail);
+
+            if (await _authorizationService.IsLastAuthWasLongAgo(tempUser, 10))
             {
                 var email = await _authorizationService.GetEmailByUsernameOrEmail(usernameOrEmail);
                 var code = await _mailWorker.SendCodeByEmailAsync(email);
@@ -58,7 +63,8 @@ namespace PL.Console.Authorization
                 }
             }
 
-            await _authorizationService.UpdateLastAuth(usernameOrEmail);
+            _currentUser.User = tempUser;
+            await _authorizationService.UpdateLastAuth(tempUser);
             return true;
         }
     }
