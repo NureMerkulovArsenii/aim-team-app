@@ -6,6 +6,6 @@ namespace BLL.Abstractions.Interfaces
 {
     public interface IRoomService
     {
-        Task<Users> GetParticipantsOfRoom(string roomId);
+        Task<List<User>> GetParticipantsOfRoom(string roomId);
     }
 }

@@ -5,7 +5,7 @@ namespace BLL.Abstractions.Interfaces
 {
     public interface IUserService
     {
-        Task LeaveRoom(string roomId);
-        Task SwitchNotifications(string roomId, bool stateOnOrOff);
+        Task<bool> LeaveRoom(string roomId);
+        Task<bool> SwitchNotifications(string roomId, bool stateOnOrOff);
     }
 }

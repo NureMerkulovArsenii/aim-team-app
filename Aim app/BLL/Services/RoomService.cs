@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using Core;
@@ -8,16 +10,19 @@ namespace BLL.Services
 {
     public class RoomService : IRoomService
     {
-        private readonly IGenericRepository<Room> _genericRepository;
+        private readonly IGenericRepository<Room> _roomGenericRepository;
 
         public RoomService(IGenericRepository<Room> genericRepository)
         {
-            _genericRepository = genericRepository;
+            _roomGenericRepository = genericRepository;
         }
         
-        public Task<Users> GetParticipantsOfRoom(string roomId)
+        public async Task<List<User>> GetParticipantsOfRoom(string roomId)
         {
-            throw new NotImplementedException();
+            var rooms = await _roomGenericRepository.FindByConditionAsync(room => room.Id == roomId);
+            var room = rooms.FirstOrDefault();
+
+            return room.Participants.Keys.ToList();
         }
     }
 }

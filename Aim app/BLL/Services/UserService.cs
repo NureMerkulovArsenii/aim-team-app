@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using Core;
@@ -8,21 +9,53 @@ namespace BLL.Services
 {
     public class UserService : IUserService
     {
-        private readonly IGenericRepository<User> _genericRepository;
+        private readonly IGenericRepository<User> _userGenericRepository;
+        private readonly IGenericRepository<Room> _roomGenericRepository;
+        private readonly ICurrentUser _currentUser;
 
-        public UserService(IGenericRepository<User> genericRepository)
+        public UserService(IGenericRepository<User> userGenericRepository,IGenericRepository<Room> roomGenericRepository, ICurrentUser currentUser)
         {
-            _genericRepository = genericRepository;
+            _userGenericRepository = userGenericRepository;
+            _roomGenericRepository = roomGenericRepository;
+            _currentUser = currentUser;
         }
 
-        public Task LeaveRoom(string roomId)
+        public async Task<bool> LeaveRoom(string roomId)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(roomId))
+            {
+                return false;
+            }
+
+            var roomsFromDb = await _roomGenericRepository.FindByConditionAsync(room => room.Id == roomId);
+            var room = roomsFromDb.FirstOrDefault();
+            if (room == null)
+            {
+                return false;
+            }
+            
+            room.Participants.Remove(_currentUser.User);
+            await _roomGenericRepository.UpdateAsync(room);
+            return true;
         }
 
-        public Task SwitchNotifications(string roomId, bool stateOnOrOff)
+        public async Task<bool> SwitchNotifications(string roomId, bool stateOnOrOff)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(roomId))
+            {
+                return false;
+            }
+
+            var roomsFromDb = await _roomGenericRepository.FindByConditionAsync(room => room.Id == roomId);
+            var room = roomsFromDb.FirstOrDefault();
+            if (room == null)
+            {
+                return false;
+            }
+
+            room.Participants[_currentUser.User].Notifications = stateOnOrOff;
+            await _roomGenericRepository.UpdateAsync(room);
+            return true;
         }
     }
 }
