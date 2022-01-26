@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Core;
-using DAL;
 using DAL.Abstractions.Interfaces;
+using BLL.Abstractions.Interfaces;
 
 namespace BLL.Services
 {
-    public class RoomCreationService
+    public class RoomCreationService : IRoomCreationService
     {
         private readonly IGenericRepository<Room> _roomGenericRepository;
 
@@ -38,12 +35,16 @@ namespace BLL.Services
             return room.Id;
         }
 
-        public void DeleteRoom(Room room, User user)
+        public bool DeleteRoom(Room room, User user)
         {
             if (IsUserAdmin(room, user))
             {
                 _roomGenericRepository.DeleteAsync(room).Wait();
+
+                return true;
             }
+
+            return false;
         }
 
         public bool ChangeRoomSettings(Room room, User user, string name, string description) //TODO: photo implementation
@@ -67,7 +68,7 @@ namespace BLL.Services
             return false;
         }
 
-        public bool IsUserAdmin(Room room, User user) //TODO: roles implementation
+        private bool IsUserAdmin(Room room, User user) //TODO: roles implementation
         {
             var isUserAdmin = room.Participants.Where(userPair => userPair.Value.RoleId == "1" && userPair.Key.Id == user.Id);
 
