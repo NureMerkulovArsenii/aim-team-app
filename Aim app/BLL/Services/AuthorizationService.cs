@@ -49,24 +49,25 @@ namespace BLL.Services
             return userWithEmail.FirstOrDefault()?.Email;
         }
 
-        public async Task<bool> IsLastAuthWasLongAgo(string usernameOrEmail, int numberOfDays)
+        public async Task<bool> IsLastAuthWasLongAgo(User user, int numberOfDays)
         {
-            var resultUsers = await _genericRepository.FindByConditionAsync(user =>
-                user.Email == usernameOrEmail || user.UserName == usernameOrEmail);
-            var userLastAuth = resultUsers.FirstOrDefault().LastAuth;
+            var userLastAuth = user.LastAuth;
             
             return userLastAuth.AddDays(numberOfDays) < DateTime.Now;
         }
 
-        public async Task UpdateLastAuth(string usernameOrEmail)
+        public async Task UpdateLastAuth(User user)
         {
-            var resultUsers = await _genericRepository.FindByConditionAsync(user =>
-                user.Email == usernameOrEmail || user.UserName == usernameOrEmail);
-            var user = resultUsers.FirstOrDefault();
-            
             user.LastAuth = DateTime.Now;
-            
+
             await _genericRepository.UpdateAsync(user);
+        }
+
+        public async Task<User> GetInfoAboutUser(string usernameOrEmail)
+        {
+            var usersFromDb = await _genericRepository.FindByConditionAsync(user =>
+                user.Email == usernameOrEmail || user.UserName == usernameOrEmail);
+            return usersFromDb.FirstOrDefault();
         }
     }
 }
