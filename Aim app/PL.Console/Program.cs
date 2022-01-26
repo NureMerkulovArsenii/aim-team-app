@@ -4,8 +4,6 @@ using BLL;
 using Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using PL.Console.Authorization;
-using PL.Console.Registration;
 using PL.Console.Interfaces;
 
 namespace PL.Console
@@ -15,7 +13,7 @@ namespace PL.Console
         static async Task Main(string[] args)
         {
             var services = new ServiceCollection();
-            ConfigureServices(services);    
+            ConfigureServices(services);
             var serviceProvider = services.BuildServiceProvider();
             await serviceProvider.GetService<App>()?.StartApp();
         }
@@ -32,6 +30,7 @@ namespace PL.Console
             services.AddScoped<App>();
             services.AddScoped<IRegistration, Registration.Registration>();
             services.AddScoped<IAuthorization, Authorization.Authorization>();
+            services.AddScoped<IRoomsControl, RoomsControl.RoomsControl>();
             DependencyRegistrar.ConfigureServices(services);
         }
     }
