@@ -22,6 +22,7 @@ namespace BLL.Services
             var user = _currentUser.User;
             var baseParticipantInfo = new ParticipantInfo()
             {
+                User = user,
                 RoleId = "1",
                 Notifications = true
             };
@@ -30,7 +31,7 @@ namespace BLL.Services
             {
                 RoomName = name,
                 RoomDescription = description,
-                Participants = new Dictionary<User, ParticipantInfo> { { user, baseParticipantInfo } }
+                Participants = new List<ParticipantInfo> { baseParticipantInfo }
             };
 
             _roomGenericRepository.CreateAsync(room).Wait();
@@ -77,7 +78,7 @@ namespace BLL.Services
 
         private bool IsUserAdmin(Room room, User user) //TODO: roles implementation
         {
-            var isUserAdmin = room.Participants.Where(userPair => userPair.Value.RoleId == "1" && userPair.Key.Id == user.Id);
+            var isUserAdmin = room.Participants.Where(participant => participant.RoleId == "1" && participant.User.Id == user.Id);
 
             return isUserAdmin.Any();
         }
