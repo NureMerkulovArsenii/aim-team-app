@@ -6,9 +6,9 @@ namespace PL.Console.RoomsControl
 {
     public class RoomsControl : IRoomsControl
     {
-        private readonly IRoomCreationService _roomService;
+        private readonly IRoomService _roomService;
 
-        public RoomsControl(IRoomCreationService roomService)
+        public RoomsControl(IRoomService roomService)
         {
             _roomService = roomService;
         }
