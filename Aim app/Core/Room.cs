@@ -14,7 +14,7 @@ namespace Core
 
         public string RoomDescription { get; set; }
 
-        public IDictionary<User, ParticipantInfo> Participants { get; set; }
+        public IList<ParticipantInfo> Participants { get; set; }
 
         [JsonIgnore] public ReadOnlyCollection<byte> Photo { get; set; }
 

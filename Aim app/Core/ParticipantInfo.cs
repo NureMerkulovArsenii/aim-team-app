@@ -8,6 +8,7 @@ namespace Core
 {
     public class ParticipantInfo
     {
+        public User User { get; set; }
         public string RoleId { get; set; }
 
         public bool Notifications { get; set; }
