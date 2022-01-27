@@ -18,16 +18,22 @@ namespace BLL.Helpers
             _genericRepository = genericRepository;
         }
 
-        public bool IsEmailValid(string email)
+        public int IsEmailValid(string email)
         {
             try
             {
                 var address = new MailAddress(email).Address;
-                return true;
+                var users = _genericRepository.FindByConditionAsync(user => user.Email == email).Result;
+                if (users.Any())
+                {
+                    return 1;
+                }
+
+                return 0;
             }
             catch (FormatException)
             {
-                return false;
+                return -1;
             }
         }
 
@@ -41,6 +47,17 @@ namespace BLL.Helpers
             }
 
             return true;
+        }
+
+        public bool ValidateUserNameOrEmail(string userName)
+        {
+            var result = _genericRepository.FindByConditionAsync(user => user.UserName == userName || user.Email == userName).Result;
+            if (result.Any())
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }
