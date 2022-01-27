@@ -67,7 +67,7 @@ namespace PL.Console.RoomsControl
                 var errors = new List<string>();
                 foreach (var name in userNames)
                 {
-                    var validationsResult = _userValidator.ValidateUserNick(name);
+                    var validationsResult = _userValidator.ValidateUserNameOrEmail(name);
                     if (validationsResult == true)
                     {
                         usersToInvite.Add(name);

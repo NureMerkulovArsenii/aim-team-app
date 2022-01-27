@@ -40,7 +40,7 @@ namespace PL.Console.RoomsControl
             do
             {
                 System.Console.Write(
-                    "If you want to choose room type its number or if you want to create room - enter \"create\": ");
+                    "If you want to choose room type its number or if you want to create room - enter \"create\" or if you want to join - enter \"join\": ");
                 userInput = System.Console.ReadLine()?.Trim();
             } while (userInput == null && userInput != "create" && userInput != "join" && !int.TryParse(userInput, out var roomNumber));
 
@@ -68,7 +68,7 @@ namespace PL.Console.RoomsControl
             string action;
             do
             {
-                System.Console.WriteLine("What do you want to do? (\"delete\" or \"set up\" or \"leave\" or \"notification\")");
+                System.Console.WriteLine("What do you want to do? (\"delete\" or \"set up\" or \"leave\" or \"notification\" or \"invite\")");
                 action = System.Console.ReadLine();
             } while (action == null);
 
@@ -91,6 +91,7 @@ namespace PL.Console.RoomsControl
             else if (action == "invite")
             {
                 _invitation.InviteToRoomWithUrl(room);
+                return true;
             }
 
             System.Console.WriteLine("Error! Please, try again later!");
