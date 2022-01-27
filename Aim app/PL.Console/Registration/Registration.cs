@@ -101,7 +101,8 @@ namespace PL.Console.Registration
             }
 
             await _registrationService.RegisterAsync(email, name, surName, nickName, password, true);
-
+            System.Console.WriteLine("You have just registered successfully");
+            
             var tempUser = new User()
             {
                 UserName = nickName,
@@ -113,8 +114,8 @@ namespace PL.Console.Registration
             };
             _passwordService.SetPassword(tempUser, password);
             _currentUser.User = tempUser;
-
-            System.Console.WriteLine("You have just registered successfully");
+            
+            
         }
     }
 }

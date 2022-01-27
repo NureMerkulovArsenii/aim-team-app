@@ -16,7 +16,7 @@ namespace DAL.Repository
         private readonly AppSettings _appSettings;
         private readonly IJsonWorker _jsonWorker;
         private List<TEntity> _allData;
-        
+
         public GenericRepositoryJson(IJsonWorker jsonWorker, IOptions<AppSettings> appSettings)
         {
             _appSettings = appSettings?.Value ?? throw new ArgumentNullException(nameof(appSettings));
@@ -26,11 +26,8 @@ namespace DAL.Repository
 
         public async Task<IEnumerable<TEntity>> FindAllAsync()
         {
-            var file = string.Empty;
-            if (typeof(TEntity) == typeof(User))
-            {
-                file = "user.json";
-            }
+            var file = GetFile(typeof(TEntity));
+
             return await _jsonWorker.LoadFromFileAsync<IEnumerable<TEntity>>(_appSettings.JsonDirectory + file);
         }
 
@@ -42,11 +39,8 @@ namespace DAL.Repository
 
         public async Task CreateAsync(TEntity entity)
         {
-            var file = string.Empty;
-            if (typeof(TEntity) == typeof(User))
-            {
-                file = "user.json";
-            }
+            var file = GetFile(typeof(TEntity));
+
             try
             {
                 _allData = (await FindAllAsync()).ToList();
@@ -58,7 +52,6 @@ namespace DAL.Repository
                 Console.WriteLine(e);
                 throw;
             }
-           
         }
 
         public async Task UpdateAsync(TEntity entity)
@@ -69,16 +62,26 @@ namespace DAL.Repository
 
         public async Task DeleteAsync(TEntity entity)
         {
-            var file = string.Empty;
-            if (typeof(TEntity) == typeof(User))
-            {
-                file = "user.json";
-            }
-            
+            var file = GetFile(typeof(TEntity));
+
             _allData = (await FindAllAsync()).ToList();
             var k = _allData.FirstOrDefault(o => o.Id == entity.Id);
             _allData.Remove(k);
             await _jsonWorker.SaveToFileAsync(_allData, _appSettings.JsonDirectory + file);
+        }
+
+        private string GetFile(Type fileType)
+        {
+            if (fileType == typeof(User))
+            {
+                return "user.json";
+            }
+            else if (fileType == typeof(Room))
+            {
+                return "room.json";
+            }
+
+            return string.Empty;
         }
     }
 }

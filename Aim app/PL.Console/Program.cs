@@ -15,7 +15,7 @@ namespace PL.Console
         static async Task Main(string[] args)
         {
             var services = new ServiceCollection();
-            ConfigureServices(services);
+            ConfigureServices(services);    
             var serviceProvider = services.BuildServiceProvider();
             await serviceProvider.GetService<App>()?.StartApp();
         }
@@ -33,6 +33,7 @@ namespace PL.Console
             services.AddScoped<IRegistration, Registration.Registration>();
             services.AddScoped<IAuthorization, Authorization.Authorization>();
             services.AddScoped<IInvitation, Invitation>();
+            services.AddScoped<IRoomsControl, RoomsControl.RoomsControl>();
             DependencyRegistrar.ConfigureServices(services);
         }
     }

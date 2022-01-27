@@ -13,11 +13,13 @@ namespace PL.Console
         private readonly IUserService _userService;
         private readonly IRegistration _registration;
         private readonly IAuthorization _authorization;
+        private readonly IRoomsControl _roomsControl;
         private readonly IInvitation _invitation;
 
         public App(IUserService userService, IAuthorization authorization, IRegistration registration,
-            IInvitation invitation)
+            IInvitation invitation,IRoomsControl roomsControl)
         {
+            this._roomsControl = roomsControl;
             this._userService = userService;
             this._registration = registration;
             this._authorization = authorization;
@@ -51,12 +53,16 @@ namespace PL.Console
                     System.Console.WriteLine("Login failed, please try again later!");
                 }
             }
-
             System.Console.WriteLine("Wan join room? (press y if yes)");
             var userKey = System.Console.ReadLine();
             if (userKey == "y")
             {
                 _invitation.EnterRoomWithUrl();
+            }
+
+            while (true)
+            {
+                await _roomsControl.ShowUserRooms();
             }
         }
     }
