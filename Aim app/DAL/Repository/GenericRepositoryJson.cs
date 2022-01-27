@@ -84,6 +84,10 @@ namespace DAL.Repository
             {
                 return "urls.json";
             }
+            else if (fileType == typeof(Role))
+            {
+                return "role.json";
+            }
 
             return string.Empty;
         }
