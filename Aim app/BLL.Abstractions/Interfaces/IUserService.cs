@@ -6,8 +6,8 @@ namespace BLL.Abstractions.Interfaces
 {
     public interface IUserService
     {
-        Task<bool> LeaveRoom(string roomId);
-        Task<bool> SwitchNotifications(string roomId, bool stateOnOrOff);
+        Task<bool> LeaveRoom(Room room);
+        Task<bool> SwitchNotifications(Room room, bool stateOnOrOff);
         bool IsUserVerified(User user);
         Task<List<Room>> GetUserRooms();
     }

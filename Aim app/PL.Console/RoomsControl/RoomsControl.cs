@@ -20,13 +20,20 @@ namespace PL.Console.RoomsControl
         {
             var userRooms = await _userService.GetUserRooms();
 
-            System.Console.WriteLine("Your rooms: ");
-
-            for (var i = 0; i < userRooms.Count; i++)
+            if (userRooms.Count == 0)
             {
-                System.Console.WriteLine($"\t{i + 1}) {userRooms[i].RoomName}");
+                System.Console.WriteLine("You have no rooms");
             }
+            else
+            {
+                System.Console.WriteLine("Your rooms: ");
 
+                for (var i = 0; i < userRooms.Count; i++)
+                {
+                    System.Console.WriteLine($"\t{i + 1}) {userRooms[i].RoomName}");
+                }
+            }
+            
             string userInput;
             do
             {
@@ -55,7 +62,7 @@ namespace PL.Console.RoomsControl
             string action;
             do
             {
-                System.Console.WriteLine("What do you want to do? (\"delete\" or \"set up\")");
+                System.Console.WriteLine("What do you want to do? (\"delete\" or \"set up\" or \"leave\" or \"notification\")");
                 action = System.Console.ReadLine();
             } while (action == null);
 
@@ -66,6 +73,14 @@ namespace PL.Console.RoomsControl
             else if (action == "set up")
             {
                 return SetUpRoom(room);
+            }
+            else if (action == "leave")
+            {
+                return LeaveRoom(room);
+            }
+            else if (action == "notification")
+            {
+                return ChangeRoomNotifications(room);
             }
 
             System.Console.WriteLine("Error! Please, try again later!");
@@ -126,6 +141,7 @@ namespace PL.Console.RoomsControl
                 System.Console.WriteLine("Enter new name:");
                 name = System.Console.ReadLine();
             }
+            
             if (action == "description" || action == "both")
             {
                 System.Console.WriteLine("Enter new description:");
@@ -140,6 +156,39 @@ namespace PL.Console.RoomsControl
 
             System.Console.WriteLine("Error! Please, try again later!");
 
+            return false;
+        }
+
+        private bool LeaveRoom(Room room)
+        {
+            if (_userService.LeaveRoom(room).Result)
+            {
+                System.Console.WriteLine("Successfully leaved the room!");
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool ChangeRoomNotifications(Room room)
+        {
+            string userResponse;
+            do
+            {
+                System.Console.Write("Do you want to receive notifications from this room (\"yes\" or \"no\")? ");
+                userResponse = System.Console.ReadLine();
+            } while (userResponse == null && userResponse != "yes" && userResponse != "no");
+
+            if (userResponse == "yes")
+            {
+                return _userService.SwitchNotifications(room, true).Result;
+            }
+            else if (userResponse == "no")
+            {
+                return _userService.SwitchNotifications(room, false).Result;
+            }
+
+            System.Console.WriteLine("Error! Please, try again later!");
             return false;
         }
     }

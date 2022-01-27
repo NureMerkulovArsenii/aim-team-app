@@ -21,18 +21,8 @@ namespace BLL.Services
             _currentUser = currentUser;
         }
 
-        public async Task<bool> LeaveRoom(string roomId)
+        public async Task<bool> LeaveRoom(Room room)
         {
-            if (string.IsNullOrWhiteSpace(roomId))
-            {
-                return false;
-            }
-
-            var room = _roomGenericRepository
-                .FindByConditionAsync(room => room.Id == roomId)
-                .Result
-                .FirstOrDefault();
-            
             if (room == null)
             {
                 return false;
@@ -44,18 +34,8 @@ namespace BLL.Services
             return true;
         }
 
-        public async Task<bool> SwitchNotifications(string roomId, bool stateOnOrOff)
+        public async Task<bool> SwitchNotifications(Room room, bool stateOnOrOff)
         {
-            if (string.IsNullOrWhiteSpace(roomId))
-            {
-                return false;
-            }
-
-            var room = _roomGenericRepository
-                .FindByConditionAsync(room => room.Id == roomId)
-                .Result
-                .FirstOrDefault();
-
             if (room == null)
             {
                 return false;
