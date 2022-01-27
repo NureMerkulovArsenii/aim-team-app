@@ -28,7 +28,7 @@ namespace BLL.Services
 
         public bool HasPasswordCorrectFormat(string email, string password)
         {
-            if (!string.IsNullOrWhiteSpace(password) && password.Length >= 8 && password.Length <= 24)
+            if (!string.IsNullOrWhiteSpace(password) && password.Length is >= 8 and <= 24)
             {
                 Regex regex = new("([A-Za-z0-9!\"#%&'()*,\\-./:;?@[\\\\\\]_{}¡«·»¿;])*");
                 var searchedString = regex.Match(password).Value;

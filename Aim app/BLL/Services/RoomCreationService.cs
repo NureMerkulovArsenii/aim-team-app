@@ -9,14 +9,17 @@ namespace BLL.Services
     public class RoomCreationService : IRoomCreationService
     {
         private readonly IGenericRepository<Room> _roomGenericRepository;
+        private readonly ICurrentUser _currentUser;
 
-        public RoomCreationService(IGenericRepository<Room> roomRepository)
+        public RoomCreationService(IGenericRepository<Room> roomRepository, ICurrentUser currentUser)
         {
             _roomGenericRepository = roomRepository;
+            _currentUser = currentUser;
         }
 
-        public string CreateRoom(User user, string name, string description) //TODO: Photo implementation
+        public string CreateRoom(string name, string description) //TODO: Photo implementation
         {
+            var user = _currentUser.User;
             var baseParticipantInfo = new ParticipantInfo()
             {
                 RoleId = "1",
@@ -35,8 +38,10 @@ namespace BLL.Services
             return room.Id;
         }
 
-        public bool DeleteRoom(Room room, User user)
+        public bool DeleteRoom(Room room)
         {
+            var user = _currentUser.User;
+            
             if (IsUserAdmin(room, user))
             {
                 _roomGenericRepository.DeleteAsync(room).Wait();
@@ -47,8 +52,10 @@ namespace BLL.Services
             return false;
         }
 
-        public bool ChangeRoomSettings(Room room, User user, string name, string description) //TODO: photo implementation
+        public bool ChangeRoomSettings(Room room, string name, string description) //TODO: photo implementation
         {
+            var user = _currentUser.User;
+            
             if (IsUserAdmin(room, user))
             {
                 if (!string.IsNullOrWhiteSpace(name))

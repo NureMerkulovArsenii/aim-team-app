@@ -4,10 +4,10 @@ namespace BLL.Abstractions.Interfaces
 {
     public interface IRoomCreationService
     {
-        string CreateRoom(User user, string name, string description);
+        string CreateRoom(string name, string description);
 
-        bool DeleteRoom(Room room, User user);
+        bool DeleteRoom(Room room);
 
-        bool ChangeRoomSettings(Room room, User user, string name, string description);
+        bool ChangeRoomSettings(Room room, string name, string description);
     }
 }

@@ -13,9 +13,9 @@ namespace PL.Console.RoomsControl
             _roomService = roomService;
         }
 
-        public bool ChooseRoomAction(User user)
+        public bool ChooseRoomAction()
         {
-            string? action;
+            string action;
             do
             {
                 System.Console.WriteLine("What do you want to do?");
@@ -24,15 +24,15 @@ namespace PL.Console.RoomsControl
 
             if (action == "create")
             {
-                return CreateRoom(user);
+                return CreateRoom();
             }
             else if (action == "delete")
             {
-                return DeleteRoom(user);
+                return DeleteRoom();
             }
             else if (action == "set up")
             {
-                return SetUpRoom(user);
+                return SetUpRoom();
             }
 
             System.Console.WriteLine("Error! Please, try again later!");
@@ -40,7 +40,7 @@ namespace PL.Console.RoomsControl
             return false;
         }
 
-        private bool CreateRoom(User user)
+        private bool CreateRoom()
         {
             string name;
 
@@ -53,7 +53,7 @@ namespace PL.Console.RoomsControl
             System.Console.WriteLine("Enter room's description:");
             var description = System.Console.ReadLine();
 
-            var roomId = _roomService.CreateRoom(user, name, description);
+            var roomId = _roomService.CreateRoom(name, description);
 
             if (roomId != null)
             {
@@ -67,12 +67,12 @@ namespace PL.Console.RoomsControl
             return false;
         }
 
-        private bool DeleteRoom(User user)
+        private bool DeleteRoom()
         {
             System.Console.WriteLine("Choose room:");
             Room room = null; //TODO: Get room
 
-            if (_roomService.DeleteRoom(room, user))
+            if (_roomService.DeleteRoom(room))
             {
                 System.Console.WriteLine("Room successfully deleted!");
                 return true;
@@ -83,7 +83,7 @@ namespace PL.Console.RoomsControl
             return false;
         }
 
-        private bool SetUpRoom(User user)
+        private bool SetUpRoom()
         {
             System.Console.WriteLine("Choose room:");
             Room room = null; //TODO: Get room
@@ -105,7 +105,7 @@ namespace PL.Console.RoomsControl
                 description = System.Console.ReadLine();
             }
 
-            if (_roomService.ChangeRoomSettings(room, user, name, description))
+            if (_roomService.ChangeRoomSettings(room, name, description))
             {
                 System.Console.WriteLine("Room settings successfully changed!");
                 return true;
