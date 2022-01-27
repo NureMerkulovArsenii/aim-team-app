@@ -92,7 +92,7 @@ namespace BLL.Services
                 .Result
                 .FirstOrDefault();
 
-            return room.Participants.Keys.ToList();
+            return room?.Participants.Select(participant => participant.User).ToList();
         }
     }
 }

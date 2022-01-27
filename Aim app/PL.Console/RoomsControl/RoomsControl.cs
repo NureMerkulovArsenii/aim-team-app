@@ -1,4 +1,5 @@
-﻿using Core;
+﻿using System.Threading.Tasks;
+using Core;
 using BLL.Abstractions.Interfaces;
 using PL.Console.Interfaces;
 
@@ -7,32 +8,64 @@ namespace PL.Console.RoomsControl
     public class RoomsControl : IRoomsControl
     {
         private readonly IRoomService _roomService;
+        private readonly IUserService _userService;
 
-        public RoomsControl(IRoomService roomService)
+        public RoomsControl(IRoomService roomService, IUserService userService)
         {
             _roomService = roomService;
+            _userService = userService;
         }
 
-        public bool ChooseRoomAction()
+        public async Task ShowUserRooms()
+        {
+            var userRooms = await _userService.GetUserRooms();
+
+            System.Console.WriteLine("Your rooms: ");
+
+            for (var i = 0; i < userRooms.Count; i++)
+            {
+                System.Console.WriteLine($"\t{i + 1}) {userRooms[i].RoomName}");
+            }
+
+            string userInput;
+            do
+            {
+                System.Console.Write(
+                    "If you want to choose room type its number or if you want to create room - enter \"create\": ");
+                userInput = System.Console.ReadLine()?.Trim();
+            } while (userInput == null && userInput != "create" && !int.TryParse(userInput, out var roomNumber));
+
+            
+            if (userInput == "create")
+            {
+                CreateRoom();
+            }
+            else if (int.TryParse(userInput, out var roomNumber) && userRooms.Count >= roomNumber)
+            {
+                ChooseRoomAction(userRooms[roomNumber - 1]);
+            }
+            else
+            {
+                System.Console.WriteLine("Error! Please, try again later!");
+            }
+        }
+        
+        public bool ChooseRoomAction(Room room)
         {
             string action;
             do
             {
-                System.Console.WriteLine("What do you want to do?");
+                System.Console.WriteLine("What do you want to do? (\"delete\" or \"set up\")");
                 action = System.Console.ReadLine();
             } while (action == null);
 
-            if (action == "create")
+            if (action == "delete")
             {
-                return CreateRoom();
-            }
-            else if (action == "delete")
-            {
-                return DeleteRoom();
+                return DeleteRoom(room);
             }
             else if (action == "set up")
             {
-                return SetUpRoom();
+                return SetUpRoom(room);
             }
 
             System.Console.WriteLine("Error! Please, try again later!");
@@ -67,11 +100,8 @@ namespace PL.Console.RoomsControl
             return false;
         }
 
-        private bool DeleteRoom()
+        private bool DeleteRoom(Room room)
         {
-            System.Console.WriteLine("Choose room:");
-            Room room = null; //TODO: Get room
-
             if (_roomService.DeleteRoom(room))
             {
                 System.Console.WriteLine("Room successfully deleted!");
@@ -83,12 +113,9 @@ namespace PL.Console.RoomsControl
             return false;
         }
 
-        private bool SetUpRoom()
+        private bool SetUpRoom(Room room)
         {
-            System.Console.WriteLine("Choose room:");
-            Room room = null; //TODO: Get room
-
-            System.Console.WriteLine("What do you want to change?"); // name || description || both
+            System.Console.WriteLine("What do you want to change? (\"name\" or \"description\" or \"both\")"); // name || description || both
             var action = System.Console.ReadLine();
 
             string name = null;

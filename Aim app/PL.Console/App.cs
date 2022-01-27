@@ -13,12 +13,14 @@ namespace PL.Console
         private readonly IUserService _userService;
         private readonly IRegistration _registration;
         private readonly IAuthorization _authorization;
+        private readonly IRoomsControl _roomsControl;
 
-        public App(IUserService userService, IAuthorization authorization, IRegistration registration)
+        public App(IUserService userService, IAuthorization authorization, IRegistration registration, IRoomsControl roomsControl)
         {
             _userService = userService;
             _registration = registration;
             _authorization = authorization;
+            _roomsControl = roomsControl;
         }
 
         public async Task StartApp()
@@ -47,6 +49,11 @@ namespace PL.Console
                 {
                     System.Console.WriteLine("Login failed, please try again later!");
                 }
+            }
+
+            while (true)
+            {
+                await _roomsControl.ShowUserRooms();
             }
         }
     }

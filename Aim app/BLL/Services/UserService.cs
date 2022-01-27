@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
@@ -36,8 +37,9 @@ namespace BLL.Services
             {
                 return false;
             }
-            
-            room.Participants.Remove(_currentUser.User);
+
+            room.Participants.Remove(
+                room.Participants.FirstOrDefault(participant => participant.User.Id == _currentUser.User.Id));
             await _roomGenericRepository.UpdateAsync(room);
             return true;
         }
@@ -59,7 +61,8 @@ namespace BLL.Services
                 return false;
             }
 
-            room.Participants[_currentUser.User].Notifications = stateOnOrOff;
+            room.Participants.FirstOrDefault(participant => participant.User.Id == _currentUser.User.Id)!.Notifications =
+                stateOnOrOff;
             await _roomGenericRepository.UpdateAsync(room);
             return true;
         }
@@ -67,6 +70,17 @@ namespace BLL.Services
         public bool IsUserVerified(User user)
         {
             return user.IsVerified;
+        }
+
+        public async Task<List<Room>> GetUserRooms()
+        {
+            var currentUser = _currentUser.User;
+
+            var foundRooms = await _roomGenericRepository
+                .FindByConditionAsync(room =>
+                    room.Participants.Any(participant => participant.User.Id == currentUser.Id));
+
+            return foundRooms.ToList();
         }
     }
 }
