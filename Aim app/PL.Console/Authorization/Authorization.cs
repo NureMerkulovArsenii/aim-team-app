@@ -10,9 +10,11 @@ namespace PL.Console.Authorization
         private readonly IAuthorizationService _authorizationService;
         private readonly IMailWorker _mailWorker;
         private readonly ICurrentUser _currentUser;
+        private readonly IUserService _userService;
 
-        public Authorization(IAuthorizationService authorizationService, IMailWorker mailWorker, ICurrentUser currentUser)
+        public Authorization(IUserService userService, IAuthorizationService authorizationService, IMailWorker mailWorker, ICurrentUser currentUser)
         {
+            _userService = userService;
             _authorizationService = authorizationService;
             _mailWorker = mailWorker;
             _currentUser = currentUser;
@@ -43,7 +45,7 @@ namespace PL.Console.Authorization
 
             var tempUser = await _authorizationService.GetInfoAboutUser(usernameOrEmail);
 
-            if (await _authorizationService.IsLastAuthWasLongAgo(tempUser, 10))
+            if (await _authorizationService.IsLastAuthWasLongAgo(tempUser, 10) || !_userService.IsUserVerified(tempUser))
             {
                 var email = await _authorizationService.GetEmailByUsernameOrEmail(usernameOrEmail);
                 var code = await _mailWorker.SendCodeByEmailAsync(email);

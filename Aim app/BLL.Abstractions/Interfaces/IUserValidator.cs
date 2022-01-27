@@ -2,6 +2,8 @@
 {
     public interface IUserValidator
     {
-        bool IsEmailValid(string email);
+        int IsEmailValid(string email);
+        public bool ValidateUserNick(string nick);
+        bool ValidateUserNameOrEmail(string userName);
     }
 }

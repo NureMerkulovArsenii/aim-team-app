@@ -23,7 +23,7 @@ namespace BLL.Services
             this._genericRepository = genericRepository;
         }
 
-        public async Task RegisterAsync(string userMail, string name, string surname, string userName, string password,
+        public async Task RegisterAsync(string userMail, string name, string surname, string nickName, string password,
             bool isVerified = false)
         {
             var user = new User()
@@ -31,7 +31,7 @@ namespace BLL.Services
                 Email = userMail,
                 FirstName = name,
                 LastName = surname,
-                UserName = userName,
+                UserName = nickName,
                 IsVerified = isVerified,
                 LastAuth = DateTime.Now
             };

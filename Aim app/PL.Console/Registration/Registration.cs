@@ -19,7 +19,8 @@ namespace PL.Console.Registration
         private readonly IMailWorker _mailWorker;
         private readonly ICurrentUser _currentUser;
 
-        public Registration(IRegistrationService registrationService, IPasswordService passwordService, IUserValidator validator, IMailWorker mailWorker, ICurrentUser currentUser)
+        public Registration(IRegistrationService registrationService, IPasswordService passwordService,
+            IUserValidator validator, IMailWorker mailWorker, ICurrentUser currentUser)
         {
             this._passwordService = passwordService;
             this._registrationService = registrationService;
@@ -37,14 +38,32 @@ namespace PL.Console.Registration
             System.Console.WriteLine("Enter your Nickname: ");
             var nickName = System.Console.ReadLine();
 
+            while (!_validator.ValidateUserNick(nickName))
+            {
+                System.Console.WriteLine("Nickname you have chosen is busy\n try another one:");
+                nickName = System.Console.ReadLine();
+            }
+
             System.Console.WriteLine("Enter your email");
             var email = System.Console.ReadLine();
 
             // Notice: if Validator.cs is no longer needed, change to if (new EmailAddressAttribute().IsValid("someone@somewhere.com")) 
-            while (!_validator.IsEmailValid(email))
+            var emailValidationResult = _validator.IsEmailValid(email);
+            while (emailValidationResult != 0)
             {
-                System.Console.WriteLine("Incorrect email, try again:");
-                email = System.Console.ReadLine();
+                if (emailValidationResult == 1)
+                {
+                    System.Console.WriteLine("User with this email already exists");
+                    email = System.Console.ReadLine();
+                    emailValidationResult = _validator.IsEmailValid(email);
+                }
+
+                if (emailValidationResult == -1)
+                {
+                    System.Console.WriteLine("Incorrect email format, try again:");
+                    email = System.Console.ReadLine();
+                    emailValidationResult = _validator.IsEmailValid(email);
+                }
             }
 
             System.Console.WriteLine("Enter your password");
@@ -82,6 +101,7 @@ namespace PL.Console.Registration
             }
 
             await _registrationService.RegisterAsync(email, name, surName, nickName, password, true);
+            System.Console.WriteLine("You have just registered successfully");
             
             var tempUser = new User()
             {
@@ -95,7 +115,7 @@ namespace PL.Console.Registration
             _passwordService.SetPassword(tempUser, password);
             _currentUser.User = tempUser;
             
-            System.Console.WriteLine("You have just registered successfully");
+            
         }
     }
 }
