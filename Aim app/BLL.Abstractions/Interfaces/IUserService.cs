@@ -7,5 +7,6 @@ namespace BLL.Abstractions.Interfaces
     {
         Task<bool> LeaveRoom(string roomId);
         Task<bool> SwitchNotifications(string roomId, bool stateOnOrOff);
+        bool IsUserVerified(User user);
     }
 }

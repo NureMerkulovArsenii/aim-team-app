@@ -27,8 +27,11 @@ namespace BLL.Services
                 return false;
             }
 
-            var roomsFromDb = await _roomGenericRepository.FindByConditionAsync(room => room.Id == roomId);
-            var room = roomsFromDb.FirstOrDefault();
+            var room = _roomGenericRepository
+                .FindByConditionAsync(room => room.Id == roomId)
+                .Result
+                .FirstOrDefault();
+            
             if (room == null)
             {
                 return false;
@@ -46,8 +49,11 @@ namespace BLL.Services
                 return false;
             }
 
-            var roomsFromDb = await _roomGenericRepository.FindByConditionAsync(room => room.Id == roomId);
-            var room = roomsFromDb.FirstOrDefault();
+            var room = _roomGenericRepository
+                .FindByConditionAsync(room => room.Id == roomId)
+                .Result
+                .FirstOrDefault();
+
             if (room == null)
             {
                 return false;
@@ -56,6 +62,11 @@ namespace BLL.Services
             room.Participants[_currentUser.User].Notifications = stateOnOrOff;
             await _roomGenericRepository.UpdateAsync(room);
             return true;
+        }
+
+        public bool IsUserVerified(User user)
+        {
+            return user.IsVerified;
         }
     }
 }

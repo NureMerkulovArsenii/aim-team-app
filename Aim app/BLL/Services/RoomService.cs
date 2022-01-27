@@ -19,8 +19,10 @@ namespace BLL.Services
         
         public async Task<List<User>> GetParticipantsOfRoom(string roomId)
         {
-            var rooms = await _roomGenericRepository.FindByConditionAsync(room => room.Id == roomId);
-            var room = rooms.FirstOrDefault();
+            var room = _roomGenericRepository
+                .FindByConditionAsync(room => room.Id == roomId)
+                .Result
+                .FirstOrDefault();
 
             return room.Participants.Keys.ToList();
         }
