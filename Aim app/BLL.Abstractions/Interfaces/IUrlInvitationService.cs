@@ -5,8 +5,8 @@ namespace BLL.Abstractions.Interfaces
 {
     public interface IUrlInvitationService
     {
-        void InviteUserByUrl(Room roomId, User userId);
+        void InviteUsersByEmailWithUrl(Room roomId, string[] users);
         public Task<bool> JoinByUrl(string url);
-        string InviteUsersByUrl(Room roomId);
+        string InviteUsersByUrl(Room room);
     }
 }

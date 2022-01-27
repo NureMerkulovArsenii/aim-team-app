@@ -80,6 +80,10 @@ namespace DAL.Repository
             {
                 return "room.json";
             }
+            else if (fileType == typeof(Urls))
+            {
+                return "urls.json";
+            }
 
             return string.Empty;
         }

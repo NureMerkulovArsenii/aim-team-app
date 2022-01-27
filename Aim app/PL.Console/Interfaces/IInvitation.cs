@@ -1,8 +1,10 @@
-﻿namespace PL.Console.Interfaces
+﻿using Core;
+
+namespace PL.Console.Interfaces
 {
     public interface IInvitation
     {
         void EnterRoomWithUrl();
-        void InviteToRoomWithUrl();
+        void InviteToRoomWithUrl(Room room);
     }
 }

@@ -10,5 +10,6 @@ namespace BLL.Abstractions.Interfaces
         Task<bool> SwitchNotifications(Room room, bool stateOnOrOff);
         bool IsUserVerified(User user);
         Task<List<Room>> GetUserRooms();
+        public Task<User> GetUserByUserNameOrEmail(string userName);
     }
 }

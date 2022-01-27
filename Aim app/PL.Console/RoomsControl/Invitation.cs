@@ -1,19 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using BLL.Abstractions.Interfaces;
+using Core;
 using PL.Console.Interfaces;
 
-namespace PL.Console
+namespace PL.Console.RoomsControl
 {
     public class Invitation : IInvitation
     {
         private readonly IUrlInvitationService _invitationService;
         private readonly IUserValidator _userValidator;
+        private readonly ICurrentUser _currentUser;
 
-        public Invitation(IUrlInvitationService invitationService, IUserValidator userValidator)
+        public Invitation(IUrlInvitationService invitationService, IUserValidator userValidator,
+            ICurrentUser currentUser)
         {
             this._invitationService = invitationService;
             this._userValidator = userValidator;
+            this._currentUser = currentUser;
         }
 
         public void EnterRoomWithUrl()
@@ -37,12 +41,12 @@ namespace PL.Console
             }
         }
 
-        public void InviteToRoomWithUrl()
+        public void InviteToRoomWithUrl(Room room)
         {
             System.Console.WriteLine(
                 "If you want invite some users press \"s\", if you want to invite 1 specified user press \"o\"");
             var userKey = System.Console.ReadLine();
-            while (userKey != "o" || userKey != "s")
+            while (userKey != "o" && userKey != "s")
             {
                 System.Console.WriteLine("Unknown key, please enter again");
                 userKey = System.Console.ReadLine();
@@ -50,7 +54,7 @@ namespace PL.Console
 
             if (userKey == "s")
             {
-                var url = _invitationService.InviteUsersByUrl(); //TODO add dest room
+                var url = _invitationService.InviteUsersByUrl(room); //TODO add dest room: done
                 System.Console.WriteLine(url);
             }
 
@@ -81,11 +85,8 @@ namespace PL.Console
                 //     userName = System.Console.ReadLine();
                 //     validationsResult = _userValidator.ValidateUserNick(userName);
                 // }
-                
-                
-                    
 
-                _invitationService.InviteUserByUrl(,);
+                _invitationService.InviteUsersByEmailWithUrl(room, userNames);
 
                 if (errors.Any())
                 {

@@ -53,13 +53,7 @@ namespace PL.Console
                     System.Console.WriteLine("Login failed, please try again later!");
                 }
             }
-            System.Console.WriteLine("Wan join room? (press y if yes)");
-            var userKey = System.Console.ReadLine();
-            if (userKey == "y")
-            {
-                _invitation.EnterRoomWithUrl();
-            }
-
+            
             while (true)
             {
                 await _roomsControl.ShowUserRooms();

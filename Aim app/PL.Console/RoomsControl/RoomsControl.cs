@@ -9,11 +9,13 @@ namespace PL.Console.RoomsControl
     {
         private readonly IRoomService _roomService;
         private readonly IUserService _userService;
+        private readonly IInvitation _invitation;
 
-        public RoomsControl(IRoomService roomService, IUserService userService)
+        public RoomsControl(IRoomService roomService, IUserService userService, IInvitation invitation)
         {
-            _roomService = roomService;
-            _userService = userService;
+            this._roomService = roomService;
+            this._userService = userService;
+            this._invitation = invitation;
         }
 
         public async Task ShowUserRooms()
@@ -40,12 +42,16 @@ namespace PL.Console.RoomsControl
                 System.Console.Write(
                     "If you want to choose room type its number or if you want to create room - enter \"create\": ");
                 userInput = System.Console.ReadLine()?.Trim();
-            } while (userInput == null && userInput != "create" && !int.TryParse(userInput, out var roomNumber));
+            } while (userInput == null && userInput != "create" && userInput != "join" && !int.TryParse(userInput, out var roomNumber));
 
             
             if (userInput == "create")
             {
                 CreateRoom();
+            }
+            else if (userInput == "join")
+            {
+                _invitation.EnterRoomWithUrl();
             }
             else if (int.TryParse(userInput, out var roomNumber) && userRooms.Count >= roomNumber)
             {
@@ -81,6 +87,10 @@ namespace PL.Console.RoomsControl
             else if (action == "notification")
             {
                 return ChangeRoomNotifications(room);
+            }
+            else if (action == "invite")
+            {
+                _invitation.InviteToRoomWithUrl(room);
             }
 
             System.Console.WriteLine("Error! Please, try again later!");

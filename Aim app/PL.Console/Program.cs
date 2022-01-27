@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using PL.Console.Authorization;
 using PL.Console.Registration;
 using PL.Console.Interfaces;
+using PL.Console.RoomsControl;
 
 namespace PL.Console
 {
