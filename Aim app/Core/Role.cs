@@ -7,16 +7,7 @@ namespace Core
         public Role(string name = "New Role")
         {
             RoleName = name;
-            CanPin = false;
-            CanInvite = false;
-            CanDeleteOthersMessages = false;
-            CanModerateParticipants = false;
-            CanManageRoles = false;
-            CanManageChannels = false;
-            CanManageRoom = false;
-            CanUseAdminChannels = false;
-            CanViewAuditLog = false;
-    }
+        }
         
         public string RoleName { get; set; }
 

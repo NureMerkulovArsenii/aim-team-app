@@ -12,13 +12,16 @@ namespace BLL.Services
     {
         private readonly IGenericRepository<User> _userGenericRepository;
         private readonly IGenericRepository<Room> _roomGenericRepository;
+        private readonly IGenericRepository<Role> _roleGenericRepository;
         private readonly ICurrentUser _currentUser;
 
         public UserService(IGenericRepository<User> userGenericRepository,
-            IGenericRepository<Room> roomGenericRepository, ICurrentUser currentUser)
+            IGenericRepository<Room> roomGenericRepository, IGenericRepository<Role> roleGenericRepository,
+            ICurrentUser currentUser)
         {
             _userGenericRepository = userGenericRepository;
             _roomGenericRepository = roomGenericRepository;
+            _roleGenericRepository = roleGenericRepository;
             _currentUser = currentUser;
         }
 
@@ -82,6 +85,15 @@ namespace BLL.Services
             await _userGenericRepository.UpdateAsync(user);
         }
         
+        public async Task<Role> GetRoleInRoom(Room room)
+        {
+            var currentUser = _currentUser.User;
+            var roleId = room.Participants.FirstOrDefault(participantInfo => participantInfo.UserId == currentUser.Id)?.RoleId;
+            var roles = await _roleGenericRepository.FindByConditionAsync(role => role.Id == roleId);
+            
+            return roles.FirstOrDefault();
+        }
+
         public async Task<User> GetUserByUserNameOrEmail(string userName)
         {
             var users = await _userGenericRepository.FindByConditionAsync(user =>

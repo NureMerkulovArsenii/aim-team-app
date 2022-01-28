@@ -10,12 +10,14 @@ namespace PL.Console.RoomsControl
         private readonly IRoomService _roomService;
         private readonly IUserService _userService;
         private readonly IInvitation _invitation;
+        private readonly IRoleControl _roleControl;
 
-        public RoomsControl(IRoomService roomService, IUserService userService, IInvitation invitation)
+        public RoomsControl(IRoomService roomService, IUserService userService, IInvitation invitation, IRoleControl roleControl)
         {
             this._roomService = roomService;
             this._userService = userService;
             this._invitation = invitation;
+            this._roleControl = roleControl;
         }
 
         public async Task ShowUserRooms()
@@ -40,7 +42,7 @@ namespace PL.Console.RoomsControl
             do
             {
                 System.Console.Write(
-                    "If you want to choose room type its number or if you want to create room - enter \"create\" or if you want to join - enter \"join\": ");
+                    "If you want to choose room - type its number or if you want to create room - enter \"create\" or if you want to join - enter \"join\": ");
                 userInput = System.Console.ReadLine()?.Trim();
             } while (userInput == null && userInput != "create" && userInput != "join" && !int.TryParse(userInput, out var roomNumber));
 
@@ -68,30 +70,32 @@ namespace PL.Console.RoomsControl
             string action;
             do
             {
-                System.Console.WriteLine("What do you want to do? (\"delete\" or \"set up\" or \"leave\" or \"notification\" or \"invite\")");
+                System.Console.WriteLine("What do you want to do? (\"delete\" or \"set up\" or \"leave\" or \"notification\" or \"invite\" or \"roles\")");
                 action = System.Console.ReadLine();
             } while (action == null);
 
-            if (action == "delete")
+            switch (action)
             {
-                return DeleteRoom(room);
-            }
-            else if (action == "set up")
-            {
-                return SetUpRoom(room);
-            }
-            else if (action == "leave")
-            {
-                return LeaveRoom(room);
-            }
-            else if (action == "notification")
-            {
-                return ChangeRoomNotifications(room);
-            }
-            else if (action == "invite")
-            {
-                _invitation.InviteToRoomWithUrl(room);
-                return true;
+                case "delete":
+                    return DeleteRoom(room);
+                    break;
+                case "set up":
+                    return SetUpRoom(room);
+                    break;
+                case "leave":
+                    return LeaveRoom(room);
+                    break;
+                case "notification":
+                    return ChangeRoomNotifications(room);
+                    break;
+                case "invite":
+                    _invitation.InviteToRoomWithUrl(room);
+                    return true;
+                    break;
+                case "roles":
+                    _roleControl.ViewRolesInTheRoom(room);
+                    return true;
+                    break;
             }
 
             System.Console.WriteLine("Error! Please, try again later!");
