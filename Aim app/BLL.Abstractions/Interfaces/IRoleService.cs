@@ -8,5 +8,9 @@ namespace BLL.Abstractions.Interfaces
             bool? canDeleteOthersMessages = null, bool? canModerateParticipants = null, bool? canManageRoles = null,
             bool? canManageChannels = null, bool? canManageRoom = null, bool? canUseAdminChannels = null,
             bool? canViewAuditLog = null);
+
+        bool CreateNewRole(Room room, string name);
+
+        bool DeleteRole(Room room, Role role);
     }
 }
