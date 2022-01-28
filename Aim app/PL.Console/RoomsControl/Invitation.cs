@@ -44,21 +44,21 @@ namespace PL.Console.RoomsControl
         public void InviteToRoomWithUrl(Room room)
         {
             System.Console.WriteLine(
-                "If you want invite some users press \"s\", if you want to invite 1 specified user press \"o\"");
+                "If you want to create url for invitation press \"u\", if you want to invite specified user/users press \"s\"");
             var userKey = System.Console.ReadLine();
-            while (userKey != "o" && userKey != "s")
+            while (userKey != "u" && userKey != "s")
             {
                 System.Console.WriteLine("Unknown key, please enter again");
                 userKey = System.Console.ReadLine();
             }
 
-            if (userKey == "s")
+            if (userKey == "u")
             {
                 var url = _invitationService.InviteUsersByUrl(room); //TODO add dest room: done
                 System.Console.WriteLine(url);
             }
 
-            if (userKey == "o")
+            if (userKey == "s")
             {
                 System.Console.WriteLine(
                     "Enter username / email that you want to invite(if many users enumerate them with \"space\")");
@@ -77,15 +77,6 @@ namespace PL.Console.RoomsControl
                         errors.Add(name);
                     }
                 }
-                //var validationsResult = _userValidator.ValidateUserNick(userName);
-
-                // while (!validationsResult)
-                // {
-                //     System.Console.WriteLine("User with such credentials does not exist, try again");
-                //     userName = System.Console.ReadLine();
-                //     validationsResult = _userValidator.ValidateUserNick(userName);
-                // }
-
                 _invitationService.InviteUsersByEmailWithUrl(room, userNames);
 
                 if (errors.Any())
