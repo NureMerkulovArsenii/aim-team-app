@@ -40,9 +40,10 @@ namespace PL.Console.RoomsControl
             do
             {
                 System.Console.Write(
-                    "If you want to choose role - type its number or if you want to create new one - enter \"create\" or \"my role\" - to see your role: ");
+                    "If you want to choose role - type its number or if you want to create new one - enter \"create\" or \"my role\" - to see your role or" +
+                    " \"users roles\" - to see roles of all users in the room: ");
                 userInput = System.Console.ReadLine()?.Trim();
-            } while (userInput == null && userInput != "create" && userInput != "my role" && !int.TryParse(userInput, out var roleNumber));
+            } while (userInput == null && userInput != "create" && userInput != "my role" && userInput != "users roles" && !int.TryParse(userInput, out var roleNumber));
 
             
             if (userInput == "create")
@@ -53,6 +54,12 @@ namespace PL.Console.RoomsControl
             {
                 await ViewMyRole(room);
             }
+
+            if (userInput == "users roles")
+            {
+                await GetUsersRoles(room);
+            }
+            
             else if (int.TryParse(userInput, out var roleNumber) && roles.Count >= roleNumber)
             {
                 await ChooseRoleAction(room, roles[roleNumber - 1]);
@@ -77,7 +84,7 @@ namespace PL.Console.RoomsControl
             return await SetUpRole(room, role);
         }
 
-        public async Task<bool> ViewMyRole(Room room) //TODO: change for permissions dict
+        private async Task<bool> ViewMyRole(Room room) //TODO: change for permissions dict
         {
             try
             {
@@ -162,6 +169,16 @@ namespace PL.Console.RoomsControl
             System.Console.WriteLine("Error! Please, try again later!");
 
             return false;
+        }
+
+        private async Task GetUsersRoles(Room room)
+        {
+
+            var rolesOfUsers = await _roleService.GetRolesOfUsers(room.Id);
+            foreach (var user in rolesOfUsers)
+            {
+                System.Console.WriteLine($"{user.Key} - {user.Value}");
+            }
         }
     }
 }

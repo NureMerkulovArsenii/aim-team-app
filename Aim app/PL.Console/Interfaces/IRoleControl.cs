@@ -7,6 +7,5 @@ namespace PL.Console.Interfaces
     {
         Task ViewRolesInTheRoom(Room room);
 
-        Task<bool> ViewMyRole(Room room);
     }
 }
