@@ -95,6 +95,10 @@ namespace DAL.Repository
             {
                 return "role.json";
             }
+            else if (fileType == typeof(TextChat))
+            {
+                return "textChat.json";
+            }
 
             return string.Empty;
         }

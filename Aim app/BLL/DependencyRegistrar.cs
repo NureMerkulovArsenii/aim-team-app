@@ -22,6 +22,7 @@ namespace BLL
             services.AddSingleton<ICurrentUser, CurrentUserConsole>();
             services.AddScoped<IRoomService, RoomService>();
             services.AddScoped<IRoleService, RoleService>();
+            services.AddScoped<ITextChatService, TextChatService>();
             DAL.DependencyRegistrar.ConfigureServices(services);
         }
     }

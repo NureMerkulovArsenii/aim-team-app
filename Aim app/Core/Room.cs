@@ -19,6 +19,8 @@ namespace Core
         public IList<string> RoomRolesId { get; set; }
 
         public string BaseRoleId { get; set; }
+        
+        public IList<string> TextChatsId { get; set; }
 
         [JsonIgnore] public ReadOnlyCollection<byte> Photo { get; set; }
 
