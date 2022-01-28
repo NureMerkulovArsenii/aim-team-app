@@ -104,7 +104,8 @@ namespace BLL.Services
 
         public bool DeleteRole(Room room, Role role)
         {
-            if (!CanManageRoles(room) || room.BaseRoleId == role.Id)
+            if (!CanManageRoles(room) || room.BaseRoleId == role.Id || room.Participants
+                    .Any(participant => participant.RoleId == role.Id))
             {
                 return false;
             }

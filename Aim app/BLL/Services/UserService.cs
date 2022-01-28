@@ -65,6 +65,23 @@ namespace BLL.Services
             return foundRooms.ToList();
         }
 
+        public async Task ChangeUserNames(string firstName = null, string lastName = null)
+        {
+            var user = _currentUser.User;
+
+            if (firstName != null)
+            {
+                user.FirstName = firstName;
+            }
+
+            if (lastName != null)
+            {
+                user.LastName = lastName;
+            }
+
+            await _userGenericRepository.UpdateAsync(user);
+        }
+        
         public async Task<User> GetUserByUserNameOrEmail(string userName)
         {
             var users = await _userGenericRepository.FindByConditionAsync(user =>

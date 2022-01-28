@@ -11,5 +11,6 @@ namespace BLL.Abstractions.Interfaces
         bool IsUserVerified(User user);
         Task<List<Room>> GetUserRooms();
         public Task<User> GetUserByUserNameOrEmail(string userName);
+        Task ChangeUserNames(string firstName, string lastName);
     }
 }

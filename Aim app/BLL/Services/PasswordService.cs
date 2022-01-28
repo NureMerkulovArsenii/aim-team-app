@@ -3,14 +3,30 @@ using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using BLL.Abstractions.Interfaces;
 using Core;
+using DAL.Abstractions.Interfaces;
 
 namespace BLL.Services
 {
     public class PasswordService : IPasswordService
     {
-        public bool ChangePassword(User user, string oldPassword, string newPassword)
+        private readonly ICurrentUser _currentUser;
+        private readonly IGenericRepository<User> _userGenericRepository;
+
+        public PasswordService(ICurrentUser currentUser, IGenericRepository<User> userGenericRepository)
         {
-            return IsPasswordCorrect(user, oldPassword) ? SetPassword(user, newPassword) : false;
+            _currentUser = currentUser;
+            _userGenericRepository = userGenericRepository;
+        }
+        
+        public bool ChangePassword(string oldPassword, string newPassword)
+        {
+            var user = _currentUser.User;
+            
+            var result = IsPasswordCorrect(user, oldPassword) ? SetPassword(user, newPassword) : false;
+
+            _userGenericRepository.UpdateAsync(user).Wait();
+
+            return result;
         }
 
         public bool SetPassword(User user, string password)
@@ -18,7 +34,6 @@ namespace BLL.Services
             if (HasPasswordCorrectFormat(user.Email, password))
             {
                 user.Password = GetHash(password);
-                //TODO: Save User
 
                 return true;
             }
