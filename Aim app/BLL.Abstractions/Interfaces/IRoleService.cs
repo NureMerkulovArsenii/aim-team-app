@@ -15,5 +15,7 @@ namespace BLL.Abstractions.Interfaces
         Task<List<Role>> GetAllRolesInRoom(Room room);
         
         Task<bool> SetRoleToUser(Room room, User user, Role role);
+
+        Task<Dictionary<string, string>> GetRolesOfUsers(string roomId);
     }
 }

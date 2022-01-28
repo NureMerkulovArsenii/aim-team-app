@@ -128,29 +128,5 @@ namespace BLL.Services
             return (List<User>)await _userGenericRepository
                 .FindByConditionAsync(user => userIds.Contains(user.Id));
         }
-
-        public async Task<Dictionary<string, string>> GetRolesOfUsers(string roomId)
-        {
-            var result = new Dictionary<string, string>();
-
-            var room = _roomGenericRepository
-                .FindByConditionAsync(room => room.Id == roomId)
-                .Result
-                .FirstOrDefault();
-
-            var roomParticipants = room?.Participants;
-
-            foreach (var participant in roomParticipants)
-            {
-                var user = _userGenericRepository.FindByConditionAsync(user => user.Id == participant.UserId).Result
-                    .FirstOrDefault();
-                var role = _roleGenericRepository.FindByConditionAsync(role => role.Id == participant.RoleId).Result
-                    .FirstOrDefault();
-
-                result.Add(user.UserName, role.RoleName);
-            }
-
-            return result;
-        }
     }
 }

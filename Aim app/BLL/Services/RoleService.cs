@@ -13,13 +13,15 @@ namespace BLL.Services
         private readonly ICurrentUser _currentUser;
         private readonly IGenericRepository<Role> _roleGenericRepository;
         private readonly IGenericRepository<Room> _roomGenericRepository;
+        private readonly IGenericRepository<User> _userGenericRepository;
 
         public RoleService(ICurrentUser currentUser, IGenericRepository<Role> roleGenericRepository,
-            IGenericRepository<Room> roomGenericRepository)
+            IGenericRepository<Room> roomGenericRepository, IGenericRepository<User> userGenericRepository)
         {
             _currentUser = currentUser;
             _roleGenericRepository = roleGenericRepository;
             _roomGenericRepository = roomGenericRepository;
+            _userGenericRepository = userGenericRepository;
         }
 
         public async Task<bool> SetUpRole(Room room, Role role, IDictionary<string, bool?> permissions)
@@ -111,6 +113,28 @@ namespace BLL.Services
 
             await _roomGenericRepository.UpdateAsync(room);
             return true;
+        }
+        
+        public async Task<Dictionary<string, string>> GetRolesOfUsers(string roomId)
+        {
+            var result = new Dictionary<string, string>();
+
+            var room = _roomGenericRepository
+                .FindByConditionAsync(room => room.Id == roomId)
+                .Result
+                .FirstOrDefault();
+
+            var roomParticipants = room?.Participants;
+
+            foreach (var participant in roomParticipants)
+            {
+                var user = await _userGenericRepository.GetEntityById(participant.UserId);
+                var role = await _roleGenericRepository.GetEntityById(participant.RoleId);
+
+                result.Add(user.UserName, role.RoleName);
+            }
+
+            return result;
         }
 
         private bool CanManageRoles(Room room)
