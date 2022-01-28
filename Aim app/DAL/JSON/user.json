@@ -1,1 +1,22 @@
-[{"UserName":"ars_m","Email":"arsenii.vm@gmail.com","Password":"\u0015���8����`��\u0019B\f � Δ�_��3\u0012D��%","FirstName":"Arsenii","LastName":"Merkulov","IsVerified":true,"LastAuth":"2022-01-27T22:39:37.6416515+02:00","Id":"675776e2-88c9-4aed-8ba5-a27dda20bf29"},{"UserName":"zhmaytsevm","Email":"zhmaytsevm@gmail.com","Password":"�y|�\u0018�-�d�\u0007�]?�v#\u0004��\u0006=S,�\\^ר��O","FirstName":"Mikhail","LastName":"Zhmaytsev","IsVerified":true,"LastAuth":"2022-01-27T22:40:48.5542564+02:00","Id":"00fef2d1-bb70-4d88-9816-51cbd45de8c3"}]
+[
+  {
+    "UserName": "ars_m",
+    "Email": "arsenii.vm@gmail.com",
+    "Password": "\u0015���8����`��\u0019B\f � Δ�_��3\u0012D��%",
+    "FirstName": "Arsenii",
+    "LastName": "Merkulov",
+    "IsVerified": true,
+    "LastAuth": "2022-01-28T14:56:32.1202638+02:00",
+    "Id": "675776e2-88c9-4aed-8ba5-a27dda20bf29"
+  },
+  {
+    "UserName": "zhmaytsevm",
+    "Email": "zhmaytsevm@gmail.com",
+    "Password": "�y|�\u0018�-�d�\u0007�]?�v#\u0004��\u0006=S,�\\^ר��O",
+    "FirstName": "Mikhail",
+    "LastName": "Zhmaytsev",
+    "IsVerified": true,
+    "LastAuth": "2022-01-28T14:59:33.6198198+02:00",
+    "Id": "00fef2d1-bb70-4d88-9816-51cbd45de8c3"
+  }
+]

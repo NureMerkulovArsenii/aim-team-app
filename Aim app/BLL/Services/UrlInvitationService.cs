@@ -7,7 +7,6 @@ using DAL.Abstractions.Interfaces;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
-using BLL.Helpers;
 
 namespace BLL.Services
 {
@@ -34,46 +33,23 @@ namespace BLL.Services
         public void InviteUsersByEmailWithUrl(Room room, string[] users)
         {
             var currentTime = DateTime.Now;
-            var expirationTime =
-                currentTime.AddMinutes(5).ToString("yyyy.mm.dd.hh.mm.ss", CultureInfo.InvariantCulture);
-            var result = new List<string>();
-            var url = new Urls();
-            url.RoomId = room.Id;
-            var body = $"Invitation to join{room.RoomName} from{_currentUser.User.UserName}";
-            if (users.Length == 1)
-            {
-                var userId = _userService.GetUserByUserNameOrEmail(users[0]).Result;
-                result.Add(userId.Id);
-                url = new Urls
-                {
-                    Url = _domen + Guid.NewGuid().ToString().Substring(0, 7),
-                    UserId = result,
-                    ExpirationTime = expirationTime,
-                    RoomId = room.Id
-                };
-                body += " " + url.Url;
+            var expirationTime = currentTime.AddMinutes(15).ToString(CultureInfo.InvariantCulture);
 
+            var result = new List<string>();
+            var url = new Urls {RoomId = room.Id, Url = _domen + Guid.NewGuid().ToString().Substring(0, 7),};
+
+            var body = $"Invitation to join {room.RoomName} from {_currentUser.User.UserName}: {url.Url}";
+
+            foreach (var user in users)
+            {
+                var userId = _userService.GetUserByUserNameOrEmail(user).Result;
+                result.Add(userId.Id);
                 var mailTo = new MailAddress(userId.Email);
                 _mailWorker.SendMailMessageAsync(mailTo, "Invitation to the room", body);
             }
 
-            if (users.Length > 1)
-            {
-                foreach (var user in users)
-                {
-                    var userId = _userService.GetUserByUserNameOrEmail(user).Result;
-                    result.Add(userId.Id);
-                    var mailTo = new MailAddress(userId.Email);
-                    _mailWorker.SendMailMessageAsync(mailTo, "Invitation to the room", body);
-                }
-
-                url = new Urls
-                {
-                    Url = _domen + "roomid=" + room.Id + Guid.NewGuid().ToString().Substring(0, 7),
-                    UserId = result,
-                    ExpirationTime = expirationTime
-                };
-            }
+            url.UserId = result;
+            url.ExpirationTime = expirationTime;
 
             _genericRepositoryUrls.CreateAsync(url);
         }
@@ -81,8 +57,7 @@ namespace BLL.Services
         public string InviteUsersByUrl(Room room)
         {
             var currentTime = DateTime.Now;
-            var expirationTime =
-                currentTime.AddHours(5).ToString("yyyy.mm.dd.hh.mm.ss", CultureInfo.InvariantCulture);
+            var expirationTime = currentTime.AddHours(5).ToString(CultureInfo.InvariantCulture);
             var url = new Urls
             {
                 Url = _domen + Guid.NewGuid().ToString().Substring(0, 6),
@@ -95,7 +70,6 @@ namespace BLL.Services
             return url.Url;
         }
 
-        //ToDO: check expiration time of url
         public async Task<bool> JoinByUrl(string url)
         {
             var urlFromDb = await _genericRepositoryUrls.FindByConditionAsync(urls => urls.Url == url);
@@ -104,12 +78,19 @@ namespace BLL.Services
             if (urlsEnumerable.Any())
             {
                 var responseUrl = urlsEnumerable.FirstOrDefault();
+                var now = DateTime.Now;
+                var expirationTime = DateTime.Parse(responseUrl.ExpirationTime, CultureInfo.InvariantCulture);
+                // if (now > DateTime.Parse(responseUrl.ExpirationTime, CultureInfo.InvariantCulture))
+                // {
+                //     return false;
+                // }
 
-                if (responseUrl.UserId == null || responseUrl.UserId.Contains(_currentUser.User.Id)) //
+                if (responseUrl.UserId == null || responseUrl.UserId.Contains(_currentUser.User.Id) &&
+                    expirationTime >= now)
                 {
-                    //ToDO: put user into room
-                    var rooms = await _genericRepositoryRooms.FindByConditionAsync(room =>
-                        room.Id == responseUrl.RoomId);
+                    var rooms =
+                        await _genericRepositoryRooms.FindByConditionAsync(room => room.Id == responseUrl.RoomId);
+
                     var room = rooms.FirstOrDefault();
                     var participantInfo = new ParticipantInfo()
                     {
