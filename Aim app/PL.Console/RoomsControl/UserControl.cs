@@ -49,7 +49,7 @@ namespace PL.Console.RoomsControl
             string newPass;
             do
             {
-                System.Console.Write("Enter your old password: ");
+                System.Console.Write("Enter your new password: ");
                 newPass = System.Console.ReadLine();
             } while (newPass == null);
 
@@ -61,21 +61,21 @@ namespace PL.Console.RoomsControl
             string firstNameChanging;
             do
             {
-                System.Console.Write("Do you want to change your first name: ");
+                System.Console.Write("Do you want to change your first name (\"y\" or \"n\"): ");
                 firstNameChanging = System.Console.ReadLine();
-            } while (firstNameChanging != "yes" && firstNameChanging != "no");
+            } while (firstNameChanging != "y" && firstNameChanging != "n");
             
             string lastNameChanging;
             do
             {
-                System.Console.Write("Do you want to change your last name: ");
+                System.Console.Write("Do you want to change your last name (\"y\" or \"n\"): ");
                 lastNameChanging = System.Console.ReadLine();
-            } while (lastNameChanging != "yes" && lastNameChanging != "no");
+            } while (lastNameChanging != "y" && lastNameChanging != "n");
 
             string firstName = null;
             string lastName = null;
 
-            if (firstNameChanging != "no")
+            if (firstNameChanging != "n")
             {
                 do
                 {
@@ -84,7 +84,7 @@ namespace PL.Console.RoomsControl
                 } while (firstName == null);
             }
             
-            if (lastNameChanging != "no")
+            if (lastNameChanging != "n")
             {
                 do
                 {

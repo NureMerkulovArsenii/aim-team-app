@@ -107,7 +107,7 @@ namespace BLL.Services
             return false;
         }
 
-        private bool IsUserAdmin(Room room, User user) //TODO: roles implementation
+        private bool IsUserAdmin(Room room, User user)
         {
             var isUserAdmin = room.Participants
                 .Where(participant => _roleGenericRepository
