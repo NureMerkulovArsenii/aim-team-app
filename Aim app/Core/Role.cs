@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json.Serialization;
 
 namespace Core
 {
@@ -10,17 +10,17 @@ namespace Core
         }
         
         public string RoleName { get; set; }
-
+        
         public bool CanPin { get; set; }
-
+        
         public bool CanInvite { get; set; }
-
+        
         public bool CanDeleteOthersMessages { get; set; }
-
+        
         public bool CanModerateParticipants { get; set; }
-
+        
         public bool CanManageRoles { get; set; }
-
+        
         public bool CanManageChannels { get; set; }
 
         public bool CanManageRoom { get; set; }
