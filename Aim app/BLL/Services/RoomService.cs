@@ -19,14 +19,14 @@ namespace BLL.Services
             IGenericRepository<User> userGenericRepository, IGenericRepository<Role> roleGenericRepository)
         {
             _roomGenericRepository = roomGenericRepository;
-            
+
             _currentUser = currentUser;
 
             _userGenericRepository = userGenericRepository;
 
             _roleGenericRepository = roleGenericRepository;
         }
-        
+
         public string CreateRoom(string name, string description) //TODO: Photo implementation
         {
             var user = _currentUser.User;
@@ -45,12 +45,10 @@ namespace BLL.Services
             };
 
             var baseRole = new Role("User");
-            
+
             var adminParticipantInfo = new ParticipantInfo()
             {
-                UserId = user.Id,
-                RoleId = adminRole.Id,
-                Notifications = true
+                UserId = user.Id, RoleId = adminRole.Id, Notifications = true
             };
 
             var room = new Room()
@@ -58,8 +56,8 @@ namespace BLL.Services
                 RoomName = name,
                 RoomDescription = description,
                 BaseRoleId = baseRole.Id,
-                Participants = new List<ParticipantInfo> { adminParticipantInfo },
-                RoomRolesId = new List<string>(){adminRole.Id, baseRole.Id}
+                Participants = new List<ParticipantInfo> {adminParticipantInfo},
+                RoomRolesId = new List<string>() {adminRole.Id, baseRole.Id}
             };
 
             _roleGenericRepository.CreateAsync(adminRole).Wait();
@@ -74,7 +72,7 @@ namespace BLL.Services
         public bool DeleteRoom(Room room)
         {
             var user = _currentUser.User;
-            
+
             if (IsUserAdmin(room, user))
             {
                 _roomGenericRepository.DeleteAsync(room).Wait();
@@ -88,13 +86,14 @@ namespace BLL.Services
         public bool ChangeRoomSettings(Room room, string name, string description) //TODO: photo implementation
         {
             var user = _currentUser.User;
-            
+
             if (IsUserAdmin(room, user))
             {
                 if (!string.IsNullOrWhiteSpace(name))
                 {
                     room.RoomName = name;
                 }
+
                 if (!string.IsNullOrWhiteSpace(description))
                 {
                     room.RoomDescription = description;
@@ -116,7 +115,7 @@ namespace BLL.Services
 
             return isUserAdmin.Any();
         }
-        
+
         public async Task<List<User>> GetParticipantsOfRoom(string roomId)
         {
             var room = _roomGenericRepository
@@ -124,10 +123,34 @@ namespace BLL.Services
                 .Result
                 .FirstOrDefault();
 
-            var userIds =  room?.Participants.Select(participant => participant.UserId).ToList();
+            var userIds = room?.Participants.Select(participant => participant.UserId).ToList();
 
             return (List<User>)await _userGenericRepository
                 .FindByConditionAsync(user => userIds.Contains(user.Id));
+        }
+
+        public async Task<Dictionary<string, string>> GetRolesOfUsers(string roomId)
+        {
+            var result = new Dictionary<string, string>();
+
+            var room = _roomGenericRepository
+                .FindByConditionAsync(room => room.Id == roomId)
+                .Result
+                .FirstOrDefault();
+
+            var roomParticipants = room?.Participants;
+
+            foreach (var participant in roomParticipants)
+            {
+                var user = _userGenericRepository.FindByConditionAsync(user => user.Id == participant.UserId).Result
+                    .FirstOrDefault();
+                var role = _roleGenericRepository.FindByConditionAsync(role => role.Id == participant.RoleId).Result
+                    .FirstOrDefault();
+
+                result.Add(user.UserName, role.RoleName);
+            }
+
+            return result;
         }
     }
 }
