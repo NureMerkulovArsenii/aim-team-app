@@ -1,4 +1,5 @@
-using Newtonsoft.Json.Serialization;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Core
 {
@@ -7,26 +8,77 @@ namespace Core
         public Role(string name = "New Role")
         {
             RoleName = name;
+            Permissions = new Dictionary<string, bool>();
+            CanPin = false;
+            CanInvite = false;
+            CanDeleteOthersMessages = false;
+            CanModerateParticipants = false;
+            CanManageRoles = false;
+            CanManageChannels = false;
+            CanManageRoom = false;
+            CanUseAdminChannels = false;
+            CanViewAuditLog = false;
         }
+
+        [JsonIgnore]
+        public IDictionary<string, bool> Permissions { get; set; }
         
         public string RoleName { get; set; }
-        
-        public bool CanPin { get; set; }
-        
-        public bool CanInvite { get; set; }
-        
-        public bool CanDeleteOthersMessages { get; set; }
-        
-        public bool CanModerateParticipants { get; set; }
-        
-        public bool CanManageRoles { get; set; }
-        
-        public bool CanManageChannels { get; set; }
 
-        public bool CanManageRoom { get; set; }
+        public bool CanPin
+        {
+            get => Permissions["CanPin"]; 
+            set => Permissions["CanPin"] = value;
+        }
+        
+        public bool CanInvite
+        {
+            get => Permissions["CanInvite"]; 
+            set => Permissions["CanInvite"] = value;
+        }
 
-        public bool CanUseAdminChannels { get; set; }
+        
+        public bool CanDeleteOthersMessages
+        {
+            get => Permissions["CanDeleteOthersMessages"]; 
+            set => Permissions["CanDeleteOthersMessages"] = value;
+        }
+        
+        public bool CanModerateParticipants
+        {
+            get => Permissions["CanModerateParticipants"]; 
+            set => Permissions["CanModerateParticipants"] = value;
+        }
+        
+        public bool CanManageRoles
+        {
+            get => Permissions["CanManageRoles"]; 
+            set => Permissions["CanManageRoles"] = value;
+        }
+        
+        public bool CanManageChannels
+        {
+            get => Permissions["CanManageChannels"]; 
+            set => Permissions["CanManageChannels"] = value;
+        }
 
-        public bool CanViewAuditLog { get; set; }
+        public bool CanManageRoom 
+        {
+            get => Permissions["CanManageRoom"]; 
+            set => Permissions["CanManageRoom"] = value;
+        }
+
+
+        public bool CanUseAdminChannels
+        {
+            get => Permissions["CanUseAdminChannels"]; 
+            set => Permissions["CanUseAdminChannels"] = value;
+        }
+
+        public bool CanViewAuditLog
+        {
+            get => Permissions["CanViewAuditLog"]; 
+            set => Permissions["CanViewAuditLog"] = value;
+        }
     }
 }

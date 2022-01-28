@@ -6,5 +6,7 @@ namespace PL.Console.Interfaces
     public interface IRoleControl
     {
         Task ViewRolesInTheRoom(Room room);
+
+        Task<bool> ViewMyRole(Room room);
     }
 }

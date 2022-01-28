@@ -34,7 +34,7 @@ namespace PL.Console
             {
                 System.Console.WriteLine("Wanna sign up (press \"y\"), wanna sign in (press \"n\")");
                 key = System.Console.ReadLine();
-            } while (key?.Length != 1 && !userKeys.Contains(key));
+            } while (key == null || !userKeys.Contains(key));
 
             if (key == "y")
             {

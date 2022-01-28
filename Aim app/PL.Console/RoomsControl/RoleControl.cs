@@ -55,7 +55,7 @@ namespace PL.Console.RoomsControl
             }
             else if (int.TryParse(userInput, out var roleNumber) && roles.Count >= roleNumber)
             {
-                await ChooseRoleAction(roles[roleNumber - 1]);
+                await ChooseRoleAction(room, roles[roleNumber - 1]);
             }
         }
 
@@ -64,15 +64,20 @@ namespace PL.Console.RoomsControl
             System.Console.WriteLine("Enter role name: ");
             var roleName = System.Console.ReadLine()?.Trim();
 
-            var response = await _roleService.CreateNewRole(room, roleName);
+            var role = await _roleService.CreateNewRole(room, roleName);
+            
+            if (role is null)
+            {
+                System.Console.WriteLine("Error! Please, try again later!");
+                return false;
+            }
+            
             System.Console.WriteLine("Role successfully created");
-            
-            //Todo: Add permissions
-            
-            return response;
+
+            return await SetUpRole(room, role);
         }
 
-        private async Task<bool> ViewMyRole(Room room)
+        public async Task<bool> ViewMyRole(Room room) //TODO: change for permissions dict
         {
             try
             {
@@ -112,40 +117,51 @@ namespace PL.Console.RoomsControl
             switch (userInput)
             {
                 case "edit":
-                    
-                    break;
+                    return await SetUpRole(room, role);
                 case "delete":
-                    
-                    break;
+                    return await DeleteRole(room, role);
             }
             
-            return true;
+            return false;
         }
 
         private async Task<bool> SetUpRole(Room room, Role role)
         {
             var permissions = new Dictionary<string, bool?>();
 
-            permissions.Add();
-            
-            
-            
-            System.Console.WriteLine($"\t-Can Pin: ");
-            System.Console.WriteLine($"\t-Can Invite: ");
-            System.Console.WriteLine($"\t-Can Delete Others Messages: ");
-            System.Console.WriteLine($"\t-Can Moderate Participants: ");
-            System.Console.WriteLine($"\t-Can Manage Roles: ");
-            System.Console.WriteLine($"\t-Can Manage Channels: ");
-            System.Console.WriteLine($"\t-Can Manage Room: ");
-            System.Console.WriteLine($"\t-Can Use Admin Channels: ");
-            System.Console.WriteLine($"\t-Can View Audit Log: ");
+            foreach (var pair in role.Permissions)
+            {
+                string stringValue;
+                do
+                {
+                    System.Console.Write($"Choose permission for {pair.Key} (\"t\", \"f\" or empty): ");
+                    stringValue = System.Console.ReadLine();
+                } while (stringValue != null && stringValue != "t" && stringValue != "f");
 
-            return await _roleService.SetUpRole();
+                if (stringValue == "t")
+                {
+                    permissions[pair.Key] = true;
+                }
+                else if (stringValue == "f")
+                {
+                    permissions[pair.Key] = false;
+                }
+            }
+
+            return await _roleService.SetUpRole(room, role, permissions);
         }
 
         private async Task<bool> DeleteRole(Room room, Role role)
         {
+            if (await _roleService.DeleteRole(room, role))
+            {
+                System.Console.WriteLine("Role deleted successfully!");
+                return true;
+            }
             
+            System.Console.WriteLine("Error! Please, try again later!");
+
+            return false;
         }
     }
 }

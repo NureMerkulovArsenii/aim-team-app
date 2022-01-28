@@ -78,24 +78,18 @@ namespace PL.Console.RoomsControl
             {
                 case "delete":
                     return DeleteRoom(room);
-                    break;
                 case "set up":
                     return SetUpRoom(room);
-                    break;
                 case "leave":
                     return LeaveRoom(room);
-                    break;
                 case "notification":
                     return ChangeRoomNotifications(room);
-                    break;
                 case "invite":
                     _invitation.InviteToRoomWithUrl(room);
                     return true;
-                    break;
                 case "roles":
-                    _roleControl.ViewRolesInTheRoom(room);
+                    _roleControl.ViewRolesInTheRoom(room).Wait();
                     return true;
-                    break;
             }
 
             System.Console.WriteLine("Error! Please, try again later!");

@@ -22,28 +22,7 @@ namespace BLL.Services
             _roomGenericRepository = roomGenericRepository;
         }
 
-        public async Task<bool> SetUpRole(Room room, Role role, Dictionary<string, bool?> permissions)
-        {
-            var user = _currentUser.User;
-            var participant = room.Participants.FirstOrDefault(participant => participant.UserId == user.Id);
-            var userRole = await _roleGenericRepository.GetEntityById(participant?.RoleId);
-            
-            if (!userRole.CanManageRoles || room.RoomRolesId.All(roomRoleId => roomRoleId != role.Id))
-            {
-                return false;
-            }
-            
-            
-            
-            await _roleGenericRepository.UpdateAsync(role);
-
-            return true;
-        }
-        
-        public async Task<bool> SetUpRole(Room room, Role role, bool? canPin = null, bool? canInvite = null,
-            bool? canDeleteOthersMessages = null, bool? canModerateParticipants = null, bool? canManageRoles = null, 
-            bool? canManageChannels = null, bool? canManageRoom = null, bool? canUseAdminChannels = null, 
-            bool? canViewAuditLog = null)
+        public async Task<bool> SetUpRole(Room room, Role role, IDictionary<string, bool?> permissions)
         {
             var user = _currentUser.User;
             var participant = room.Participants.FirstOrDefault(participant => participant.UserId == user.Id);
@@ -53,50 +32,13 @@ namespace BLL.Services
             {
                 return false;
             }
-            
-            if (canPin is { } pin)
-            {
-                role.CanPin = pin;
-            }
-            
-            if (canInvite is { } invite)
-            {
-                role.CanInvite = invite;
-            }
 
-            if (canDeleteOthersMessages is { } deleteMessages)
+            foreach (var pair in permissions)
             {
-                role.CanDeleteOthersMessages = deleteMessages;
-            }
-
-            if (canModerateParticipants is { } moderateParticipants)
-            {
-                role.CanModerateParticipants = moderateParticipants;
-            }
-
-            if (canManageRoles is { } manageRoles)
-            {
-                role.CanManageRoles = manageRoles;
-            }
-
-            if (canManageChannels is { } manageChannels)
-            {
-                role.CanManageChannels = manageChannels;
-            }
-
-            if (canManageRoom is { } manageRoom)
-            {
-                role.CanManageRoom = manageRoom;
-            }
-
-            if (canUseAdminChannels is { } useAdminChannels)
-            {
-                role.CanUseAdminChannels = useAdminChannels;
-            }
-
-            if (canViewAuditLog is { } viewAuditLog)
-            {
-                role.CanViewAuditLog = viewAuditLog;
+                if (pair.Value is { } value)
+                {
+                    role.Permissions[pair.Key] = value;
+                }
             }
 
             await _roleGenericRepository.UpdateAsync(role);
@@ -104,11 +46,11 @@ namespace BLL.Services
             return true;
         }
 
-        public async Task<bool> CreateNewRole(Room room, string name)
+        public async Task<Role> CreateNewRole(Room room, string name)
         {
             if (!CanManageRoles(room))
             {
-                return false;
+                return null;
             }
             
             var newRole = new Role(name);
@@ -119,7 +61,7 @@ namespace BLL.Services
 
             await _roomGenericRepository.UpdateAsync(room);
 
-            return true;
+            return newRole;
         }
 
         public async Task<bool> DeleteRole(Room room, Role role)
