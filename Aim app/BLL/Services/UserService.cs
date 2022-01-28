@@ -12,13 +12,16 @@ namespace BLL.Services
     {
         private readonly IGenericRepository<User> _userGenericRepository;
         private readonly IGenericRepository<Room> _roomGenericRepository;
+        private readonly IGenericRepository<Role> _roleGenericRepository;
         private readonly ICurrentUser _currentUser;
 
         public UserService(IGenericRepository<User> userGenericRepository,
-            IGenericRepository<Room> roomGenericRepository, ICurrentUser currentUser)
+            IGenericRepository<Room> roomGenericRepository, IGenericRepository<Role> roleGenericRepository,
+            ICurrentUser currentUser)
         {
             _userGenericRepository = userGenericRepository;
             _roomGenericRepository = roomGenericRepository;
+            _roleGenericRepository = roleGenericRepository;
             _currentUser = currentUser;
         }
 
@@ -30,7 +33,7 @@ namespace BLL.Services
             }
 
             room.Participants.Remove(
-                room.Participants.FirstOrDefault(participant => participant.User.Id == _currentUser.User.Id));
+                room.Participants.FirstOrDefault(participant => participant.UserId == _currentUser.User.Id));
             await _roomGenericRepository.UpdateAsync(room);
             return true;
         }
@@ -42,7 +45,7 @@ namespace BLL.Services
                 return false;
             }
 
-            room.Participants.FirstOrDefault(participant => participant.User.Id == _currentUser.User.Id)!
+            room.Participants.FirstOrDefault(participant => participant.UserId == _currentUser.User.Id)!
                     .Notifications =
                 stateOnOrOff;
             await _roomGenericRepository.UpdateAsync(room);
@@ -60,9 +63,35 @@ namespace BLL.Services
 
             var foundRooms = await _roomGenericRepository
                 .FindByConditionAsync(room =>
-                    room.Participants.Any(participant => participant.User.Id == currentUser.Id));
+                    room.Participants.Any(participant => participant.UserId == currentUser.Id));
 
             return foundRooms.ToList();
+        }
+
+        public async Task ChangeUserNames(string firstName = null, string lastName = null)
+        {
+            var user = _currentUser.User;
+
+            if (firstName != null)
+            {
+                user.FirstName = firstName;
+            }
+
+            if (lastName != null)
+            {
+                user.LastName = lastName;
+            }
+
+            await _userGenericRepository.UpdateAsync(user);
+        }
+        
+        public async Task<Role> GetRoleInRoom(Room room)
+        {
+            var currentUser = _currentUser.User;
+            var roleId = room.Participants.FirstOrDefault(participantInfo => participantInfo.UserId == currentUser.Id)?.RoleId;
+            var roles = await _roleGenericRepository.FindByConditionAsync(role => role.Id == roleId);
+            
+            return roles.FirstOrDefault();
         }
 
         public async Task<User> GetUserByUserNameOrEmail(string userName)

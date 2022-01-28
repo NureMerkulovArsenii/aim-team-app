@@ -13,9 +13,9 @@ namespace BLL.Services
         private readonly IUserValidator _userValidator;
         private readonly IPasswordService _passwordService;
 
-        public AuthorizationService(IGenericRepository<User> genericRepository, IUserValidator userValidator, IPasswordService passwordService)
+        public AuthorizationService(IGenericRepository<User> userGenericRepository, IUserValidator userValidator, IPasswordService passwordService)
         {
-            _userGenericRepository = genericRepository;
+            _userGenericRepository = userGenericRepository;
             _userValidator = userValidator;
             _passwordService = passwordService;
         }

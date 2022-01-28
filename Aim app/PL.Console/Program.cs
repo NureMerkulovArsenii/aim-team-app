@@ -33,8 +33,10 @@ namespace PL.Console
             services.AddScoped<App>();
             services.AddScoped<IRegistration, Registration.Registration>();
             services.AddScoped<IAuthorization, Authorization.Authorization>();
-            services.AddScoped<IInvitation, Invitation>();
+            services.AddScoped<IInvitation, RoomsControl.Invitation>();
             services.AddScoped<IRoomsControl, RoomsControl.RoomsControl>();
+            services.AddScoped<IRoleControl, RoomsControl.RoleControl>();
+            services.AddScoped<IUserControl, UserControl>();
             DependencyRegistrar.ConfigureServices(services);
         }
     }

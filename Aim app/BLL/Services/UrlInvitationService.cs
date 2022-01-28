@@ -94,7 +94,7 @@ namespace BLL.Services
                     var room = rooms.FirstOrDefault();
                     var participantInfo = new ParticipantInfo()
                     {
-                        Notifications = true, User = _currentUser.User, RoleId = "0"
+                        Notifications = true, UserId = _currentUser.User.Id, RoleId = room.BaseRoleId
                     };
 
                     room.Participants.Add(participantInfo);

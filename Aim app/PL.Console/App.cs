@@ -15,15 +15,17 @@ namespace PL.Console
         private readonly IAuthorization _authorization;
         private readonly IRoomsControl _roomsControl;
         private readonly IInvitation _invitation;
+        private readonly IUserControl _userControl;
 
         public App(IUserService userService, IAuthorization authorization, IRegistration registration,
-            IInvitation invitation,IRoomsControl roomsControl)
+            IInvitation invitation,IRoomsControl roomsControl, IUserControl userControl)
         {
             this._roomsControl = roomsControl;
             this._userService = userService;
             this._registration = registration;
             this._authorization = authorization;
             this._invitation = invitation;
+            this._userControl = userControl;
         }
 
         public async Task StartApp()
@@ -34,7 +36,7 @@ namespace PL.Console
             {
                 System.Console.WriteLine("Wanna sign up (press \"y\"), wanna sign in (press \"n\")");
                 key = System.Console.ReadLine();
-            } while (key?.Length != 1 && !userKeys.Contains(key));
+            } while (key == null || !userKeys.Contains(key));
 
             if (key == "y")
             {
@@ -52,6 +54,18 @@ namespace PL.Console
                 {
                     System.Console.WriteLine("Login failed, please try again later!");
                 }
+            }
+            
+            string accountSet;
+            do
+            {
+                System.Console.WriteLine("Do you want to set up your account? (press \"y\" or \"n\")");
+                accountSet = System.Console.ReadLine();
+            } while (accountSet != "y" && accountSet != "n");
+
+            if (accountSet == "y")
+            {
+                _userControl.ChooseAction();
             }
             
             while (true)

@@ -6,29 +6,34 @@ using DAL.Abstractions.Interfaces;
 
 namespace DAL.Repository
 {
-    public class RepositoryDb<TEnity> : IGenericRepository<TEnity>
+    public class RepositoryDb<TEntity> : IGenericRepository<TEntity>
     {
-        public Task<IEnumerable<TEnity>> FindAllAsync()
+        public Task<IEnumerable<TEntity>> FindAllAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<TEnity>> FindByConditionAsync(Expression<Func<TEnity, bool>> expression)
+        public Task<IEnumerable<TEntity>> FindByConditionAsync(Expression<Func<TEntity, bool>> expression)
         {
             throw new NotImplementedException();
         }
 
-        public Task CreateAsync(TEnity entity)
+        public Task<TEntity> GetEntityById(string id)
         {
             throw new NotImplementedException();
         }
 
-        public Task UpdateAsync(TEnity entity)
+        public Task CreateAsync(TEntity entity)
         {
             throw new NotImplementedException();
         }
 
-        public Task DeleteAsync(TEnity entity)
+        public Task UpdateAsync(TEntity entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteAsync(TEntity entity)
         {
             throw new NotImplementedException();
         }

@@ -4,7 +4,7 @@ namespace BLL.Abstractions.Interfaces
 {
     public interface IPasswordService
     {
-        bool ChangePassword(User user, string oldPassword, string newPassword);
+        bool ChangePassword(string oldPassword, string newPassword);
 
         bool SetPassword(User user, string password);
 
