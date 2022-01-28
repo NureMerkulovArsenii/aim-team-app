@@ -31,6 +31,13 @@ namespace DAL.Repository
             return await _jsonWorker.LoadFromFileAsync<IEnumerable<TEntity>>(_appSettings.JsonDirectory + file);
         }
 
+        public async Task<TEntity> GetEntityById(string id)
+        {
+            var entities = await FindByConditionAsync(entity => entity.Id == id);
+
+            return entities.FirstOrDefault();
+        }
+        
         public async Task<IEnumerable<TEntity>> FindByConditionAsync(Expression<Func<TEntity, bool>> expression)
         {
             var m = await FindAllAsync();

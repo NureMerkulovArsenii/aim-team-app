@@ -11,21 +11,45 @@ namespace BLL.Services
     public class RoomService : IRoomService
     {
         private readonly IGenericRepository<Room> _roomGenericRepository;
+        private readonly IGenericRepository<User> _userGenericRepository;
+        private readonly IGenericRepository<Role> _roleGenericRepository;
         private readonly ICurrentUser _currentUser;
 
-        public RoomService(IGenericRepository<Room> roomGenericRepository, ICurrentUser currentUser)
+        public RoomService(IGenericRepository<Room> roomGenericRepository, ICurrentUser currentUser,
+            IGenericRepository<User> userGenericRepository, IGenericRepository<Role> roleGenericRepository)
         {
             _roomGenericRepository = roomGenericRepository;
+            
             _currentUser = currentUser;
+
+            _userGenericRepository = userGenericRepository;
+
+            _roleGenericRepository = roleGenericRepository;
         }
         
         public string CreateRoom(string name, string description) //TODO: Photo implementation
         {
             var user = _currentUser.User;
-            var baseParticipantInfo = new ParticipantInfo()
+
+            var adminRole = new Role("Admin")
             {
-                User = user,
-                RoleId = "1",
+                CanInvite = true,
+                CanDeleteOthersMessages = true,
+                CanManageChannels = true,
+                CanManageRoles = true,
+                CanManageRoom = true,
+                CanModerateParticipants = true,
+                CanPin = true,
+                CanUseAdminChannels = true,
+                CanViewAuditLog = true
+            };
+
+            var baseRole = new Role("User");
+            
+            var adminParticipantInfo = new ParticipantInfo()
+            {
+                UserId = user.Id,
+                RoleId = adminRole.Id,
                 Notifications = true
             };
 
@@ -33,8 +57,14 @@ namespace BLL.Services
             {
                 RoomName = name,
                 RoomDescription = description,
-                Participants = new List<ParticipantInfo> { baseParticipantInfo }
+                BaseRoleId = baseRole.Id,
+                Participants = new List<ParticipantInfo> { adminParticipantInfo },
+                RoomRolesId = new List<string>(){adminRole.Id, baseRole.Id}
             };
+
+            _roleGenericRepository.CreateAsync(adminRole).Wait();
+
+            _roleGenericRepository.CreateAsync(baseRole).Wait();
 
             _roomGenericRepository.CreateAsync(room).Wait();
 
@@ -80,7 +110,9 @@ namespace BLL.Services
 
         private bool IsUserAdmin(Room room, User user) //TODO: roles implementation
         {
-            var isUserAdmin = room.Participants.Where(participant => participant.RoleId == "1" && participant.User.Id == user.Id);
+            var isUserAdmin = room.Participants
+                .Where(participant => _roleGenericRepository
+                    .GetEntityById(participant.RoleId).Result.CanManageRoom && participant.UserId == user.Id);
 
             return isUserAdmin.Any();
         }
@@ -92,7 +124,10 @@ namespace BLL.Services
                 .Result
                 .FirstOrDefault();
 
-            return room?.Participants.Select(participant => participant.User).ToList();
+            var userIds =  room?.Participants.Select(participant => participant.UserId).ToList();
+
+            return (List<User>)await _userGenericRepository
+                .FindByConditionAsync(user => userIds.Contains(user.Id));
         }
     }
 }

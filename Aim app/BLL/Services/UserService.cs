@@ -30,7 +30,7 @@ namespace BLL.Services
             }
 
             room.Participants.Remove(
-                room.Participants.FirstOrDefault(participant => participant.User.Id == _currentUser.User.Id));
+                room.Participants.FirstOrDefault(participant => participant.UserId == _currentUser.User.Id));
             await _roomGenericRepository.UpdateAsync(room);
             return true;
         }
@@ -42,7 +42,7 @@ namespace BLL.Services
                 return false;
             }
 
-            room.Participants.FirstOrDefault(participant => participant.User.Id == _currentUser.User.Id)!
+            room.Participants.FirstOrDefault(participant => participant.UserId == _currentUser.User.Id)!
                     .Notifications =
                 stateOnOrOff;
             await _roomGenericRepository.UpdateAsync(room);
@@ -60,7 +60,7 @@ namespace BLL.Services
 
             var foundRooms = await _roomGenericRepository
                 .FindByConditionAsync(room =>
-                    room.Participants.Any(participant => participant.User.Id == currentUser.Id));
+                    room.Participants.Any(participant => participant.UserId == currentUser.Id));
 
             return foundRooms.ToList();
         }

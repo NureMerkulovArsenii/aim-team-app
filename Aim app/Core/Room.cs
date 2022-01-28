@@ -15,6 +15,10 @@ namespace Core
         public string RoomDescription { get; set; }
 
         public IList<ParticipantInfo> Participants { get; set; }
+        
+        public IList<string> RoomRolesId { get; set; }
+
+        public string BaseRoleId { get; set; }
 
         [JsonIgnore] public ReadOnlyCollection<byte> Photo { get; set; }
 
