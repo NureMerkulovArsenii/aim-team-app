@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using PL.Console.Authorization;
 using PL.Console.Registration;
 using PL.Console.Interfaces;
+using PL.Console.RoomsControl;
 
 namespace PL.Console
 {
@@ -35,6 +36,7 @@ namespace PL.Console
             services.AddScoped<IInvitation, RoomsControl.Invitation>();
             services.AddScoped<IRoomsControl, RoomsControl.RoomsControl>();
             services.AddScoped<IRoleControl, RoomsControl.RoleControl>();
+            services.AddScoped<IUserControl, UserControl>();
             DependencyRegistrar.ConfigureServices(services);
         }
     }

@@ -19,7 +19,7 @@ namespace PL.Console.RoomsControl
             string action;
             do
             {
-                System.Console.Write("What do you want to change? (\"password\" or \"name\")");
+                System.Console.Write("What do you want to change (\"password\" or \"name\")? ");
                 action = System.Console.ReadLine();
             } while (action != "password" && action != "name");
 
@@ -63,7 +63,7 @@ namespace PL.Console.RoomsControl
             {
                 System.Console.Write("Do you want to change your first name: ");
                 firstNameChanging = System.Console.ReadLine();
-            } while (firstNameChanging != "yes" || firstNameChanging != "no");
+            } while (firstNameChanging != "yes" && firstNameChanging != "no");
             
             string lastNameChanging;
             do
