@@ -130,7 +130,8 @@ namespace PL.Console.RoomsControl
 
             if (userInput == "users")
             {
-                _chatService.GetUserNamesOfChat(chat);
+                var users =  _chatService.GetUserNamesOfChat(chat).Result;
+                System.Console.WriteLine(string.Join("\n", users));
             }
 
             if (userInput == "change")
@@ -138,7 +139,7 @@ namespace PL.Console.RoomsControl
                 System.Console.WriteLine("Enter new name for chat:");
                 var name = System.Console.ReadLine();
 
-                _chatService.ChangeNameOfPersonalChat(chat, name).Wait();
+                _ = _chatService.ChangeNameOfPersonalChat(chat, name).Result;
             }
 
             if (userInput == "invite")

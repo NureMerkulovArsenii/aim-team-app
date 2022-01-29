@@ -22,7 +22,7 @@ namespace BLL.Services
             this._currentUser = currentUser;
         }
 
-        public async Task CreatePersonalChat(string[] usersToChat) // add abstraction
+        public async Task CreatePersonalChat(string[] usersToChat)
         {
             var participants = new List<string> {_currentUser.User.Id};
 
@@ -30,7 +30,10 @@ namespace BLL.Services
             {
                 var userId = _genericRepositoryUser.FindByConditionAsync(user =>
                     user.UserName == userInPersonalChat || user.Email == userInPersonalChat).Result.FirstOrDefault();
-                participants.Add(userId.Id);
+                if (!participants.Contains(userId.Id))
+                {
+                    participants.Add(userId.Id);
+                }
             }
 
             var chatName = string.Empty;
@@ -51,29 +54,27 @@ namespace BLL.Services
 
         public async Task<bool> ChangeNameOfPersonalChat(PersonalChat chat, string name)
         {
-            try
-            {
-                chat.ChatName = name;
-                return true;
-            }
-            catch (NullReferenceException e)
-            {
-                Console.WriteLine(e);
-                return false;
-            }
+            chat.ChatName = name;
+            await _genericRepositoryChat.UpdateAsync(chat);
+            return true;
         }
 
         public async Task AddParticipantsToPersonalChat(PersonalChat chat, string[] participants)
         {
             try
             {
-
                 foreach (var participant in participants)
                 {
-                    var users = await _genericRepositoryUser.FindByConditionAsync(user =>
+                    var user = await _genericRepositoryUser.FindByConditionAsync(user =>
                         user.UserName == participant || user.Email == participant);
-                    chat.ParticipantsIds.Add(users.FirstOrDefault().Id);
+                    if (!chat.ParticipantsIds.Contains(user.FirstOrDefault().Id))
+                    {
+                        chat.ParticipantsIds.Add(user.FirstOrDefault().Id);
+                    }
+                    
                 }
+
+                await _genericRepositoryChat.UpdateAsync(chat);
             }
             catch (NullReferenceException e)
             {
@@ -87,7 +88,6 @@ namespace BLL.Services
                 _genericRepositoryChat.FindByConditionAsync(chat =>
                     chat.ParticipantsIds.Contains(_currentUser.User.Id));
 
-            //var result = userChats.Select(chat => chat.Id).ToList();
 
             return userChats.ToList();
         }
@@ -105,7 +105,7 @@ namespace BLL.Services
 
             return users;
         }
-        
+
         public async Task<bool> LeavePersonalChat(PersonalChat chat)
         {
             var user = _currentUser.User;

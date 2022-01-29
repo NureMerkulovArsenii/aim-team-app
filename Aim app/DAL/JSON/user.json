@@ -1,25 +1,5 @@
 [
   {
-    "UserName": "ars",
-    "Email": "arsenii.vm@gmail.com",
-    "Password": "\u0015���8����`��\u0019B\f � Δ�_��3\u0012D��%",
-    "FirstName": "Arsenii",
-    "LastName": "Merkulov",
-    "IsVerified": true,
-    "LastAuth": "2022-01-28T19:29:29.5427596+02:00",
-    "Id": "b8fa6b04-3c47-4747-b8ea-8d4546335f90"
-  },
-  {
-    "UserName": "osigram",
-    "Email": "igor.b769@gmail.com",
-    "Password": "\u0015���8����`��\u0019B\f � Δ�_��3\u0012D��%",
-    "FirstName": "Igor",
-    "LastName": "Butsulin",
-    "IsVerified": true,
-    "LastAuth": "2022-01-29T20:12:25.8362651+02:00",
-    "Id": "9e96fc92-9dd1-470a-ba10-b611eac8cc9c"
-  },
-  {
     "UserName": "zhmaytsevm",
     "Email": "zhmaytsevm@gmail.com",
     "Password": "�y|�\u0018�-�d�\u0007�]?�v#\u0004��\u0006=S,�\\^ר��O",
@@ -36,7 +16,27 @@
     "FirstName": "Arsenii",
     "LastName": "Merkulov",
     "IsVerified": true,
-    "LastAuth": "2022-01-29T21:35:06.7270992+02:00",
+    "LastAuth": "2022-01-29T22:14:35.6146686+02:00",
     "Id": "949a82a9-dd7c-4c31-b1d4-6ea005329335"
+  },
+  {
+    "UserName": "ars",
+    "Email": "arsenii.vm@gmail.com",
+    "Password": "\u0015���8����`��\u0019B\f � Δ�_��3\u0012D��%",
+    "FirstName": "Arsenii",
+    "LastName": "Merkulov",
+    "IsVerified": true,
+    "LastAuth": "2022-01-29T22:17:56.3709761+02:00",
+    "Id": "b8fa6b04-3c47-4747-b8ea-8d4546335f90"
+  },
+  {
+    "UserName": "osigram",
+    "Email": "igor.b769@gmail.com",
+    "Password": "\u0015���8����`��\u0019B\f � Δ�_��3\u0012D��%",
+    "FirstName": "Igor",
+    "LastName": "Butsulin",
+    "IsVerified": true,
+    "LastAuth": "2022-01-29T22:19:33.6952389+02:00",
+    "Id": "9e96fc92-9dd1-470a-ba10-b611eac8cc9c"
   }
 ]
