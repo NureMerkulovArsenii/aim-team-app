@@ -57,7 +57,8 @@ namespace BLL.Services
                 RoomDescription = description,
                 BaseRoleId = baseRole.Id,
                 Participants = new List<ParticipantInfo> {adminParticipantInfo},
-                RoomRolesId = new List<string>() {adminRole.Id, baseRole.Id}
+                RoomRolesId = new List<string>() {adminRole.Id, baseRole.Id},
+                TextChatsId = new List<string>()
             };
 
             _roleGenericRepository.CreateAsync(adminRole).Wait();
