@@ -39,5 +39,25 @@ namespace BLL.Services
 
             await _genericRepositoryChat.CreateAsync(personalChat);
         }
+
+        public async Task<bool> LeavePersonalChat(PersonalChat chat)
+        {
+            var user = _currentUser.User;
+
+            if (!chat.ParticipantsIds.Remove(user.Id))
+            {
+                return false;
+            }
+
+            if (chat.ParticipantsIds.Count == 0)
+            {
+                await _genericRepositoryChat.DeleteAsync(chat);
+                return true;
+            }
+
+            await _genericRepositoryChat.UpdateAsync(chat);
+
+            return true;
+        }
     }
 }
