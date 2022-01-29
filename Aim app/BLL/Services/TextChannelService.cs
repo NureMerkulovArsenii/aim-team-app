@@ -104,42 +104,6 @@ namespace BLL.Services
             return result;
         }
 
-        public async Task<bool> CanManageChannels(Room room, User user=null)
-        {
-            if (user == null)
-            {
-                user = _currentUser.User;
-            }
-            
-            var participant = room.Participants.FirstOrDefault(participant => participant.UserId == user.Id);
-            var userRole = await _roleGenericRepository.GetEntityById(participant?.RoleId);
-
-            if (userRole.CanManageChannels)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        public async Task<bool> CanUseAdminChannels(Room room, User user=null)
-        {
-            if (user == null)
-            {
-                user = _currentUser.User;
-            }
-            
-            var participant = room.Participants.FirstOrDefault(participant => participant.UserId == user.Id);
-            var userRole = await _roleGenericRepository.GetEntityById(participant?.RoleId);
-
-            if (userRole.CanUseAdminChannels)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
         public async Task<bool> DeleteTextChannel(TextChannel textChannel, Room room)
         {
             if (!await CanManageChannels(room, _currentUser.User))
@@ -156,6 +120,32 @@ namespace BLL.Services
             {
                 return false;
             }
+        }
+        
+        public async Task<bool> CanManageChannels(Room room, User user=null)
+        {
+            if (user == null)
+            {
+                user = _currentUser.User;
+            }
+            
+            var participant = room.Participants.FirstOrDefault(participant => participant.UserId == user.Id);
+            var userRole = await _roleGenericRepository.GetEntityById(participant?.RoleId);
+
+            return userRole.CanManageChannels;
+        }
+
+        public async Task<bool> CanUseAdminChannels(Room room, User user=null)
+        {
+            if (user == null)
+            {
+                user = _currentUser.User;
+            }
+            
+            var participant = room.Participants.FirstOrDefault(participant => participant.UserId == user.Id);
+            var userRole = await _roleGenericRepository.GetEntityById(participant?.RoleId);
+
+            return userRole.CanUseAdminChannels;
         }
     }
 }
