@@ -21,15 +21,20 @@ namespace PL.Console.RoomsControl
 
             System.Console.WriteLine($"Text channels in {room.RoomName}:");
             
+            if (channelList.Count == 0)
+            {
+                System.Console.WriteLine("There is no text channels in room");
+            }
+
             foreach (var channel in channelList)
             {
-                System.Console.WriteLine($" {counter}) {channel.ChannelName}");
+                System.Console.WriteLine($"\t{counter}) {channel.ChannelName}");
                 counter++;
             }
 
             var actions = new string[] {"create"};
             
-            System.Console.Write($"What do you want to do? ({string.Join("or", actions)})");
+            System.Console.Write($"What do you want to do? ({string.Join(" or ", actions)} or type its number): ");
             string action;
             var outAction = -1;
             do
@@ -61,27 +66,27 @@ namespace PL.Console.RoomsControl
                 return false;
             }
             
-            System.Console.Write("Enter text channel name: ");
             string name;
             do
             {
-                name = System.Console.ReadLine();
-            } while (name == null);
-                
-            System.Console.Write("Enter text channel description: ");
+                System.Console.Write("Enter text channel name: ");
+                name = System.Console.ReadLine()?.Trim();
+            } while (string.IsNullOrWhiteSpace(name));
+            
             string description;
             do
             {
+                System.Console.Write("Enter text channel description: ");
                 description = System.Console.ReadLine();
-            } while (description == null);
+            } while (string.IsNullOrWhiteSpace(description));
 
             var isAdmin = false;
             if (_textChannelService.CanUseAdminChannels(room).Result)
             {
-                System.Console.Write("Do you want to this channel be private (\"t\" or \"f\")? ");
                 string admin;
                 do
                 {
+                    System.Console.Write("Do you want to this channel be private (\"t\" or \"f\")? ");
                     admin = System.Console.ReadLine();
                 } while (admin != "t" && admin != "f");
 
@@ -98,10 +103,10 @@ namespace PL.Console.RoomsControl
         {
             var actions = new string[] {"edit", "delete"};
             
-            System.Console.Write($"What do you want to do? ({string.Join("or", actions)})");
             string action;
             do
             {
+                System.Console.Write($"What do you want to do? ({string.Join(" or ", actions)}): ");
                 action = System.Console.ReadLine();
             } while (action == null || !actions.Contains(action));
 
@@ -136,23 +141,26 @@ namespace PL.Console.RoomsControl
             }
             
             System.Console.Write("Enter new channel name (if you  don't want to change it - just press Enter): ");
-            var name = System.Console.ReadLine();
+            var name = System.Console.ReadLine()?.Trim();
+            name = name == string.Empty ? null : name;
             
             System.Console.Write("Enter new channel description (if you  don't want to change it - just press Enter): ");
-            var description = System.Console.ReadLine();
+            var description = System.Console.ReadLine()?.Trim();
+            description = description == string.Empty ? null : description;
 
+            bool? isAdmin = null;
             if (_textChannelService.CanUseAdminChannels(room).Result)
             {
                 var actions = new string[] {"y", "n", null};
-            
-                System.Console.Write("Do you want to do it private? ");
+                
                 string admin;
                 do
                 {
-                    admin = System.Console.ReadLine();
+                    System.Console.Write($"Do you want to do it private? ({string.Join(" or ", actions)} or if you  don't want to change it - just press Enter): ");
+                    admin = System.Console.ReadLine()?.Trim();
+                    admin = admin == string.Empty ? null : admin;
                 } while (!actions.Contains(admin));
-
-                bool? isAdmin = null;
+                
                 switch (admin)
                 {
                     case "y":
@@ -162,12 +170,15 @@ namespace PL.Console.RoomsControl
                         isAdmin = false;
                         break;
                 }
-                
-                return _textChannelService.EditTextChannel(textChannel, room, name, description, isAdmin).Result;
             }
 
-            System.Console.WriteLine("Error! Please, try again later!");
+            if (_textChannelService.EditTextChannel(textChannel, room, name, description, isAdmin).Result)
+            {
+                System.Console.WriteLine("Text channel edited successfully!");
+                return true;
+            }
             
+            System.Console.WriteLine("Error! Please, try again later!");
             return false;
         }
     }

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -70,16 +70,16 @@ namespace BLL.Services
                 return false;
             }
 
-            var newTextChat = new TextChannel()
+            var newTextChannel = new TextChannel()
             {
                 ChannelName = name,
                 ChannelDescription = description,
                 IsAdminChannel = isAdmin
             };
             
-            room.TextChatsId.Add(newTextChat.Id);
+            room.TextChannelsId.Add(newTextChannel.Id);
 
-            await _textChatGenericRepository.CreateAsync(newTextChat);
+            await _textChatGenericRepository.CreateAsync(newTextChannel);
             
             await _roomGenericRepository.UpdateAsync(room);
             
@@ -91,7 +91,7 @@ namespace BLL.Services
             var result = new List<TextChannel>();
             var user = _currentUser.User;
 
-            foreach (var chatId in room.TextChatsId)
+            foreach (var chatId in room.TextChannelsId)
             {
                 var chat = await _textChatGenericRepository.GetEntityById(chatId);
 
@@ -110,10 +110,13 @@ namespace BLL.Services
             {
                 return false;
             }
+
+            room.TextChannelsId.Remove(textChannel.Id);
             
             try
             {
                 await _textChatGenericRepository.DeleteAsync(textChannel);
+                await _roomGenericRepository.UpdateAsync(room);
                 return true;
             }
             catch (Exception)
