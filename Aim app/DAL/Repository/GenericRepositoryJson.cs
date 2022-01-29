@@ -97,7 +97,7 @@ namespace DAL.Repository
             }
             else if (fileType == typeof(TextChannel))
             {
-                return "textChat.json";
+                return "textChannel.json";
             }
 
             else if (fileType == typeof(PersonalChat))

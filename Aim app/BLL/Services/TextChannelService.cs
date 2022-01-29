@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
@@ -23,6 +24,43 @@ namespace BLL.Services
             _textChatGenericRepository = textChatGenericRepository;
         }
 
+        public async Task<bool> EditTextChannel(TextChannel textChannel, Room room, string name = null, string description = null, bool? isAdmin = false)
+        {
+            var user = _currentUser.User;
+
+            // ToDo: Check if "is" statement is working
+            if (!await CanManageChannels(room, user) ||
+                (!await CanUseAdminChannels(room, user) && isAdmin is false))
+            {
+                return false;
+            }
+
+            try
+            {
+                if (name != null)
+                {
+                    textChannel.ChannelName = name;
+                }
+
+                if (description != null)
+                {
+                    textChannel.ChannelDescription = description;
+                }
+                
+                if (isAdmin.HasValue)
+                {
+                    textChannel.IsAdminChannel = isAdmin.Value;
+                }
+
+                await _textChatGenericRepository.UpdateAsync(textChannel);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+        
         public async Task<bool> CreateTextChannel(Room room, string name, string description, bool isAdmin=false)
         {
             var user = _currentUser.User;
@@ -100,6 +138,24 @@ namespace BLL.Services
             }
 
             return false;
+        }
+
+        public async Task<bool> DeleteTextChannel(TextChannel textChannel, Room room)
+        {
+            if (!await CanManageChannels(room, _currentUser.User))
+            {
+                return false;
+            }
+            
+            try
+            {
+                await _textChatGenericRepository.DeleteAsync(textChannel);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }

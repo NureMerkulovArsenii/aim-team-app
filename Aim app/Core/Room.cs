@@ -17,6 +17,8 @@ namespace Core
         public IList<ParticipantInfo> Participants { get; set; }
         
         public IList<string> RoomRolesId { get; set; }
+        
+        public IList<string> TextChannelsId { get; set; }
 
         public string BaseRoleId { get; set; }
         
