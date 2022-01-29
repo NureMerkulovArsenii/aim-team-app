@@ -39,12 +39,5 @@ namespace BLL.Services
 
             await _genericRepositoryChat.CreateAsync(personalChat);
         }
-        
-        public 
-
-        public async Task AddParticipants(PersonalChat chat)
-        {
-            
-        }
     }
 }
