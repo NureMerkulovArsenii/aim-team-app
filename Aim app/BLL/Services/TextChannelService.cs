@@ -24,13 +24,13 @@ namespace BLL.Services
             _textChatGenericRepository = textChatGenericRepository;
         }
 
-        public async Task<bool> EditTextChannel(TextChannel textChannel, Room room, string name = null, string description = null, bool? isAdmin = false)
+        public async Task<bool> EditTextChannel(TextChannel textChannel, Room room, string name = null, string description = null, bool? isAdmin = null)
         {
             var user = _currentUser.User;
 
             // ToDo: Check if "is" statement is working
             if (!await CanManageChannels(room, user) ||
-                (!await CanUseAdminChannels(room, user) && isAdmin is false))
+                (!await CanUseAdminChannels(room, user) && (textChannel.IsAdminChannel || isAdmin is true)))
             {
                 return false;
             }

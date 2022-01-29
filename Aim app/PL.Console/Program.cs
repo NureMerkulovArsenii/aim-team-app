@@ -37,6 +37,7 @@ namespace PL.Console
             services.AddScoped<IRoomsControl, RoomsControl.RoomsControl>();
             services.AddScoped<IRoleControl, RoomsControl.RoleControl>();
             services.AddScoped<IUserControl, UserControl>();
+            services.AddScoped<ITextChannelControl, TextChannelControl>();
             DependencyRegistrar.ConfigureServices(services);
         }
     }

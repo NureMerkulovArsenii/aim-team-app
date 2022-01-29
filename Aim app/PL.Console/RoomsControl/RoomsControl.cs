@@ -11,13 +11,16 @@ namespace PL.Console.RoomsControl
         private readonly IUserService _userService;
         private readonly IInvitation _invitation;
         private readonly IRoleControl _roleControl;
+        private readonly ITextChannelControl _textChannelControl;
 
-        public RoomsControl(IRoomService roomService, IUserService userService, IInvitation invitation, IRoleControl roleControl)
+        public RoomsControl(IRoomService roomService, IUserService userService, IInvitation invitation, 
+            IRoleControl roleControl, ITextChannelControl textChannelControl)
         {
             this._roomService = roomService;
             this._userService = userService;
             this._invitation = invitation;
             this._roleControl = roleControl;
+            this._textChannelControl = textChannelControl;
         }
 
         public async Task ShowUserRooms()
@@ -70,7 +73,8 @@ namespace PL.Console.RoomsControl
             string action;
             do
             {
-                System.Console.WriteLine("What do you want to do? (\"delete\" or \"set up\" or \"leave\" or \"notification\" or \"invite\" or \"roles\")");
+                System.Console.WriteLine("What do you want to do? (\"delete\" or \"set up\" or \"leave\" or " +
+                                         "\"notification\" or \"invite\" or \"roles\" or \"text channels\")");
                 action = System.Console.ReadLine();
             } while (action == null);
 
@@ -89,6 +93,9 @@ namespace PL.Console.RoomsControl
                     return true;
                 case "roles":
                     _roleControl.ViewRolesInTheRoom(room).Wait();
+                    return true;
+                case "text channels":
+                    _textChannelControl.TextChannelChoice(room);
                     return true;
             }
 
