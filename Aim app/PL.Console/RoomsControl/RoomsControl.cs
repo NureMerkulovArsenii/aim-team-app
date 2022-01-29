@@ -12,15 +12,18 @@ namespace PL.Console.RoomsControl
         private readonly IInvitation _invitation;
         private readonly IRoleControl _roleControl;
         private readonly ITextChannelControl _textChannelControl;
+        private readonly IPersonalChatControl _personalChatControl;
+        
 
         public RoomsControl(IRoomService roomService, IUserService userService, IInvitation invitation, 
-            IRoleControl roleControl, ITextChannelControl textChannelControl)
+            IRoleControl roleControl, ITextChannelControl textChannelControl, IPersonalChatControl personalChatControl)
         {
             this._roomService = roomService;
             this._userService = userService;
             this._invitation = invitation;
             this._roleControl = roleControl;
             this._textChannelControl = textChannelControl;
+            this._personalChatControl = personalChatControl;
         }
 
         public async Task ShowUserRooms()
@@ -45,9 +48,11 @@ namespace PL.Console.RoomsControl
             do
             {
                 System.Console.Write(
-                    "If you want to choose room - type its number or if you want to create room - enter \"create\" or if you want to join - enter \"join\": ");
+                    "If you want to choose room - type its number or if you want to create room - enter \"create\"" +
+                    " or if you want to join - enter \"join\" " +
+                    "or if you want to show personal chats - enter \"pc\": ");
                 userInput = System.Console.ReadLine()?.Trim();
-            } while (userInput == null && userInput != "create" && userInput != "join" && !int.TryParse(userInput, out var roomNumber));
+            } while (userInput == null && userInput != "create" && userInput != "join" && userInput != "pc" && !int.TryParse(userInput, out _));
 
             
             if (userInput == "create")
@@ -58,6 +63,11 @@ namespace PL.Console.RoomsControl
             {
                 _invitation.EnterRoomWithUrl();
             }
+            else if (userInput == "pc")
+            {
+                _personalChatControl.DoAction();
+            }
+            
             else if (int.TryParse(userInput, out var roomNumber) && userRooms.Count >= roomNumber)
             {
                 ChooseRoomAction(userRooms[roomNumber - 1]);

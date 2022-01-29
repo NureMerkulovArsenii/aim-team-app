@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Core;
 
 namespace PL.Console.Interfaces
 {
-    public interface IPersonalChat
+    public interface IPersonalChatControl
     {
         void StartChat();
-        Task GetUserPersonalChats();
+        Task<IList<PersonalChat>> GetUserPersonalChats();
+        void DoAction();
     }
 }

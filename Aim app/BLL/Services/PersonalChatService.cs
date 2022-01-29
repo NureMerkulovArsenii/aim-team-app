@@ -49,14 +49,10 @@ namespace BLL.Services
             await _genericRepositoryChat.CreateAsync(personalChat);
         }
 
-        public async Task<bool> ChangeNameOfPersonalChat(string chatName, string name)
+        public async Task<bool> ChangeNameOfPersonalChat(PersonalChat chat, string name)
         {
             try
             {
-                var chats = await _genericRepositoryChat.FindByConditionAsync(personalChat =>
-                    personalChat.ChatName == chatName);
-                var chat = chats.FirstOrDefault();
-
                 chat.ChatName = name;
                 return true;
             }
@@ -67,13 +63,10 @@ namespace BLL.Services
             }
         }
 
-        public async Task AddParticipantsToPersonalChat(string chatName, string[] participants)
+        public async Task AddParticipantsToPersonalChat(PersonalChat chat, string[] participants)
         {
             try
             {
-                var chats = await _genericRepositoryChat.FindByConditionAsync(personalChat =>
-                    personalChat.ChatName == chatName);
-                var chat = chats.FirstOrDefault();
 
                 foreach (var participant in participants)
                 {
@@ -88,16 +81,31 @@ namespace BLL.Services
             }
         }
 
-        public async Task<IList<string>> GetUserPersonalChats()
+        public async Task<IList<PersonalChat>> GetUserPersonalChats()
         {
             var userChats = await
                 _genericRepositoryChat.FindByConditionAsync(chat =>
                     chat.ParticipantsIds.Contains(_currentUser.User.Id));
 
-            var result = userChats.Select(chat => chat.Id).ToList();
+            //var result = userChats.Select(chat => chat.Id).ToList();
 
-            return result;
+            return userChats.ToList();
         }
+
+        public async Task<IList<string>> GetUserNamesOfChat(PersonalChat chat)
+        {
+            var users = new List<string>();
+            var ids = chat.ParticipantsIds;
+
+            foreach (var id in ids)
+            {
+                var participants = await _genericRepositoryUser.FindByConditionAsync(user => user.Id == id);
+                users.Add(participants.FirstOrDefault()?.UserName);
+            }
+
+            return users;
+        }
+        
         public async Task<bool> LeavePersonalChat(PersonalChat chat)
         {
             var user = _currentUser.User;

@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PL.Console.Interfaces;
 using PL.Console.RoomsControl;
-using PersonalChat = PL.Console.RoomsControl.PersonalChat;
 
 namespace PL.Console
 {
@@ -36,7 +35,7 @@ namespace PL.Console
             services.AddScoped<IRoomsControl, RoomsControl.RoomsControl>();
             services.AddScoped<IRoleControl, RoleControl>();
             services.AddScoped<IUserControl, UserControl>();
-            services.AddScoped<IPersonalChat, PersonalChat>();
+            services.AddScoped<IPersonalChatControl, PersonalChatControl>();
             services.AddScoped<ITextChannelControl, TextChannelControl>();
             DependencyRegistrar.ConfigureServices(services);
         }

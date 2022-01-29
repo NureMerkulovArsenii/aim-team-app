@@ -16,11 +16,11 @@ namespace PL.Console
         private readonly IRoomsControl _roomsControl;
         private readonly IInvitation _invitation;
         private readonly IUserControl _userControl;
-        private readonly IPersonalChat _personalChat;
+        private readonly IPersonalChatControl _personalChatControl;
 
 
         public App(IUserService userService, IAuthorization authorization, IRegistration registration,
-            IInvitation invitation, IRoomsControl roomsControl, IUserControl userControl, IPersonalChat personalChat)
+            IInvitation invitation, IRoomsControl roomsControl, IUserControl userControl, IPersonalChatControl personalChatControl)
         {
             this._roomsControl = roomsControl;
             this._userService = userService;
@@ -28,7 +28,7 @@ namespace PL.Console
             this._authorization = authorization;
             this._invitation = invitation;
             this._userControl = userControl;
-            this._personalChat = personalChat;
+            this._personalChatControl = personalChatControl;
         }
 
         public async Task StartApp()
@@ -74,7 +74,7 @@ namespace PL.Console
             while (true)
             {
                 await _roomsControl.ShowUserRooms();
-                await _personalChat.GetUserPersonalChats();
+                await _personalChatControl.GetUserPersonalChats();
             }
         }
     }
