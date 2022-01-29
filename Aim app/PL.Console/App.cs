@@ -16,9 +16,11 @@ namespace PL.Console
         private readonly IRoomsControl _roomsControl;
         private readonly IInvitation _invitation;
         private readonly IUserControl _userControl;
+        private readonly IPersonalChat _personalChat;
+
 
         public App(IUserService userService, IAuthorization authorization, IRegistration registration,
-            IInvitation invitation,IRoomsControl roomsControl, IUserControl userControl)
+            IInvitation invitation, IRoomsControl roomsControl, IUserControl userControl, IPersonalChat personalChat)
         {
             this._roomsControl = roomsControl;
             this._userService = userService;
@@ -26,6 +28,7 @@ namespace PL.Console
             this._authorization = authorization;
             this._invitation = invitation;
             this._userControl = userControl;
+            this._personalChat = personalChat;
         }
 
         public async Task StartApp()
@@ -55,7 +58,7 @@ namespace PL.Console
                     System.Console.WriteLine("Login failed, please try again later!");
                 }
             }
-            
+
             string accountSet;
             do
             {
@@ -67,10 +70,11 @@ namespace PL.Console
             {
                 _userControl.ChooseAction();
             }
-            
+
             while (true)
             {
                 await _roomsControl.ShowUserRooms();
+                await _personalChat.GetUserPersonalChats();
             }
         }
     }

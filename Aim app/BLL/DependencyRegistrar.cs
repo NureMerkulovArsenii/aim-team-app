@@ -1,4 +1,6 @@
-﻿using BLL.Abstractions.Interfaces;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Net;
+using BLL.Abstractions.Interfaces;
 using BLL.Helpers;
 using BLL.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +23,7 @@ namespace BLL
             services.AddScoped<IRoomService, RoomService>();
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<ITextChannelService, TextChannelService>();
+            services.AddScoped<IPersonalChatService, PersonalChatService>();
             DAL.DependencyRegistrar.ConfigureServices(services);
         }
     }
