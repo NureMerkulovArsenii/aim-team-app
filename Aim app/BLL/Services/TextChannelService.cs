@@ -36,7 +36,7 @@ namespace BLL.Services
             {
                 ChannelName = name,
                 ChannelDescription = description,
-                IsAdmin = isAdmin
+                IsAdminChannel = isAdmin
             };
             
             room.TextChatsId.Add(newTextChat.Id);
@@ -57,7 +57,7 @@ namespace BLL.Services
             {
                 var chat = await _textChatGenericRepository.GetEntityById(chatId);
 
-                if ((chat.IsAdmin && await CanUseAdminChannels(room, user)) || !chat.IsAdmin)
+                if ((chat.IsAdminChannel && await CanUseAdminChannels(room, user)) || !chat.IsAdminChannel)
                 {
                     result.Add(chat);
                 }
