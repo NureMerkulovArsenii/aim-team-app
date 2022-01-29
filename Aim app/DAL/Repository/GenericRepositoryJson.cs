@@ -96,6 +96,10 @@ namespace DAL.Repository
                 return "role.json";
             }
 
+            else if (fileType == typeof(PersonalChat))
+            {
+                return "personalChats.json";
+            }
             return string.Empty;
         }
     }
