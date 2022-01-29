@@ -100,6 +100,10 @@ namespace DAL.Repository
                 return "textChat.json";
             }
 
+            else if (fileType == typeof(PersonalChat))
+            {
+                return "personalChats.json";
+            }
             return string.Empty;
         }
     }
