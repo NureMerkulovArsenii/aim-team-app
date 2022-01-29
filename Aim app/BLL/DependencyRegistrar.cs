@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Net;
-using BLL.Abstractions.Interfaces;
+﻿using BLL.Abstractions.Interfaces;
 using BLL.Helpers;
 using BLL.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +20,7 @@ namespace BLL
             services.AddSingleton<ICurrentUser, CurrentUserConsole>();
             services.AddScoped<IRoomService, RoomService>();
             services.AddScoped<IRoleService, RoleService>();
+            services.AddScoped<ITextChannelService, TextChannelService>();
             DAL.DependencyRegistrar.ConfigureServices(services);
         }
     }
