@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Core;
 
 namespace BLL.Abstractions.Interfaces
@@ -8,5 +9,6 @@ namespace BLL.Abstractions.Interfaces
         Task CreatePersonalChat(string[] userToChatWith);
         Task<bool> ChangeNameOfPersonalChat(string chatName, string name);
         Task AddParticipantsToPersonalChat(string chatName, string[] participants);
+        Task<IList<string>> GetUserPersonalChats();
     }
 }

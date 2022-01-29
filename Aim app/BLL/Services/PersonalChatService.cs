@@ -67,7 +67,6 @@ namespace BLL.Services
             }
         }
 
-
         public async Task AddParticipantsToPersonalChat(string chatName, string[] participants)
         {
             try
@@ -87,6 +86,17 @@ namespace BLL.Services
             {
                 Console.WriteLine(e);
             }
+        }
+
+        public async Task<IList<string>> GetUserPersonalChats()
+        {
+            var userChats = await
+                _genericRepositoryChat.FindByConditionAsync(chat =>
+                    chat.ParticipantsIds.Contains(_currentUser.User.Id));
+
+            var result = userChats.Select(chat => chat.Id).ToList();
+
+            return result;
         }
     }
 }
