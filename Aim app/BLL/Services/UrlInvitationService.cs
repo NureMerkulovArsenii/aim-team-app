@@ -80,13 +80,8 @@ namespace BLL.Services
                 var responseUrl = urlsEnumerable.FirstOrDefault();
                 var now = DateTime.Now;
                 var expirationTime = DateTime.Parse(responseUrl.ExpirationTime, CultureInfo.InvariantCulture);
-                // if (now > DateTime.Parse(responseUrl.ExpirationTime, CultureInfo.InvariantCulture))
-                // {
-                //     return false;
-                // }
-
-                if (responseUrl.UserId == null || responseUrl.UserId.Contains(_currentUser.User.Id) &&
-                    expirationTime >= now)
+                
+                if (responseUrl.UserId == null || responseUrl.UserId.Contains(_currentUser.User.Id) && expirationTime >= now )
                 {
                     var rooms =
                         await _genericRepositoryRooms.FindByConditionAsync(room => room.Id == responseUrl.RoomId);
@@ -94,10 +89,14 @@ namespace BLL.Services
                     var room = rooms.FirstOrDefault();
                     var participantInfo = new ParticipantInfo()
                     {
-                        Notifications = true, UserId = _currentUser.User.Id, RoleId = room.BaseRoleId
+                        Notifications = true,
+                        UserId = _currentUser.User.Id,
+                        RoleId = room.BaseRoleId
                     };
-
-                    room.Participants.Add(participantInfo);
+                    if (room.Participants.All(info => info.UserId != participantInfo.UserId))
+                    {
+                        room.Participants.Add(participantInfo);
+                    }
 
                     await _genericRepositoryRooms.UpdateAsync(room);
                     return true;
