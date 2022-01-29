@@ -28,7 +28,7 @@ namespace PL.Console.RoomsControl
             //when first message is sent, then chat is initiated
 
             //on message sent:
-            _chatService.CreatePersonalChat(userName);
+            _chatService.CreatePersonalChat();
             
             
 
