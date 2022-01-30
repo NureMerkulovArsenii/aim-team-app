@@ -47,7 +47,7 @@ namespace PL.Console.ResetPassword
                 System.Console.Write("Enter code to reset your password: ");
                 var codeFromUser = System.Console.ReadLine()?.Trim();
 
-                while (_mailWorker.CompareCodes(codeFromUser))
+                while (!_mailWorker.CompareCodes(codeFromUser))
                 {
                     System.Console.Write(
                         "Wrong code! Enter code from message sent on your email or \"r\" to resend code: ");
