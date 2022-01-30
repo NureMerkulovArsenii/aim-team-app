@@ -12,7 +12,8 @@ namespace PL.Console.Authorization
         private readonly ICurrentUser _currentUser;
         private readonly IUserService _userService;
 
-        public Authorization(IUserService userService, IAuthorizationService authorizationService, IMailWorker mailWorker, ICurrentUser currentUser)
+        public Authorization(IUserService userService, IAuthorizationService authorizationService, 
+            IMailWorker mailWorker, ICurrentUser currentUser)
         {
             _userService = userService;
             _authorizationService = authorizationService;
@@ -45,7 +46,8 @@ namespace PL.Console.Authorization
 
             var tempUser = await _authorizationService.GetInfoAboutUser(usernameOrEmail);
 
-            if (await _authorizationService.IsLastAuthWasLongAgo(tempUser, 10) || !_userService.IsUserVerified(tempUser))
+            if (await _authorizationService.IsLastAuthWasLongAgo(tempUser, 10) 
+                || !_userService.IsUserVerified(tempUser))
             {
                 var email = await _authorizationService.GetEmailByUsernameOrEmail(usernameOrEmail);
                 var code = await _mailWorker.SendCodeByEmailAsync(email);
@@ -55,7 +57,8 @@ namespace PL.Console.Authorization
 
                 while (codeFromUser != code)
                 {
-                    System.Console.Write("Wrong code! Enter code from message sent on your email or \"r\" to resend code: ");
+                    System.Console.Write("Wrong code! Enter code from message sent on your email " +
+                                         "or \"r\" to resend code: ");
                     codeFromUser =  System.Console.ReadLine()?.Trim();
 
                     if (codeFromUser == "r")

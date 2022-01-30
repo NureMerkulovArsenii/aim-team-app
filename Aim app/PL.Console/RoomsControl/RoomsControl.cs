@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Core;
 using BLL.Abstractions.Interfaces;
 using PL.Console.Interfaces;
@@ -44,6 +46,11 @@ namespace PL.Console.RoomsControl
                 }
             }
             
+            ChooseAction(userRooms);
+        }
+
+        private void ChooseAction(List<Room> userRooms)
+        {
             string userInput;
             do
             {
@@ -52,9 +59,9 @@ namespace PL.Console.RoomsControl
                     " or if you want to join - enter \"join\" " +
                     "or if you want to show personal chats - enter \"pc\": ");
                 userInput = System.Console.ReadLine()?.Trim();
-            } while (userInput == null && userInput != "create" && userInput != "join" && userInput != "pc" && !int.TryParse(userInput, out _));
+            } while (string.IsNullOrWhiteSpace(userInput) && userInput != "create" && userInput != "join" && 
+                     userInput != "pc" && !int.TryParse(userInput, out _));
 
-            
             if (userInput == "create")
             {
                 CreateRoom();
@@ -67,7 +74,6 @@ namespace PL.Console.RoomsControl
             {
                 _personalChatControl.DoAction();
             }
-            
             else if (int.TryParse(userInput, out var roomNumber) && userRooms.Count >= roomNumber)
             {
                 ChooseRoomAction(userRooms[roomNumber - 1]);
@@ -77,7 +83,7 @@ namespace PL.Console.RoomsControl
                 System.Console.WriteLine("Error! Please, try again later!");
             }
         }
-        
+
         public bool ChooseRoomAction(Room room)
         {
             string action;
@@ -85,8 +91,8 @@ namespace PL.Console.RoomsControl
             {
                 System.Console.WriteLine("What do you want to do? (\"delete\" or \"set up\" or \"leave\" or " +
                                          "\"notification\" or \"invite\" or \"roles\" or \"text channels\")");
-                action = System.Console.ReadLine();
-            } while (action == null);
+                action = System.Console.ReadLine()?.Trim();
+            } while (string.IsNullOrWhiteSpace(action));
 
             switch (action)
             {
@@ -117,15 +123,18 @@ namespace PL.Console.RoomsControl
         private bool CreateRoom()
         {
             string name;
-
             do
             {
                 System.Console.WriteLine("Enter room's name:");
-                name = System.Console.ReadLine();
-            } while (name == null);
+                name = System.Console.ReadLine()?.Trim();
+            } while (string.IsNullOrWhiteSpace(name));
 
-            System.Console.WriteLine("Enter room's description:");
-            var description = System.Console.ReadLine();
+            string description;
+            do
+            {
+                System.Console.WriteLine("Enter room's description:");
+                description = System.Console.ReadLine()?.Trim();
+            } while (string.IsNullOrWhiteSpace(description));
 
             var roomId = _roomService.CreateRoom(name, description);
 
@@ -146,6 +155,7 @@ namespace PL.Console.RoomsControl
             if (_roomService.DeleteRoom(room))
             {
                 System.Console.WriteLine("Room successfully deleted!");
+                
                 return true;
             }
 
@@ -156,8 +166,14 @@ namespace PL.Console.RoomsControl
 
         private bool SetUpRoom(Room room)
         {
-            System.Console.WriteLine("What do you want to change? (\"name\" or \"description\" or \"both\")"); // name || description || both
-            var action = System.Console.ReadLine();
+            var actions = new[] {"name", "description", "both"};
+            string action;
+            
+            do
+            {
+                System.Console.WriteLine("What do you want to change? (\"name\" or \"description\" or \"both\")");
+                action = System.Console.ReadLine()?.Trim();
+            } while (string.IsNullOrWhiteSpace(action) || !actions.Contains(action));
 
             string name = null;
             string description = null;
@@ -177,6 +193,7 @@ namespace PL.Console.RoomsControl
             if (_roomService.ChangeRoomSettings(room, name, description))
             {
                 System.Console.WriteLine("Room settings successfully changed!");
+                
                 return true;
             }
 
@@ -199,22 +216,23 @@ namespace PL.Console.RoomsControl
         private bool ChangeRoomNotifications(Room room)
         {
             string userResponse;
+            
             do
             {
                 System.Console.Write("Do you want to receive notifications from this room (\"yes\" or \"no\")? ");
-                userResponse = System.Console.ReadLine();
-            } while (userResponse == null && userResponse != "yes" && userResponse != "no");
+                userResponse = System.Console.ReadLine()?.Trim();
+            } while (string.IsNullOrWhiteSpace(userResponse) && userResponse != "yes" && userResponse != "no");
 
-            if (userResponse == "yes")
+            switch (userResponse)
             {
-                return _userService.SwitchNotifications(room, true).Result;
+                case "yes":
+                    return _userService.SwitchNotifications(room, true).Result;
+                case "no":
+                    return _userService.SwitchNotifications(room, false).Result;
             }
-            else if (userResponse == "no")
-            {
-                return _userService.SwitchNotifications(room, false).Result;
-            }
-
+            
             System.Console.WriteLine("Error! Please, try again later!");
+            
             return false;
         }
     }
