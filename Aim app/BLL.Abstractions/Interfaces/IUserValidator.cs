@@ -1,11 +1,13 @@
-﻿namespace BLL.Abstractions.Interfaces
+﻿using System.Threading.Tasks;
+
+namespace BLL.Abstractions.Interfaces
 {
     public interface IUserValidator
     {
-        int IsEmailValid(string email);
+        Task<int> IsEmailValid(string email);
         
-        public bool ValidateUserNick(string nick);
+        Task<bool> ValidateUserNick(string nick);
         
-        bool ValidateUserNameOrEmail(string userName);
+        Task<bool> ValidateUserNameOrEmail(string userName);
     }
 }
