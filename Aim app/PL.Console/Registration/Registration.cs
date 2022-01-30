@@ -77,10 +77,12 @@ namespace PL.Console.Registration
 
 
             System.Console.WriteLine("Check your email and enter code:");
+            
+            await _mailWorker.SendCodeByEmailAsync(email);
 
             var code = System.Console.ReadLine();
 
-            while (_mailWorker.CompareCodes(code))
+            while (!_mailWorker.CompareCodes(code))
             {
                 System.Console.WriteLine("Wrong code");
                 System.Console.WriteLine(
@@ -111,7 +113,7 @@ namespace PL.Console.Registration
                 IsVerified = true,
                 LastAuth = DateTime.Now
             };
-            _passwordService.SetPassword(tempUser, password);
+            await _passwordService.SetPassword(tempUser, password);
             _currentUser.User = tempUser;
         }
     }
