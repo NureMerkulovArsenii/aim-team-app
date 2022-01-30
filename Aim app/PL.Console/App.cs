@@ -17,10 +17,12 @@ namespace PL.Console
         private readonly IInvitation _invitation;
         private readonly IUserControl _userControl;
         private readonly IPersonalChatControl _personalChatControl;
+        private readonly IResetPasswordControl _resetPasswordControl;
 
 
         public App(IUserService userService, IAuthorization authorization, IRegistration registration,
-            IInvitation invitation, IRoomsControl roomsControl, IUserControl userControl, IPersonalChatControl personalChatControl)
+            IInvitation invitation, IRoomsControl roomsControl, IUserControl userControl,
+            IPersonalChatControl personalChatControl, IResetPasswordControl resetPasswordControl)
         {
             this._roomsControl = roomsControl;
             this._userService = userService;
@@ -29,52 +31,70 @@ namespace PL.Console
             this._invitation = invitation;
             this._userControl = userControl;
             this._personalChatControl = personalChatControl;
+            this._resetPasswordControl = resetPasswordControl;
         }
 
         public async Task StartApp()
         {
-            var userKeys = new[] {"y", "n"};
-            string key;
-            do
-            {
-                System.Console.WriteLine("Wanna sign up (press \"y\"), wanna sign in (press \"n\")");
-                key = System.Console.ReadLine();
-            } while (key == null || !userKeys.Contains(key));
-
-            if (key == "y")
-            {
-                await _registration.RegisterUserAsync();
-            }
-            else if (key == "n")
-            {
-                var response = await _authorization.AuthorizeUserAsync();
-
-                if (response)
-                {
-                    System.Console.WriteLine("Successfully logged in!");
-                }
-                else
-                {
-                    System.Console.WriteLine("Login failed, please try again later!");
-                }
-            }
-
-            string accountSet;
-            do
-            {
-                System.Console.WriteLine("Do you want to set up your account? (press \"y\" or \"n\")");
-                accountSet = System.Console.ReadLine();
-            } while (accountSet != "y" && accountSet != "n");
-
-            if (accountSet == "y")
-            {
-                _userControl.ChooseAction();
-            }
-
             while (true)
             {
-                await _roomsControl.ShowUserRooms();
-                await _personalChatControl.GetUserPersonalChats();
+                var userKeys = new[] {"y", "n", "f"};
+                string key;
+                do
+                {
+                    System.Console.WriteLine("Wanna sign up (press \"y\"), wanna sign in (press \"n\"), forgot password - press \"f\"");
+                    key = System.Console.ReadLine()?.Trim();
+                } while (string.IsNullOrWhiteSpace(key) || !userKeys.Contains(key));
+    
+                if (key == "y")
+                {
+                    await _registration.RegisterUserAsync();
+                }
+                else if (key == "n")
+                {
+                    var response = await _authorization.AuthorizeUserAsync();
+    
+                    if (response)
+                    {
+                        System.Console.WriteLine("Successfully logged in!");
+                    }
+                    else
+                    {
+                        System.Console.WriteLine("Login failed, please try again later!");
+                    }
+                }
+                else if (key == "f")
+                {
+                    var response = await _resetPasswordControl.ResetUserPasswordAsync();
+    
+                    if (response)
+                    {
+                        System.Console.WriteLine("Password reset successfully!");
+                    }
+                    else
+                    {
+                        System.Console.WriteLine("Reset password failed, please try again later!");
+                        continue;
+                    }
+                }
+    
+                string accountSet;
+                do
+                {
+                    System.Console.WriteLine("Do you want to set up your account? (press \"y\" or \"n\")");
+                    accountSet = System.Console.ReadLine();
+                } while (accountSet != "y" && accountSet != "n");
+    
+                if (accountSet == "y")
+                {
+                    _userControl.ChooseAction();
+                }
+    
+                while (true)
+                {
+                    await _roomsControl.ShowUserRooms();
+                    await _personalChatControl.GetUserPersonalChats();
+                }
             }
         }
     }

@@ -22,6 +22,35 @@ namespace PL.Console.Authorization
         
         public async Task<bool> AuthorizeUserAsync()
         {
+            var tempUser = await InputEmailAndPassword();
+
+            if (await _authorizationService.IsLastAuthWasLongAgo(tempUser, 10) || !_userService.IsUserVerified(tempUser))
+            {
+                var email = tempUser.Email;
+                var code = await _mailWorker.SendCodeByEmailAsync(email);
+            
+                System.Console.Write($"Enter code from message sent on your email ({email}): ");
+                var codeFromUser = System.Console.ReadLine()?.Trim();
+
+                while (codeFromUser != code)
+                {
+                    System.Console.Write("Wrong code! Enter code from message sent on your email or \"r\" to resend code: ");
+                    codeFromUser =  System.Console.ReadLine()?.Trim();
+
+                    if (codeFromUser == "r")
+                    {
+                        await _mailWorker.SendCodeByEmailAsync(email, code);
+                    }
+                }
+            }
+
+            _currentUser.User = tempUser;
+            await _authorizationService.UpdateLastAuth(tempUser);
+            return true;
+        }
+
+        private async Task<User> InputEmailAndPassword()
+        {
             System.Console.Write("Enter your username/email: ");
             var usernameOrEmail = System.Console.ReadLine()?.Trim();
 
@@ -43,31 +72,7 @@ namespace PL.Console.Authorization
                 isUserDataValid = await _authorizationService.CheckUserDataForAuthAsync(usernameOrEmail, password);
             }
 
-            var tempUser = await _authorizationService.GetInfoAboutUser(usernameOrEmail);
-
-            if (await _authorizationService.IsLastAuthWasLongAgo(tempUser, 10) || !_userService.IsUserVerified(tempUser))
-            {
-                var email = await _authorizationService.GetEmailByUsernameOrEmail(usernameOrEmail);
-                var code = await _mailWorker.SendCodeByEmailAsync(email);
-            
-                System.Console.Write($"Enter code from message sent on your email ({email}): ");
-                var codeFromUser = System.Console.ReadLine()?.Trim();
-
-                while (codeFromUser != code)
-                {
-                    System.Console.Write("Wrong code! Enter code from message sent on your email or \"r\" to resend code: ");
-                    codeFromUser =  System.Console.ReadLine()?.Trim();
-
-                    if (codeFromUser == "r")
-                    {
-                        await _mailWorker.SendCodeByEmailAsync(email, code);
-                    }
-                }
-            }
-
-            _currentUser.User = tempUser;
-            await _authorizationService.UpdateLastAuth(tempUser);
-            return true;
+            return await _authorizationService.GetInfoAboutUser(usernameOrEmail);
         }
     }
 }
