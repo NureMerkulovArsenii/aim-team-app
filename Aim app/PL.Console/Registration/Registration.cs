@@ -75,13 +75,12 @@ namespace PL.Console.Registration
                 password = System.Console.ReadLine();
             }
 
-            var responseCode = await _mailWorker.SendCodeByEmailAsync(email);
 
             System.Console.WriteLine("Check your email and enter code:");
 
             var code = System.Console.ReadLine();
 
-            while (code != responseCode)
+            while (_mailWorker.CompareCodes(code))
             {
                 System.Console.WriteLine("Wrong code");
                 System.Console.WriteLine(
@@ -89,7 +88,7 @@ namespace PL.Console.Registration
                 var userAnswer = System.Console.ReadLine();
                 if (userAnswer == "n")
                 {
-                    responseCode = await _mailWorker.SendCodeByEmailAsync(email);
+                    await _mailWorker.SendCodeByEmailAsync(email);
                     System.Console.WriteLine("Check your email and enter code:");
                     code = System.Console.ReadLine();
                 }

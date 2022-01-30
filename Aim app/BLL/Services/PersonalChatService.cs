@@ -22,11 +22,11 @@ namespace BLL.Services
             this._currentUser = currentUser;
         }
 
-        public async Task CreatePersonalChat(string[] usersToChat)
+        public async Task CreatePersonalChat(List<string> userToChatWith)
         {
             var participants = new List<string> {_currentUser.User.Id};
 
-            foreach (var userInPersonalChat in usersToChat)
+            foreach (var userInPersonalChat in userToChatWith)
             {
                 var userId = _genericRepositoryUser.FindByConditionAsync(user =>
                     user.UserName == userInPersonalChat || user.Email == userInPersonalChat).Result.FirstOrDefault();
@@ -38,10 +38,10 @@ namespace BLL.Services
 
             var chatName = string.Empty;
 
-            for (var i = 0; i < usersToChat.Length && i < 5; i++)
+            for (var i = 0; i < userToChatWith.Count && i < 5; i++)
             {
-                chatName += usersToChat[i];
-                if (i != 4 && i != usersToChat.Length - 1)
+                chatName += userToChatWith[i];
+                if (i != 4 && i != userToChatWith.Count - 1)
                 {
                     chatName += ",";
                 }

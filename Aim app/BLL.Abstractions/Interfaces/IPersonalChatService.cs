@@ -6,7 +6,7 @@ namespace BLL.Abstractions.Interfaces
 {
     public interface IPersonalChatService
     {
-        Task CreatePersonalChat(string[] userToChatWith);
+        Task CreatePersonalChat(List<string> userToChatWith);
         Task<bool> ChangeNameOfPersonalChat(PersonalChat chat, string name);
         Task AddParticipantsToPersonalChat(PersonalChat chat, string[] participants);
         Task<IList<PersonalChat>> GetUserPersonalChats();

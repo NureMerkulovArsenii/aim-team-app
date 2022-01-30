@@ -13,9 +13,11 @@ namespace BLL.Helpers
     {
         public string Code { get; set; }
         private readonly AppSettings _appSettings;
+        private readonly ICurrentUser _currentUser;
 
-        public MailWorker(IOptions<AppSettings> appSettings)
+        public MailWorker(IOptions<AppSettings> appSettings, ICurrentUser currentUser)
         {
+            this._currentUser = currentUser;
             _appSettings = appSettings?.Value ?? throw new ArgumentNullException(nameof(appSettings));
         }
 
@@ -38,6 +40,27 @@ namespace BLL.Helpers
                 return false;
             }
         }
+
+
+        public async Task<bool> SendInvitationEmailAsync(Room room, string url, string emailTo)
+        {
+            try
+            {
+                var random = new Random();
+                Code = random.Next(100000, 999999).ToString(CultureInfo.InvariantCulture);
+                var toMailAddress = new MailAddress(emailTo);
+                var subject = "AIM APP | Invitation To Room";
+                var body = $"Invitation to join {room.RoomName} from {_currentUser.User.UserName}: {url}";
+
+                await SendMailMessageAsync(toMailAddress, subject, body);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
 
         private async Task<bool> SendMailMessageAsync(MailAddress mailAddressTo, string subject, string body)
         {
@@ -63,14 +86,14 @@ namespace BLL.Helpers
                 return false;
             }
         }
-        
+
         public bool CompareCodes(string codeFromUser)
         {
             if (Code == null)
             {
                 return false;
             }
-            
+
             return codeFromUser == Code;
         }
     }

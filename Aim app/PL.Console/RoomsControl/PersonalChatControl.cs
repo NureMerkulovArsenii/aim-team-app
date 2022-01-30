@@ -52,13 +52,7 @@ namespace PL.Console.RoomsControl
                 }
             }
 
-            // System.Console.WriteLine($"{userName}\n start typing:");
-            //here must be called message worker or smth like this
-            //when first message is sent, then chat is initiated
-
-            //on message sent:
-
-            _chatService.CreatePersonalChat(userNames);
+            _chatService.CreatePersonalChat(usersToInvite);
         }
 
         public async Task<IList<PersonalChat>> GetUserPersonalChats()
