@@ -90,7 +90,6 @@ namespace PL.Console
                 while (true)
                 {
                     await _roomsControl.ShowUserRooms();
-                    await _personalChatControl.GetUserPersonalChats();
                 }
             }
         }
