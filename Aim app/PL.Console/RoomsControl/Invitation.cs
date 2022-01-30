@@ -10,14 +10,11 @@ namespace PL.Console.RoomsControl
     {
         private readonly IUrlInvitationService _invitationService;
         private readonly IUserValidator _userValidator;
-        private readonly ICurrentUser _currentUser;
 
-        public Invitation(IUrlInvitationService invitationService, IUserValidator userValidator,
-            ICurrentUser currentUser)
+        public Invitation(IUrlInvitationService invitationService, IUserValidator userValidator)
         {
             this._invitationService = invitationService;
             this._userValidator = userValidator;
-            this._currentUser = currentUser;
         }
 
         public void EnterRoomWithUrl()
