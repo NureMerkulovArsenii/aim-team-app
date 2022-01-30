@@ -6,27 +6,29 @@ using Core;
 using DAL.Abstractions.Interfaces;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 
 namespace BLL.Services
 {
     public class UrlInvitationService : IUrlInvitationService
     {
-        private string _domen = "aim-app.net/";
         private readonly IGenericRepository<Urls> _genericRepositoryUrls;
         private readonly IGenericRepository<Room> _genericRepositoryRooms;
         private readonly ICurrentUser _currentUser;
         private readonly IMailWorker _mailWorker;
         private readonly IUserService _userService;
+        private readonly AppSettings _appSettings;
 
         public UrlInvitationService(IGenericRepository<Urls> genericRepositoryUrls,
             IGenericRepository<Room> genericRepositoryRooms, ICurrentUser currentUser,
-            IMailWorker mailWorker, IUserService userService)
+            IMailWorker mailWorker, IUserService userService, IOptions<AppSettings> appSettings)
         {
             this._genericRepositoryUrls = genericRepositoryUrls;
             this._genericRepositoryRooms = genericRepositoryRooms;
             this._currentUser = currentUser;
             this._mailWorker = mailWorker;
             this._userService = userService;
+            this._appSettings  = appSettings?.Value ?? throw new ArgumentNullException(nameof(appSettings));
         }
 
         public async Task InviteUsersByEmailWithUrlAsync(Room room, List<string> users)
@@ -36,7 +38,7 @@ namespace BLL.Services
 
             var result = new List<string>();
 
-            var url = new Urls {RoomId = room.Id, Url = _domen + Guid.NewGuid().ToString().Substring(0, 7),};
+            var url = new Urls {RoomId = room.Id, Url = _appSettings.Domain + Guid.NewGuid().ToString().Substring(0, 7),};
 
 
             foreach (var user in users)
@@ -63,7 +65,7 @@ namespace BLL.Services
             var expirationTime = currentTime.AddHours(5).ToString(CultureInfo.InvariantCulture);
             var url = new Urls
             {
-                Url = _domen + Guid.NewGuid().ToString().Substring(0, 6),
+                Url = _appSettings.Domain + Guid.NewGuid().ToString().Substring(0, 6),
                 ExpirationTime = expirationTime,
                 UserId = null,
                 RoomId = room.Id

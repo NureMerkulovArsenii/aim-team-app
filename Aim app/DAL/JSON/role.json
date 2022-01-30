@@ -1,3 +1,1 @@
-[
-  
-]
+[{"RoleName":"Admin","CanPin":true,"CanInvite":true,"CanDeleteOthersMessages":true,"CanModerateParticipants":true,"CanManageRoles":true,"CanManageChannels":true,"CanManageRoom":true,"CanUseAdminChannels":true,"CanViewAuditLog":true,"Id":"63ed10d2-7e87-4e77-a7db-e1eba80b1c8b"},{"RoleName":"User","CanPin":false,"CanInvite":false,"CanDeleteOthersMessages":false,"CanModerateParticipants":false,"CanManageRoles":false,"CanManageChannels":false,"CanManageRoom":false,"CanUseAdminChannels":false,"CanViewAuditLog":false,"Id":"33abbe7e-35e7-4f5d-90c0-75a7807e82a3"}]

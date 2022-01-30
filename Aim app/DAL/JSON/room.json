@@ -1,3 +1,1 @@
-[
-  
-]
+[{"RoomName":"Dsadsadsa","RoomDescription":"asdsadsa","Participants":[{"UserId":"00cf1fa8-b031-4d3e-bdc9-ae5c707e0e2e","RoleId":"63ed10d2-7e87-4e77-a7db-e1eba80b1c8b","Notifications":true},{"UserId":"6767adbd-d55b-4e96-80b6-6fba32856d1c","RoleId":"33abbe7e-35e7-4f5d-90c0-75a7807e82a3","Notifications":true}],"RoomRolesId":["63ed10d2-7e87-4e77-a7db-e1eba80b1c8b","33abbe7e-35e7-4f5d-90c0-75a7807e82a3"],"TextChannelsId":[],"BaseRoleId":"33abbe7e-35e7-4f5d-90c0-75a7807e82a3","PhotoSource":"","Id":"aa59e4e8-262f-43ef-a054-1039c17f978f"}]

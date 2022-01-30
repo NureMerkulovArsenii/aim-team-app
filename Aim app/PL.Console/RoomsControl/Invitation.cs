@@ -51,7 +51,7 @@ namespace PL.Console.RoomsControl
 
             if (userKey == "u")
             {
-                var url = _invitationService.InviteUsersByUrl(room); //TODO add dest room: done
+                var url = _invitationService.InviteUsersByUrl(room);
                 System.Console.WriteLine(url);
             }
 
