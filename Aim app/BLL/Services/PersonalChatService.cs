@@ -28,12 +28,18 @@ namespace BLL.Services
 
             foreach (var userInPersonalChat in userToChatWith)
             {
-                var userId = _genericRepositoryUser.FindByConditionAsync(user =>
-                    user.UserName == userInPersonalChat || user.Email == userInPersonalChat).Result.FirstOrDefault();
-                if (!participants.Contains(userId.Id))
+                var users = await _genericRepositoryUser.FindByConditionAsync(user =>
+                    user.UserName == userInPersonalChat || user.Email == userInPersonalChat);
+                var user = users.FirstOrDefault();
+                if (user != null && !participants.Contains(user.Id))
                 {
-                    participants.Add(userId.Id);
+                    participants.Add(user.Id);
                 }
+            }
+
+            if (participants.Count == 1)
+            {
+                return;
             }
 
             var chatName = string.Empty;
@@ -47,7 +53,11 @@ namespace BLL.Services
                 }
             }
 
-            var personalChat = new PersonalChat() {ChatName = chatName, ParticipantsIds = participants};
+            var personalChat = new PersonalChat
+            {
+                ChatName = chatName,
+                ParticipantsIds = participants
+            };
 
             await _genericRepositoryChat.CreateAsync(personalChat);
         }
