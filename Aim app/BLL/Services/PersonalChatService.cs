@@ -37,6 +37,11 @@ namespace BLL.Services
                 }
             }
 
+            if (participants.Count == 1)
+            {
+                return;
+            }
+
             var chatName = string.Empty;
 
             for (var i = 0; i < userToChatWith.Count && i < 5; i++)
@@ -48,7 +53,11 @@ namespace BLL.Services
                 }
             }
 
-            var personalChat = new PersonalChat() {ChatName = chatName, ParticipantsIds = participants};
+            var personalChat = new PersonalChat
+            {
+                ChatName = chatName,
+                ParticipantsIds = participants
+            };
 
             await _genericRepositoryChat.CreateAsync(personalChat);
         }
