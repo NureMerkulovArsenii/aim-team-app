@@ -49,7 +49,7 @@ namespace PL.Console.RoomsControl
                 action = System.Console.ReadLine()?.Trim();
                 _ = int.TryParse(action, out outAction);
             } while (string.IsNullOrWhiteSpace(action) || (!actions.Contains(action) && outAction > channelList.Count && 
-                                                           outAction < 0));
+                                                           outAction <= 0));
 
             if (action == "create")
             {

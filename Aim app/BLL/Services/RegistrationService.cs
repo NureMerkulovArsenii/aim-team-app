@@ -16,11 +16,14 @@ namespace BLL.Services
 
         private readonly IPasswordService _passwordService;
         private readonly IGenericRepository<User> _genericRepository;
+        private readonly ICurrentUser _currentUser;
 
-        public RegistrationService(IPasswordService passwordService, IGenericRepository<User> genericRepository)
+        public RegistrationService(IPasswordService passwordService, IGenericRepository<User> genericRepository,
+            ICurrentUser currentUser)
         {
             this._passwordService = passwordService;
             this._genericRepository = genericRepository;
+            this._currentUser = currentUser;
         }
 
         public async Task RegisterAsync(string userMail, string name, string surname, string nickName, string password,
@@ -36,10 +39,12 @@ namespace BLL.Services
                 LastAuth = DateTime.Now
             };
 
-            _passwordService.SetPassword(user, password);
+            await _passwordService.SetPassword(user, password);
 
 
             await _genericRepository.CreateAsync(user);
+            
+            _currentUser.User = user;
         }
     }
 }

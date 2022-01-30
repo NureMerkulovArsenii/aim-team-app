@@ -103,18 +103,6 @@ namespace PL.Console.Registration
 
             await _registrationService.RegisterAsync(email, name, surName, nickName, password, true);
             System.Console.WriteLine("You have just registered successfully");
-            
-            var tempUser = new User()
-            {
-                UserName = nickName,
-                Email = email,
-                FirstName = name,
-                LastName = surName,
-                IsVerified = true,
-                LastAuth = DateTime.Now
-            };
-            await _passwordService.SetPassword(tempUser, password);
-            _currentUser.User = tempUser;
         }
     }
 }
