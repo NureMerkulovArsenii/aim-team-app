@@ -3,6 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using BLL.Helpers;
+using Core;
+using Core.CustomExceptions;
 using PL.Console.Interfaces;
 using PL.Console.Registration;
 
@@ -33,6 +35,16 @@ namespace PL.Console
 
         public async Task StartApp()
         {
+            try
+            {
+                var user = new User();
+                throw new EntityNotFoundException(user);
+            }
+            catch (EntityNotFoundException ex)
+            {
+                System.Console.WriteLine(ex.Message);
+            }
+            
             var userKeys = new[] {"y", "n"};
             string key;
             do

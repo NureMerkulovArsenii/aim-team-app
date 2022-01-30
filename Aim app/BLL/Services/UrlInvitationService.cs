@@ -40,6 +40,7 @@ namespace BLL.Services
 
             var body = $"Invitation to join {room.RoomName} from {_currentUser.User.UserName}: {url.Url}";
 
+            // ToDo: Вынести отправку в MailWorker
             foreach (var user in users)
             {
                 var userId = _userService.GetUserByUserNameOrEmail(user).Result;
