@@ -42,7 +42,9 @@ namespace PL.Console.Authorization
 
                     if (codeFromUser == "r")
                     {
+                        System.Console.Write($"Enter code from message sent on your email ({email}): ");
                         await _mailWorker.SendCodeByEmailAsync(email);
+                        codeFromUser = System.Console.ReadLine()?.Trim();
                     }
                 }
             }

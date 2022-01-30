@@ -57,7 +57,10 @@ namespace PL.Console.ResetPassword
 
                     if (codeFromUser == "r")
                     {
+                        System.Console.WriteLine($"We have sent message on your email ({email}) with code");
+                        System.Console.Write("Enter code to reset your password: ");
                         await _mailWorker.SendCodeByEmailAsync(email);
+                        codeFromUser = System.Console.ReadLine()?.Trim();
                     }
                 }
 
