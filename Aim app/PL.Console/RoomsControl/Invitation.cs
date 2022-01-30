@@ -74,6 +74,7 @@ namespace PL.Console.RoomsControl
                         errors.Add(name);
                     }
                 }
+
                 _invitationService.InviteUsersByEmailWithUrlAsync(room, usersToInvite).Wait();
 
                 if (errors.Any())

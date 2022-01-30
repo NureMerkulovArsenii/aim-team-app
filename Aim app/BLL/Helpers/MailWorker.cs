@@ -41,7 +41,6 @@ namespace BLL.Helpers
             }
         }
 
-
         public async Task<bool> SendInvitationEmailAsync(Room room, string url, string emailTo)
         {
             try
@@ -60,8 +59,7 @@ namespace BLL.Helpers
                 return false;
             }
         }
-
-
+        
         private async Task<bool> SendMailMessageAsync(MailAddress mailAddressTo, string subject, string body)
         {
             try

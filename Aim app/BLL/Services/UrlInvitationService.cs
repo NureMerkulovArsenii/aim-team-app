@@ -5,7 +5,6 @@ using BLL.Abstractions.Interfaces;
 using Core;
 using DAL.Abstractions.Interfaces;
 using System.Linq;
-using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace BLL.Services
@@ -36,7 +35,7 @@ namespace BLL.Services
             var expirationTime = currentTime.AddMinutes(15).ToString(CultureInfo.InvariantCulture);
 
             var result = new List<string>();
-            
+
             var url = new Urls {RoomId = room.Id, Url = _domen + Guid.NewGuid().ToString().Substring(0, 7),};
 
 
@@ -47,9 +46,9 @@ namespace BLL.Services
                 {
                     return;
                 }
+
                 result.Add(userId.Id);
                 await _mailWorker.SendInvitationEmailAsync(room, url.Url, userId.Email); //ToDO bool
-
             }
 
             url.UserId = result;
@@ -71,6 +70,7 @@ namespace BLL.Services
             };
 
             _genericRepositoryUrls.CreateAsync(url);
+            
             return url.Url;
         }
 
@@ -96,12 +96,14 @@ namespace BLL.Services
                     {
                         Notifications = true, UserId = _currentUser.User.Id, RoleId = room.BaseRoleId
                     };
+                    
                     if (room.Participants.All(info => info.UserId != participantInfo.UserId))
                     {
                         room.Participants.Add(participantInfo);
                     }
 
                     await _genericRepositoryRooms.UpdateAsync(room);
+                    
                     return true;
                 }
             }

@@ -15,9 +15,9 @@ namespace PL.Console.RoomsControl
         private readonly IRoleControl _roleControl;
         private readonly ITextChannelControl _textChannelControl;
         private readonly IPersonalChatControl _personalChatControl;
-        
 
-        public RoomsControl(IRoomService roomService, IUserService userService, IInvitation invitation, 
+
+        public RoomsControl(IRoomService roomService, IUserService userService, IInvitation invitation,
             IRoleControl roleControl, ITextChannelControl textChannelControl, IPersonalChatControl personalChatControl)
         {
             this._roomService = roomService;
@@ -45,7 +45,7 @@ namespace PL.Console.RoomsControl
                     System.Console.WriteLine($"\t{i + 1}) {userRooms[i].RoomName}");
                 }
             }
-            
+
             ChooseAction(userRooms);
         }
 
@@ -59,7 +59,7 @@ namespace PL.Console.RoomsControl
                     " or if you want to join - enter \"join\" " +
                     "or if you want to show personal chats - enter \"pc\": ");
                 userInput = System.Console.ReadLine()?.Trim();
-            } while (string.IsNullOrWhiteSpace(userInput) && userInput != "create" && userInput != "join" && 
+            } while (string.IsNullOrWhiteSpace(userInput) && userInput != "create" && userInput != "join" &&
                      userInput != "pc" && !int.TryParse(userInput, out _));
 
             if (userInput == "create")
@@ -155,7 +155,7 @@ namespace PL.Console.RoomsControl
             if (_roomService.DeleteRoom(room))
             {
                 System.Console.WriteLine("Room successfully deleted!");
-                
+
                 return true;
             }
 
@@ -168,7 +168,7 @@ namespace PL.Console.RoomsControl
         {
             var actions = new[] {"name", "description", "both"};
             string action;
-            
+
             do
             {
                 System.Console.WriteLine("What do you want to change? (\"name\" or \"description\" or \"both\")");
@@ -183,7 +183,7 @@ namespace PL.Console.RoomsControl
                 System.Console.WriteLine("Enter new name:");
                 name = System.Console.ReadLine();
             }
-            
+
             if (action == "description" || action == "both")
             {
                 System.Console.WriteLine("Enter new description:");
@@ -193,7 +193,7 @@ namespace PL.Console.RoomsControl
             if (_roomService.ChangeRoomSettings(room, name, description))
             {
                 System.Console.WriteLine("Room settings successfully changed!");
-                
+
                 return true;
             }
 
@@ -216,7 +216,7 @@ namespace PL.Console.RoomsControl
         private bool ChangeRoomNotifications(Room room)
         {
             string userResponse;
-            
+
             do
             {
                 System.Console.Write("Do you want to receive notifications from this room (\"yes\" or \"no\")? ");
@@ -230,9 +230,9 @@ namespace PL.Console.RoomsControl
                 case "no":
                     return _userService.SwitchNotifications(room, false).Result;
             }
-            
+
             System.Console.WriteLine("Error! Please, try again later!");
-            
+
             return false;
         }
     }

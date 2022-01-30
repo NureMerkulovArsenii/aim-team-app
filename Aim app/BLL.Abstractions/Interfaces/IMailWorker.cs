@@ -1,5 +1,4 @@
-﻿using System.Net.Mail;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Core;
 
 namespace BLL.Abstractions.Interfaces
@@ -12,7 +11,5 @@ namespace BLL.Abstractions.Interfaces
         Task<bool> SendInvitationEmailAsync(Room room, string url, string emailTo);
 
         bool CompareCodes(string codeFromUser);
-
-        // Task<string> SendCodeByEmailAsync(string emailTo, string code);
     }
 }

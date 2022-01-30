@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using Core;
@@ -54,9 +53,9 @@ namespace BLL.Services
             {
                 return null;
             }
-            
+
             var newRole = new Role(name);
-            
+
             room.RoomRolesId.Add(newRole.Id);
 
             await _roleGenericRepository.CreateAsync(newRole);
@@ -101,20 +100,21 @@ namespace BLL.Services
             {
                 return false;
             }
-            
+
             var participant = room.Participants.FirstOrDefault(participant => participant.UserId == user.Id);
-            
+
             if (participant == null)
             {
                 return false;
             }
-            
+
             participant.RoleId = role.Id;
 
             await _roomGenericRepository.UpdateAsync(room);
+            
             return true;
         }
-        
+
         public async Task<Dictionary<string, string>> GetRolesOfUsers(string roomId)
         {
             var result = new Dictionary<string, string>();

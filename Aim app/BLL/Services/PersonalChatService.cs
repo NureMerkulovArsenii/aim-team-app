@@ -71,7 +71,6 @@ namespace BLL.Services
                     {
                         chat.ParticipantsIds.Add(user.FirstOrDefault().Id);
                     }
-                    
                 }
 
                 await _genericRepositoryChat.UpdateAsync(chat);

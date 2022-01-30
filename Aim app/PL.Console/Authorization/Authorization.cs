@@ -12,7 +12,7 @@ namespace PL.Console.Authorization
         private readonly ICurrentUser _currentUser;
         private readonly IUserService _userService;
 
-        public Authorization(IUserService userService, IAuthorizationService authorizationService, 
+        public Authorization(IUserService userService, IAuthorizationService authorizationService,
             IMailWorker mailWorker, ICurrentUser currentUser)
         {
             _userService = userService;
@@ -20,23 +20,25 @@ namespace PL.Console.Authorization
             _mailWorker = mailWorker;
             _currentUser = currentUser;
         }
-        
+
         public async Task<bool> AuthorizeUserAsync()
         {
             var tempUser = await InputEmailAndPassword();
 
-            if (await _authorizationService.IsLastAuthWasLongAgo(tempUser, 10) || !_userService.IsUserVerified(tempUser))
+            if (await _authorizationService.IsLastAuthWasLongAgo(tempUser, 10) ||
+                !_userService.IsUserVerified(tempUser))
             {
                 var email = tempUser.Email;
                 await _mailWorker.SendCodeByEmailAsync(email);
-            
+
                 System.Console.Write($"Enter code from message sent on your email ({email}): ");
                 var codeFromUser = System.Console.ReadLine()?.Trim();
 
                 while (_mailWorker.CompareCodes(codeFromUser))
                 {
-                    System.Console.Write("Wrong code! Enter code from message sent on your email or \"r\" to resend code: ");
-                    codeFromUser =  System.Console.ReadLine()?.Trim();
+                    System.Console.Write(
+                        "Wrong code! Enter code from message sent on your email or \"r\" to resend code: ");
+                    codeFromUser = System.Console.ReadLine()?.Trim();
 
                     if (codeFromUser == "r")
                     {
@@ -47,6 +49,7 @@ namespace PL.Console.Authorization
 
             _currentUser.User = tempUser;
             await _authorizationService.UpdateLastAuth(tempUser);
+            
             return true;
         }
 
@@ -59,17 +62,17 @@ namespace PL.Console.Authorization
             var password = System.Console.ReadLine()?.Trim();
 
             var isUserDataValid = await _authorizationService.CheckUserDataForAuthAsync(usernameOrEmail, password);
-            
+
             while (!isUserDataValid)
             {
                 System.Console.WriteLine("Invalid username or password");
-                
+
                 System.Console.Write("Enter your username/email: ");
                 usernameOrEmail = System.Console.ReadLine()?.Trim();
-                
+
                 System.Console.Write("Enter your password: ");
                 password = System.Console.ReadLine()?.Trim();
-                
+
                 isUserDataValid = await _authorizationService.CheckUserDataForAuthAsync(usernameOrEmail, password);
             }
 

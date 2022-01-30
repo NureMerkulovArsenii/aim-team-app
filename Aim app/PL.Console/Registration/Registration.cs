@@ -1,12 +1,5 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.Net.Mail;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
-using BLL.Helpers;
-using Core;
-using Microsoft.Extensions.Options;
 using PL.Console.Interfaces;
 
 namespace PL.Console.Registration
@@ -17,16 +10,14 @@ namespace PL.Console.Registration
         private readonly IPasswordService _passwordService;
         private readonly IUserValidator _validator;
         private readonly IMailWorker _mailWorker;
-        private readonly ICurrentUser _currentUser;
 
         public Registration(IRegistrationService registrationService, IPasswordService passwordService,
-            IUserValidator validator, IMailWorker mailWorker, ICurrentUser currentUser)
+            IUserValidator validator, IMailWorker mailWorker)
         {
             this._passwordService = passwordService;
             this._registrationService = registrationService;
             this._validator = validator;
             this._mailWorker = mailWorker;
-            this._currentUser = currentUser;
         }
 
         public async Task RegisterUserAsync()
@@ -47,7 +38,6 @@ namespace PL.Console.Registration
             System.Console.WriteLine("Enter your email");
             var email = System.Console.ReadLine();
 
-            // Notice: if Validator.cs is no longer needed, change to if (new EmailAddressAttribute().IsValid("someone@somewhere.com")) 
             var emailValidationResult = _validator.IsEmailValid(email);
             while (emailValidationResult != 0)
             {
@@ -77,7 +67,7 @@ namespace PL.Console.Registration
 
 
             System.Console.WriteLine("Check your email and enter code:");
-            
+
             await _mailWorker.SendCodeByEmailAsync(email);
 
             var code = System.Console.ReadLine();

@@ -24,11 +24,11 @@ namespace BLL.Services
             _textChatGenericRepository = textChatGenericRepository;
         }
 
-        public async Task<bool> EditTextChannel(TextChannel textChannel, Room room, string name = null, string description = null, bool? isAdmin = null)
+        public async Task<bool> EditTextChannel(TextChannel textChannel, Room room, string name = null,
+            string description = null, bool? isAdmin = null)
         {
             var user = _currentUser.User;
-
-            // ToDo: Check if "is" statement is working
+            
             if (!await CanManageChannels(room, user) ||
                 (!await CanUseAdminChannels(room, user) && (textChannel.IsAdminChannel || isAdmin is true)))
             {
@@ -46,7 +46,7 @@ namespace BLL.Services
                 {
                     textChannel.ChannelDescription = description;
                 }
-                
+
                 if (isAdmin.HasValue)
                 {
                     textChannel.IsAdminChannel = isAdmin.Value;
@@ -60,29 +60,27 @@ namespace BLL.Services
                 return false;
             }
         }
-        
-        public async Task<bool> CreateTextChannel(Room room, string name, string description, bool isAdmin=false)
+
+        public async Task<bool> CreateTextChannel(Room room, string name, string description, bool isAdmin = false)
         {
             var user = _currentUser.User;
 
-            if (! await CanManageChannels(room, user) || (isAdmin && ! await CanUseAdminChannels(room, user)))
+            if (!await CanManageChannels(room, user) || (isAdmin && !await CanUseAdminChannels(room, user)))
             {
                 return false;
             }
 
             var newTextChannel = new TextChannel()
             {
-                ChannelName = name,
-                ChannelDescription = description,
-                IsAdminChannel = isAdmin
+                ChannelName = name, ChannelDescription = description, IsAdminChannel = isAdmin
             };
-            
+
             room.TextChannelsId.Add(newTextChannel.Id);
 
             await _textChatGenericRepository.CreateAsync(newTextChannel);
-            
+
             await _roomGenericRepository.UpdateAsync(room);
-            
+
             return true;
         }
 
@@ -112,11 +110,12 @@ namespace BLL.Services
             }
 
             room.TextChannelsId.Remove(textChannel.Id);
-            
+
             try
             {
                 await _textChatGenericRepository.DeleteAsync(textChannel);
                 await _roomGenericRepository.UpdateAsync(room);
+                
                 return true;
             }
             catch (Exception)
@@ -124,27 +123,27 @@ namespace BLL.Services
                 return false;
             }
         }
-        
-        public async Task<bool> CanManageChannels(Room room, User user=null)
+
+        public async Task<bool> CanManageChannels(Room room, User user = null)
         {
             if (user == null)
             {
                 user = _currentUser.User;
             }
-            
+
             var participant = room.Participants.FirstOrDefault(participant => participant.UserId == user.Id);
             var userRole = await _roleGenericRepository.GetEntityById(participant?.RoleId);
 
             return userRole.CanManageChannels;
         }
 
-        public async Task<bool> CanUseAdminChannels(Room room, User user=null)
+        public async Task<bool> CanUseAdminChannels(Room room, User user = null)
         {
             if (user == null)
             {
                 user = _currentUser.User;
             }
-            
+
             var participant = room.Participants.FirstOrDefault(participant => participant.UserId == user.Id);
             var userRole = await _roleGenericRepository.GetEntityById(participant?.RoleId);
 

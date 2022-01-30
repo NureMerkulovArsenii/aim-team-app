@@ -8,16 +8,14 @@ namespace Core
 {
     public class Room : BaseEntity
     {
-        // private string _filePath;
-
         public string RoomName { get; set; }
 
         public string RoomDescription { get; set; }
 
         public IList<ParticipantInfo> Participants { get; set; }
-        
+
         public IList<string> RoomRolesId { get; set; }
-        
+
         public IList<string> TextChannelsId { get; set; }
 
         public string BaseRoleId { get; set; }

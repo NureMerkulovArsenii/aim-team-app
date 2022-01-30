@@ -7,7 +7,9 @@ namespace PL.Console.Interfaces
     public interface IPersonalChatControl
     {
         void StartChat();
+        
         Task<IList<PersonalChat>> GetUserPersonalChats();
+        
         void DoAction();
     }
 }

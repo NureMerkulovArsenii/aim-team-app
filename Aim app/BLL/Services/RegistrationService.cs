@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Globalization;
-using System.Net;
-using System.Net.Mail;
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using Core;
 using DAL.Abstractions.Interfaces;
-using Microsoft.Extensions.Options;
 
 namespace BLL.Services
 {
@@ -40,8 +36,7 @@ namespace BLL.Services
             };
 
             await _passwordService.SetPassword(user, password);
-
-
+            
             await _genericRepository.CreateAsync(user);
             
             _currentUser.User = user;

@@ -11,17 +11,17 @@ namespace PL.Console.RoomsControl
     {
         private readonly IRoleService _roleService;
         private readonly IUserService _userService;
-        
+
         public RoleControl(IRoleService roleService, IUserService userService)
         {
             _roleService = roleService;
             _userService = userService;
         }
-        
+
         public async Task ViewRolesInTheRoom(Room room)
         {
             var roles = await _roleService.GetAllRolesInRoom(room);
-            
+
             if (roles.Count == 0)
             {
                 System.Console.WriteLine("There is no roles in room");
@@ -35,7 +35,7 @@ namespace PL.Console.RoomsControl
                     System.Console.WriteLine($"\t{i + 1}) {roles[i].RoleName}");
                 }
             }
-            
+
             string userInput;
             do
             {
@@ -43,14 +43,15 @@ namespace PL.Console.RoomsControl
                     "If you want to choose role - type its number or if you want to create new one - enter \"create\" or \"my role\" - to see your role or" +
                     " \"users roles\" - to see roles of all users in the room: ");
                 userInput = System.Console.ReadLine()?.Trim();
-            } while (string.IsNullOrWhiteSpace(userInput) && userInput != "create" && userInput != "my role" && 
+            } while (string.IsNullOrWhiteSpace(userInput) && userInput != "create" && userInput != "my role" &&
                      userInput != "users roles" && !int.TryParse(userInput, out _));
 
-            
+
             if (userInput == "create")
             {
                 await CreateRole(room);
             }
+
             if (userInput == "my role")
             {
                 await ViewMyRole(room);
@@ -60,7 +61,7 @@ namespace PL.Console.RoomsControl
             {
                 await GetUsersRoles(room);
             }
-            
+
             else if (int.TryParse(userInput, out var roleNumber) && roles.Count >= roleNumber)
             {
                 await ChooseRoleAction(room, roles[roleNumber - 1]);
@@ -77,13 +78,13 @@ namespace PL.Console.RoomsControl
             } while (string.IsNullOrWhiteSpace(roleName));
 
             var role = await _roleService.CreateNewRole(room, roleName);
-            
+
             if (role is null)
             {
                 System.Console.WriteLine("Error! Please, try again later!");
                 return false;
             }
-            
+
             System.Console.WriteLine("Role successfully created");
 
             return await SetUpRole(room, role);
@@ -114,7 +115,6 @@ namespace PL.Console.RoomsControl
                 System.Console.WriteLine("Error! Please, try again later!");
                 return false;
             }
-            
         }
 
         private async Task<bool> ChooseRoleAction(Room room, Role role)
@@ -123,7 +123,7 @@ namespace PL.Console.RoomsControl
             do
             {
                 System.Console.WriteLine(
-                "If you want to edit permissions - type \"edit\" or if you want to delete role - type \"delete\"");
+                    "If you want to edit permissions - type \"edit\" or if you want to delete role - type \"delete\"");
                 userInput = System.Console.ReadLine()?.Trim();
             } while (string.IsNullOrWhiteSpace(userInput) && userInput != "edit" && userInput != "delete");
 
@@ -134,7 +134,7 @@ namespace PL.Console.RoomsControl
                 case "delete":
                     return await DeleteRole(room, role);
             }
-            
+
             return false;
         }
 
@@ -172,7 +172,7 @@ namespace PL.Console.RoomsControl
                 System.Console.WriteLine("Role deleted successfully!");
                 return true;
             }
-            
+
             System.Console.WriteLine("Error! Please, try again later!");
 
             return false;
@@ -180,7 +180,6 @@ namespace PL.Console.RoomsControl
 
         private async Task GetUsersRoles(Room room)
         {
-
             var rolesOfUsers = await _roleService.GetRolesOfUsers(room.Id);
             foreach (var user in rolesOfUsers)
             {

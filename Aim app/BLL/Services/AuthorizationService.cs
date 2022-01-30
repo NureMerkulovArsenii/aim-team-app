@@ -13,7 +13,8 @@ namespace BLL.Services
         private readonly IUserValidator _userValidator;
         private readonly IPasswordService _passwordService;
 
-        public AuthorizationService(IGenericRepository<User> userGenericRepository, IUserValidator userValidator, IPasswordService passwordService)
+        public AuthorizationService(IGenericRepository<User> userGenericRepository, IUserValidator userValidator,
+            IPasswordService passwordService)
         {
             _userGenericRepository = userGenericRepository;
             _userValidator = userValidator;
@@ -33,7 +34,7 @@ namespace BLL.Services
 
                 return receivedUsers.Any();
             }
-            
+
             return false;
         }
 
@@ -52,7 +53,7 @@ namespace BLL.Services
         public async Task<bool> IsLastAuthWasLongAgo(User user, int numberOfDays)
         {
             var userLastAuth = user.LastAuth;
-            
+
             return userLastAuth.AddDays(numberOfDays) < DateTime.Now;
         }
 

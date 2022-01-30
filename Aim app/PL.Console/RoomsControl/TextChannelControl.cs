@@ -21,7 +21,7 @@ namespace PL.Console.RoomsControl
             var counter = 1;
 
             System.Console.WriteLine($"Text channels in {room.RoomName}:");
-            
+
             if (channelList.Count == 0)
             {
                 System.Console.WriteLine("\tThere is no text channels in room");
@@ -38,9 +38,8 @@ namespace PL.Console.RoomsControl
 
         private bool TextChannelAction(Room room, List<TextChannel> channelList)
         {
-            
             var actions = new string[] {"create"};
-            
+
             string action;
             var outAction = -1;
             do
@@ -48,7 +47,7 @@ namespace PL.Console.RoomsControl
                 System.Console.Write($"What do you want to do? ({string.Join(" or ", actions)} or type its number): ");
                 action = System.Console.ReadLine()?.Trim();
                 _ = int.TryParse(action, out outAction);
-            } while (string.IsNullOrWhiteSpace(action) || (!actions.Contains(action) && outAction > channelList.Count && 
+            } while (string.IsNullOrWhiteSpace(action) || (!actions.Contains(action) && outAction > channelList.Count &&
                                                            outAction <= 0));
 
             if (action == "create")
@@ -58,7 +57,7 @@ namespace PL.Console.RoomsControl
                     System.Console.WriteLine("Text channel created successfully!");
                     return true;
                 }
-                
+
                 System.Console.WriteLine("Error! Please, try again later!");
 
                 return false;
@@ -66,21 +65,21 @@ namespace PL.Console.RoomsControl
 
             return ChannelsAction(room, channelList[outAction - 1]);
         }
-        
+
         private bool CreateTextChannel(Room room)
         {
             if (!_textChannelService.CanManageChannels(room).Result)
             {
                 return false;
             }
-            
+
             string name;
             do
             {
                 System.Console.Write("Enter text channel name: ");
                 name = System.Console.ReadLine()?.Trim();
             } while (string.IsNullOrWhiteSpace(name));
-            
+
             string description;
             do
             {
@@ -94,7 +93,7 @@ namespace PL.Console.RoomsControl
             }
 
             var isAdmin = false;
-            
+
             string admin;
             do
             {
@@ -113,7 +112,7 @@ namespace PL.Console.RoomsControl
         private bool ChannelsAction(Room room, TextChannel textChannel) //TODO: delete empty method
         {
             var actions = new string[] {"edit", "delete"};
-            
+
             string action;
             do
             {
@@ -128,13 +127,13 @@ namespace PL.Console.RoomsControl
                 case "delete":
                     return DeleteTextChannel(room, textChannel);
             }
-            
+
             return true;
         }
 
         private bool DeleteTextChannel(Room room, TextChannel textChannel)
         {
-            if (!_textChannelService.CanManageChannels(room).Result || 
+            if (!_textChannelService.CanManageChannels(room).Result ||
                 (!_textChannelService.CanUseAdminChannels(room).Result && textChannel.IsAdminChannel))
             {
                 return false;
@@ -142,20 +141,21 @@ namespace PL.Console.RoomsControl
 
             return _textChannelService.DeleteTextChannel(textChannel, room).Result;
         }
-        
+
         private bool EditTextChannel(Room room, TextChannel textChannel)
         {
-            if (!_textChannelService.CanManageChannels(room).Result || 
+            if (!_textChannelService.CanManageChannels(room).Result ||
                 (!_textChannelService.CanUseAdminChannels(room).Result && textChannel.IsAdminChannel))
             {
                 return false;
             }
-            
+
             System.Console.Write("Enter new channel name (if you  don't want to change it - just press Enter): ");
             var name = System.Console.ReadLine()?.Trim();
             name = name == string.Empty ? null : name;
-            
-            System.Console.Write("Enter new channel description (if you  don't want to change it - just press Enter): ");
+
+            System.Console.Write(
+                "Enter new channel description (if you  don't want to change it - just press Enter): ");
             var description = System.Console.ReadLine()?.Trim();
             description = description == string.Empty ? null : description;
 
@@ -163,7 +163,7 @@ namespace PL.Console.RoomsControl
             if (_textChannelService.CanUseAdminChannels(room).Result)
             {
                 var actions = new string[] {"y", "n", null};
-                
+
                 string admin;
                 do
                 {
@@ -172,7 +172,7 @@ namespace PL.Console.RoomsControl
                     admin = System.Console.ReadLine()?.Trim();
                     admin = admin == string.Empty ? null : admin;
                 } while (!actions.Contains(admin));
-                
+
                 switch (admin)
                 {
                     case "y":
@@ -189,7 +189,7 @@ namespace PL.Console.RoomsControl
                 System.Console.WriteLine("Text channel edited successfully!");
                 return true;
             }
-            
+
             System.Console.WriteLine("Error! Please, try again later!");
             return false;
         }

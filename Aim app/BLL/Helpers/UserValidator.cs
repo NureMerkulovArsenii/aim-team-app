@@ -4,8 +4,6 @@ using BLL.Abstractions.Interfaces;
 using Core;
 using DAL.Abstractions.Interfaces;
 using System.Linq;
-using System.Threading.Tasks;
-using DAL.Repository;
 
 namespace BLL.Helpers
 {
@@ -51,7 +49,8 @@ namespace BLL.Helpers
 
         public bool ValidateUserNameOrEmail(string userName)
         {
-            var result = _genericRepository.FindByConditionAsync(user => user.UserName == userName || user.Email == userName).Result;
+            var result = _genericRepository
+                .FindByConditionAsync(user => user.UserName == userName || user.Email == userName).Result;
             if (result.Any())
             {
                 return true;

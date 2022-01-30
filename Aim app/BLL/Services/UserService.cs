@@ -35,6 +35,7 @@ namespace BLL.Services
             room.Participants.Remove(
                 room.Participants.FirstOrDefault(participant => participant.UserId == _currentUser.User.Id));
             await _roomGenericRepository.UpdateAsync(room);
+            
             return true;
         }
 
@@ -49,6 +50,7 @@ namespace BLL.Services
                     .Notifications =
                 stateOnOrOff;
             await _roomGenericRepository.UpdateAsync(room);
+            
             return true;
         }
 

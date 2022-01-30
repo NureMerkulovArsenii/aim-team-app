@@ -22,62 +22,62 @@ namespace Core
 
         [JsonIgnore]
         public IDictionary<string, bool> Permissions { get; set; }
-        
+
         public string RoleName { get; set; }
 
         public bool CanPin
         {
-            get => Permissions["CanPin"]; 
+            get => Permissions["CanPin"];
             set => Permissions["CanPin"] = value;
         }
-        
+
         public bool CanInvite
         {
-            get => Permissions["CanInvite"]; 
+            get => Permissions["CanInvite"];
             set => Permissions["CanInvite"] = value;
         }
 
-        
+
         public bool CanDeleteOthersMessages
         {
-            get => Permissions["CanDeleteOthersMessages"]; 
+            get => Permissions["CanDeleteOthersMessages"];
             set => Permissions["CanDeleteOthersMessages"] = value;
         }
-        
+
         public bool CanModerateParticipants
         {
-            get => Permissions["CanModerateParticipants"]; 
+            get => Permissions["CanModerateParticipants"];
             set => Permissions["CanModerateParticipants"] = value;
         }
-        
+
         public bool CanManageRoles
         {
-            get => Permissions["CanManageRoles"]; 
+            get => Permissions["CanManageRoles"];
             set => Permissions["CanManageRoles"] = value;
         }
-        
+
         public bool CanManageChannels
         {
-            get => Permissions["CanManageChannels"]; 
+            get => Permissions["CanManageChannels"];
             set => Permissions["CanManageChannels"] = value;
         }
 
-        public bool CanManageRoom 
+        public bool CanManageRoom
         {
-            get => Permissions["CanManageRoom"]; 
+            get => Permissions["CanManageRoom"];
             set => Permissions["CanManageRoom"] = value;
         }
 
 
         public bool CanUseAdminChannels
         {
-            get => Permissions["CanUseAdminChannels"]; 
+            get => Permissions["CanUseAdminChannels"];
             set => Permissions["CanUseAdminChannels"] = value;
         }
 
         public bool CanViewAuditLog
         {
-            get => Permissions["CanViewAuditLog"]; 
+            get => Permissions["CanViewAuditLog"];
             set => Permissions["CanViewAuditLog"] = value;
         }
     }

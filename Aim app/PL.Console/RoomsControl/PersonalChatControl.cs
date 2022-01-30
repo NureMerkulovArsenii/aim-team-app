@@ -1,7 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using Core;
@@ -13,14 +11,12 @@ namespace PL.Console.RoomsControl
     {
         private readonly IPersonalChatService _chatService;
         private readonly IUserValidator _userValidator;
-        private readonly ICurrentUser _currentUser;
 
         public PersonalChatControl(IPersonalChatService chatService, IUserValidator userValidator,
             ICurrentUser currentUser)
         {
             this._chatService = chatService;
             this._userValidator = userValidator;
-            this._currentUser = currentUser;
         }
 
         public void StartChat()
@@ -112,7 +108,7 @@ namespace PL.Console.RoomsControl
                     " to invite users type \"invite\"" +
                     "to see users type \"users\"");
                 userInput = System.Console.ReadLine()?.Trim();
-            } while (string.IsNullOrWhiteSpace(userInput) && userInput != "leave" && userInput != "change" && 
+            } while (string.IsNullOrWhiteSpace(userInput) && userInput != "leave" && userInput != "change" &&
                      userInput != "users" && userInput != "invite");
 
             if (userInput == "leave")

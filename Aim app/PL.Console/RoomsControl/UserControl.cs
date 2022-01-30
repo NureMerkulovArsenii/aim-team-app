@@ -13,7 +13,7 @@ namespace PL.Console.RoomsControl
             _passwordService = passwordService;
             _userService = userService;
         }
-        
+
         public bool ChooseAction()
         {
             string action;
@@ -45,7 +45,7 @@ namespace PL.Console.RoomsControl
                 System.Console.Write("Enter your old password: ");
                 oldPass = System.Console.ReadLine()?.Trim();
             } while (string.IsNullOrWhiteSpace(oldPass));
-            
+
             string newPass;
             do
             {
@@ -64,7 +64,7 @@ namespace PL.Console.RoomsControl
                 System.Console.Write("Do you want to change your first name (\"y\" or \"n\"): ");
                 firstNameChanging = System.Console.ReadLine()?.Trim();
             } while (firstNameChanging != "y" && firstNameChanging != "n");
-            
+
             string lastNameChanging;
             do
             {
@@ -83,7 +83,7 @@ namespace PL.Console.RoomsControl
                     firstName = System.Console.ReadLine()?.Trim();
                 } while (string.IsNullOrWhiteSpace(firstName));
             }
-            
+
             if (lastNameChanging != "n")
             {
                 do

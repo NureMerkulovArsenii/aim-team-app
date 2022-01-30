@@ -18,11 +18,11 @@ namespace BLL.Services
             _currentUser = currentUser;
             _userGenericRepository = userGenericRepository;
         }
-        
+
         public async Task<bool> ChangePassword(string oldPassword, string newPassword)
         {
             var user = _currentUser.User;
-            
+
             var result = IsPasswordCorrect(user, oldPassword) ? await SetPassword(user, newPassword) : false;
 
             await _userGenericRepository.UpdateAsync(user);
