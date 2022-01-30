@@ -12,7 +12,8 @@ namespace PL.Console.Authorization
         private readonly ICurrentUser _currentUser;
         private readonly IUserService _userService;
 
-        public Authorization(IUserService userService, IAuthorizationService authorizationService, IMailWorker mailWorker, ICurrentUser currentUser)
+        public Authorization(IUserService userService, IAuthorizationService authorizationService, 
+            IMailWorker mailWorker, ICurrentUser currentUser)
         {
             _userService = userService;
             _authorizationService = authorizationService;

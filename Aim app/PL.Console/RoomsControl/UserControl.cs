@@ -43,15 +43,15 @@ namespace PL.Console.RoomsControl
             do
             {
                 System.Console.Write("Enter your old password: ");
-                oldPass = System.Console.ReadLine();
-            } while (oldPass == null);
+                oldPass = System.Console.ReadLine()?.Trim();
+            } while (string.IsNullOrWhiteSpace(oldPass));
             
             string newPass;
             do
             {
                 System.Console.Write("Enter your new password: ");
-                newPass = System.Console.ReadLine();
-            } while (newPass == null);
+                newPass = System.Console.ReadLine()?.Trim();
+            } while (string.IsNullOrWhiteSpace(newPass));
 
             return _passwordService.ChangePassword(oldPass, newPass).Result;
         }
@@ -62,14 +62,14 @@ namespace PL.Console.RoomsControl
             do
             {
                 System.Console.Write("Do you want to change your first name (\"y\" or \"n\"): ");
-                firstNameChanging = System.Console.ReadLine();
+                firstNameChanging = System.Console.ReadLine()?.Trim();
             } while (firstNameChanging != "y" && firstNameChanging != "n");
             
             string lastNameChanging;
             do
             {
                 System.Console.Write("Do you want to change your last name (\"y\" or \"n\"): ");
-                lastNameChanging = System.Console.ReadLine();
+                lastNameChanging = System.Console.ReadLine()?.Trim();
             } while (lastNameChanging != "y" && lastNameChanging != "n");
 
             string firstName = null;
@@ -80,8 +80,8 @@ namespace PL.Console.RoomsControl
                 do
                 {
                     System.Console.Write("Enter your new first name: ");
-                    firstName = System.Console.ReadLine();
-                } while (firstName == null);
+                    firstName = System.Console.ReadLine()?.Trim();
+                } while (string.IsNullOrWhiteSpace(firstName));
             }
             
             if (lastNameChanging != "n")
@@ -89,8 +89,8 @@ namespace PL.Console.RoomsControl
                 do
                 {
                     System.Console.Write("Enter your new last name: ");
-                    lastName = System.Console.ReadLine();
-                } while (lastName == null);
+                    lastName = System.Console.ReadLine()?.Trim();
+                } while (string.IsNullOrWhiteSpace(lastName));
             }
 
             _userService.ChangeUserNames(firstName, lastName);
