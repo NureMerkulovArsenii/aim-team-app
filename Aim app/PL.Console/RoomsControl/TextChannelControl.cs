@@ -41,11 +41,11 @@ namespace PL.Console.RoomsControl
             
             var actions = new string[] {"create"};
             
-            System.Console.Write($"What do you want to do? ({string.Join(" or ", actions)} or type its number): ");
             string action;
             var outAction = -1;
             do
             {
+                System.Console.Write($"What do you want to do? ({string.Join(" or ", actions)} or type its number): ");
                 action = System.Console.ReadLine()?.Trim();
                 _ = int.TryParse(action, out outAction);
             } while (string.IsNullOrWhiteSpace(action) || (!actions.Contains(action) && outAction > channelList.Count && 

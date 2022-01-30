@@ -120,7 +120,8 @@ namespace PL.Console.RoomsControl
         private async Task<bool> ChooseRoleAction(Room room, Role role)
         {
             string userInput;
-            do{
+            do
+            {
                 System.Console.WriteLine(
                 "If you want to edit permissions - type \"edit\" or if you want to delete role - type \"delete\"");
                 userInput = System.Console.ReadLine()?.Trim();
