@@ -31,6 +31,7 @@ namespace PL.Console
             services.AddScoped<App>();
             services.AddScoped<IRegistration, Registration.Registration>();
             services.AddScoped<IAuthorization, Authorization.Authorization>();
+            services.AddScoped<IResetPasswordControl, ResetPassword.ResetPasswordControl>();
             services.AddScoped<IInvitation, Invitation>();
             services.AddScoped<IRoomsControl, RoomsControl.RoomsControl>();
             services.AddScoped<IRoleControl, RoleControl>();

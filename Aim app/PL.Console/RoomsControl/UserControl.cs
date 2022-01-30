@@ -53,7 +53,7 @@ namespace PL.Console.RoomsControl
                 newPass = System.Console.ReadLine();
             } while (newPass == null);
 
-            return _passwordService.ChangePassword(oldPass, newPass);
+            return _passwordService.ChangePassword(oldPass, newPass).Result;
         }
 
         private void ChangeNames()

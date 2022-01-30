@@ -1,12 +1,13 @@
-﻿using Core;
+﻿using System.Threading.Tasks;
+using Core;
 
 namespace BLL.Abstractions.Interfaces
 {
     public interface IPasswordService
     {
-        bool ChangePassword(string oldPassword, string newPassword);
+        Task<bool> ChangePassword(string oldPassword, string newPassword);
 
-        bool SetPassword(User user, string password);
+        Task<bool> SetPassword(User user, string password, bool toSaveUser = false);
 
         bool HasPasswordCorrectFormat(string email, string password);
 

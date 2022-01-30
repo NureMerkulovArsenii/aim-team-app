@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using Core;
 using DAL.Abstractions.Interfaces;
@@ -18,22 +19,27 @@ namespace BLL.Services
             _userGenericRepository = userGenericRepository;
         }
         
-        public bool ChangePassword(string oldPassword, string newPassword)
+        public async Task<bool> ChangePassword(string oldPassword, string newPassword)
         {
             var user = _currentUser.User;
             
-            var result = IsPasswordCorrect(user, oldPassword) ? SetPassword(user, newPassword) : false;
+            var result = IsPasswordCorrect(user, oldPassword) ? await SetPassword(user, newPassword) : false;
 
-            _userGenericRepository.UpdateAsync(user).Wait();
+            await _userGenericRepository.UpdateAsync(user);
 
             return result;
         }
 
-        public bool SetPassword(User user, string password)
+        public async Task<bool> SetPassword(User user, string password, bool toSaveUser = false)
         {
             if (HasPasswordCorrectFormat(user.Email, password))
             {
                 user.Password = GetHash(password);
+
+                if (toSaveUser)
+                {
+                    await _userGenericRepository.UpdateAsync(user);
+                }
 
                 return true;
             }

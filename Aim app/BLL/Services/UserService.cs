@@ -98,7 +98,8 @@ namespace BLL.Services
         {
             var users = await _userGenericRepository.FindByConditionAsync(user =>
                 user.UserName == userName || user.Email == userName);
-            return users.First();
+            
+            return users.FirstOrDefault();
         }
     }
 }
