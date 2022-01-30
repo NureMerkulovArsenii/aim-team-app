@@ -28,11 +28,12 @@ namespace BLL.Services
 
             foreach (var userInPersonalChat in userToChatWith)
             {
-                var userId = _genericRepositoryUser.FindByConditionAsync(user =>
-                    user.UserName == userInPersonalChat || user.Email == userInPersonalChat).Result.FirstOrDefault();
-                if (!participants.Contains(userId.Id))
+                var users = await _genericRepositoryUser.FindByConditionAsync(user =>
+                    user.UserName == userInPersonalChat || user.Email == userInPersonalChat);
+                var user = users.FirstOrDefault();
+                if (user != null && !participants.Contains(user.Id))
                 {
-                    participants.Add(userId.Id);
+                    participants.Add(user.Id);
                 }
             }
 
