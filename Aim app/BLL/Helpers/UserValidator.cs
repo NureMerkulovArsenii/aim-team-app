@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Mail;
 using BLL.Abstractions.Interfaces;
 using Core;
 using DAL.Abstractions.Interfaces;
@@ -16,12 +15,11 @@ namespace BLL.Helpers
             _genericRepository = genericRepository;
         }
 
-        public int IsEmailValid(string email)
+        public async Task<int> IsEmailValid(string email)
         {
             try
             {
-                var address = new MailAddress(email).Address;
-                var users = _genericRepository.FindByConditionAsync(user => user.Email == email).Result;
+                var users = await _genericRepository.FindByConditionAsync(user => user.Email == email);
                 if (users.Any())
                 {
                     return 1;
@@ -36,9 +34,9 @@ namespace BLL.Helpers
         }
 
 
-        public bool ValidateUserNick(string nick)
+        public async Task<bool> ValidateUserNick(string nick)
         {
-            var result = _genericRepository.FindByConditionAsync(user => user.UserName == nick).Result;
+            var result = await _genericRepository.FindByConditionAsync(user => user.UserName == nick);
             if (result.Any())
             {
                 return false;
@@ -47,16 +45,12 @@ namespace BLL.Helpers
             return true;
         }
 
-        public bool ValidateUserNameOrEmail(string userName)
+        public async Task<bool> ValidateUserNameOrEmail(string userName)
         {
-            var result = _genericRepository
-                .FindByConditionAsync(user => user.UserName == userName || user.Email == userName).Result;
-            if (result.Any())
-            {
-                return true;
-            }
-
-            return false;
+            var result = await _genericRepository
+                .FindByConditionAsync(user => user.UserName == userName || user.Email == userName);
+            
+            return result.Any();
         }
     }
 }

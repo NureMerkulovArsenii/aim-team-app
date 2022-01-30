@@ -40,7 +40,7 @@ namespace BLL.Services
 
         public async Task<string> GetEmailByUsernameOrEmail(string usernameOrEmail)
         {
-            if (_userValidator.IsEmailValid(usernameOrEmail) == 1)
+            if (await _userValidator.IsEmailValid(usernameOrEmail) == 1)
             {
                 return usernameOrEmail;
             }

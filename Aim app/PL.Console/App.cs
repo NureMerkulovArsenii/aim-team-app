@@ -1,6 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using BLL.Abstractions.Interfaces;
+using BLL.Helpers;
 using PL.Console.Interfaces;
+using PL.Console.Registration;
 
 namespace PL.Console
 {
@@ -14,9 +18,9 @@ namespace PL.Console
         private readonly IResetPasswordControl _resetPasswordControl;
 
 
-        public App(IAuthorization authorization, IRegistration registration, IRoomsControl roomsControl,
-            IUserControl userControl, IPersonalChatControl personalChatControl,
-            IResetPasswordControl resetPasswordControl)
+        public App(IAuthorization authorization, IRegistration registration,
+            IRoomsControl roomsControl, IUserControl userControl,
+            IPersonalChatControl personalChatControl, IResetPasswordControl resetPasswordControl)
         {
             this._roomsControl = roomsControl;
             this._registration = registration;
