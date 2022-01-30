@@ -32,7 +32,7 @@ namespace PL.Console.RoomsControl
             var errors = new List<string>();
             foreach (var name in userNames)
             {
-                var validationsResult = _userValidator.ValidateUserNameOrEmail(name);
+                var validationsResult = _userValidator.ValidateUserNameOrEmail(name).Result;
                 if (validationsResult)
                 {
                     usersToInvite.Add(name);

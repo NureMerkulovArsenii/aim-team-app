@@ -38,7 +38,7 @@ namespace PL.Console.Registration
             System.Console.WriteLine("Enter your Nickname: ");
             var nickName = System.Console.ReadLine();
 
-            while (!_validator.ValidateUserNick(nickName))
+            while (!await _validator.ValidateUserNick(nickName))
             {
                 System.Console.WriteLine("Nickname you have chosen is busy\n try another one:");
                 nickName = System.Console.ReadLine();
@@ -48,21 +48,21 @@ namespace PL.Console.Registration
             var email = System.Console.ReadLine();
 
             // Notice: if Validator.cs is no longer needed, change to if (new EmailAddressAttribute().IsValid("someone@somewhere.com")) 
-            var emailValidationResult = _validator.IsEmailValid(email);
+            var emailValidationResult = await _validator.IsEmailValid(email);
             while (emailValidationResult != 0)
             {
                 if (emailValidationResult == 1)
                 {
                     System.Console.WriteLine("User with this email already exists");
                     email = System.Console.ReadLine();
-                    emailValidationResult = _validator.IsEmailValid(email);
+                    emailValidationResult = await _validator.IsEmailValid(email);
                 }
 
                 if (emailValidationResult == -1)
                 {
                     System.Console.WriteLine("Incorrect email format, try again:");
                     email = System.Console.ReadLine();
-                    emailValidationResult = _validator.IsEmailValid(email);
+                    emailValidationResult = await _validator.IsEmailValid(email);
                 }
             }
 
@@ -77,7 +77,7 @@ namespace PL.Console.Registration
 
 
             System.Console.WriteLine("Check your email and enter code:");
-            
+
             await _mailWorker.SendCodeByEmailAsync(email);
 
             var code = System.Console.ReadLine();
@@ -103,7 +103,7 @@ namespace PL.Console.Registration
 
             await _registrationService.RegisterAsync(email, name, surName, nickName, password, true);
             System.Console.WriteLine("You have just registered successfully");
-            
+
             var tempUser = new User()
             {
                 UserName = nickName,
