@@ -11,14 +11,16 @@ namespace PL.Console.ResetPassword
         private readonly IAuthorizationService _authorizationService;
         private readonly IMailWorker _mailWorker;
         private readonly IPasswordService _passwordService;
+        private readonly ICurrentUser _currentUser;
 
         public ResetPasswordControl(IUserService userService, IAuthorizationService authorizationService,
-            IMailWorker mailWorker, IPasswordService passwordService)
+            IMailWorker mailWorker, IPasswordService passwordService, ICurrentUser currentUser)
         {
             _userService = userService;
             _authorizationService = authorizationService;
             _mailWorker = mailWorker;
             _passwordService = passwordService;
+            _currentUser = currentUser;
         }
 
         public async Task<bool> ResetUserPasswordAsync()
@@ -67,6 +69,8 @@ namespace PL.Console.ResetPassword
                 } while (string.IsNullOrWhiteSpace(password) ||
                          !_passwordService.HasPasswordCorrectFormat(email, password));
 
+                _currentUser.User = userToReset;
+                await _authorizationService.UpdateLastAuth(userToReset);
                 return await _passwordService.SetPassword(userToReset, password, true);
             }
             catch (Exception)
