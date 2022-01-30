@@ -7,10 +7,10 @@ namespace BLL.Abstractions.Interfaces
     {
         string Code { get; set; }
 
-        Task<string> SendCodeByEmailAsync(string emailTo);
+        Task<bool> SendCodeByEmailAsync(string emailTo);
 
-        Task<string> SendCodeByEmailAsync(string emailTo, string code);
-        
-        Task<bool> SendMailMessageAsync(MailAddress mailAddressTo, string subject, string body);
+        bool CompareCodes(string codeFromUser);
+
+        // Task<string> SendCodeByEmailAsync(string emailTo, string code);
     }
 }

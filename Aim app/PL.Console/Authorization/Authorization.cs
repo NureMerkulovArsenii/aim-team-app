@@ -48,19 +48,19 @@ namespace PL.Console.Authorization
             if (await _authorizationService.IsLastAuthWasLongAgo(tempUser, 10) || !_userService.IsUserVerified(tempUser))
             {
                 var email = await _authorizationService.GetEmailByUsernameOrEmail(usernameOrEmail);
-                var code = await _mailWorker.SendCodeByEmailAsync(email);
+                await _mailWorker.SendCodeByEmailAsync(email);
             
                 System.Console.Write($"Enter code from message sent on your email ({email}): ");
                 var codeFromUser = System.Console.ReadLine()?.Trim();
 
-                while (codeFromUser != code)
+                while (_mailWorker.CompareCodes(codeFromUser))
                 {
                     System.Console.Write("Wrong code! Enter code from message sent on your email or \"r\" to resend code: ");
                     codeFromUser =  System.Console.ReadLine()?.Trim();
 
                     if (codeFromUser == "r")
                     {
-                        await _mailWorker.SendCodeByEmailAsync(email, code);
+                        await _mailWorker.SendCodeByEmailAsync(email);
                     }
                 }
             }
