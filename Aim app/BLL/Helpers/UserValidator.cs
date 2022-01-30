@@ -3,6 +3,7 @@ using BLL.Abstractions.Interfaces;
 using Core;
 using DAL.Abstractions.Interfaces;
 using System.Linq;
+using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace BLL.Helpers
@@ -26,9 +27,11 @@ namespace BLL.Helpers
                     return 1;
                 }
 
+                _ = new MailAddress(email);
+
                 return 0;
             }
-            catch (FormatException)
+            catch (Exception)
             {
                 return -1;
             }
