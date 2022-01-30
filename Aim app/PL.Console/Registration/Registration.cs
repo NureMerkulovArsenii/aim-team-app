@@ -113,8 +113,6 @@ namespace PL.Console.Registration
             };
             _passwordService.SetPassword(tempUser, password);
             _currentUser.User = tempUser;
-            
-            
         }
     }
 }

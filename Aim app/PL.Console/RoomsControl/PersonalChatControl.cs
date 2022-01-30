@@ -27,13 +27,13 @@ namespace PL.Console.RoomsControl
         {
             System.Console.WriteLine(
                 "Enter username / email that you want to invite(if many users enumerate them with \"space\")");
-            var userNames = System.Console.ReadLine().Split(" ");
+            var userNames = System.Console.ReadLine()?.Split(" ");
             var usersToInvite = new List<string>();
             var errors = new List<string>();
             foreach (var name in userNames)
             {
                 var validationsResult = _userValidator.ValidateUserNameOrEmail(name);
-                if (validationsResult == true)
+                if (validationsResult)
                 {
                     usersToInvite.Add(name);
                 }
@@ -86,7 +86,7 @@ namespace PL.Console.RoomsControl
                 System.Console.Write(
                     "If you want to choose chat - type its number or if you want to start new chat enter - \"start\": ");
                 userInput = System.Console.ReadLine()?.Trim();
-            } while (userInput == null && userInput != "start" && !int.TryParse(userInput, out _));
+            } while (string.IsNullOrWhiteSpace(userInput) && userInput != "start" && !int.TryParse(userInput, out _));
 
             if (userInput == "start")
             {
@@ -112,10 +112,8 @@ namespace PL.Console.RoomsControl
                     " to invite users type \"invite\"" +
                     "to see users type \"users\"");
                 userInput = System.Console.ReadLine()?.Trim();
-                userInput = userInput == string.Empty ? null : userInput;
-            } while (userInput == null && userInput != "leave" && userInput != "change" && userInput != "users" &&
-                     userInput != "invite");
-
+            } while (string.IsNullOrWhiteSpace(userInput) && userInput != "leave" && userInput != "change" && 
+                     userInput != "users" && userInput != "invite");
 
             if (userInput == "leave")
             {
@@ -124,7 +122,7 @@ namespace PL.Console.RoomsControl
 
             if (userInput == "users")
             {
-                var users =  _chatService.GetUserNamesOfChat(chat).Result;
+                var users = _chatService.GetUserNamesOfChat(chat).Result;
                 System.Console.WriteLine(string.Join("\n", users));
             }
 

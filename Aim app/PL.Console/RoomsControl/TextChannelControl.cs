@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using BLL.Abstractions.Interfaces;
 using Core;
 using PL.Console.Interfaces;
@@ -23,7 +24,7 @@ namespace PL.Console.RoomsControl
             
             if (channelList.Count == 0)
             {
-                System.Console.WriteLine("There is no text channels in room");
+                System.Console.WriteLine("\tThere is no text channels in room");
             }
 
             foreach (var channel in channelList)
@@ -32,16 +33,23 @@ namespace PL.Console.RoomsControl
                 counter++;
             }
 
+            return TextChannelAction(room, channelList);
+        }
+
+        private bool TextChannelAction(Room room, List<TextChannel> channelList)
+        {
+            
             var actions = new string[] {"create"};
             
-            System.Console.Write($"What do you want to do? ({string.Join(" or ", actions)} or type its number): ");
             string action;
             var outAction = -1;
             do
             {
-                action = System.Console.ReadLine();
-                int.TryParse(action, out outAction);
-            } while (action == null || (!actions.Contains(action) && outAction > channelList.Count && outAction < 0));
+                System.Console.Write($"What do you want to do? ({string.Join(" or ", actions)} or type its number): ");
+                action = System.Console.ReadLine()?.Trim();
+                _ = int.TryParse(action, out outAction);
+            } while (string.IsNullOrWhiteSpace(action) || (!actions.Contains(action) && outAction > channelList.Count && 
+                                                           outAction < 0));
 
             if (action == "create")
             {
@@ -56,9 +64,9 @@ namespace PL.Console.RoomsControl
                 return false;
             }
 
-            return ChannelsAction(room, channelList[outAction - 1]); //TODO: text channel logic
-            }
-
+            return ChannelsAction(room, channelList[outAction - 1]);
+        }
+        
         private bool CreateTextChannel(Room room)
         {
             if (!_textChannelService.CanManageChannels(room).Result)
@@ -80,20 +88,23 @@ namespace PL.Console.RoomsControl
                 description = System.Console.ReadLine();
             } while (string.IsNullOrWhiteSpace(description));
 
-            var isAdmin = false;
-            if (_textChannelService.CanUseAdminChannels(room).Result)
+            if (!_textChannelService.CanUseAdminChannels(room).Result)
             {
-                string admin;
-                do
-                {
-                    System.Console.Write("Do you want to this channel be private (\"t\" or \"f\")? ");
-                    admin = System.Console.ReadLine();
-                } while (admin != "t" && admin != "f");
+                return _textChannelService.CreateTextChannel(room, name, description, false).Result;
+            }
 
-                if (admin == "t")
-                {
-                    isAdmin = true;
-                }
+            var isAdmin = false;
+            
+            string admin;
+            do
+            {
+                System.Console.Write("Do you want to this channel be private (\"t\" or \"f\")? ");
+                admin = System.Console.ReadLine()?.Trim();
+            } while (admin != "t" && admin != "f");
+
+            if (admin == "t")
+            {
+                isAdmin = true;
             }
 
             return _textChannelService.CreateTextChannel(room, name, description, isAdmin).Result;
@@ -156,7 +167,8 @@ namespace PL.Console.RoomsControl
                 string admin;
                 do
                 {
-                    System.Console.Write($"Do you want to do it private? ({string.Join(" or ", actions)} or if you  don't want to change it - just press Enter): ");
+                    System.Console.Write($"Do you want to do it private? ({string.Join(" or ", actions)}or if you " +
+                                         $"don't want to change it - just press Enter): ");
                     admin = System.Console.ReadLine()?.Trim();
                     admin = admin == string.Empty ? null : admin;
                 } while (!actions.Contains(admin));

@@ -48,7 +48,7 @@ namespace PL.Console.RoomsControl
             var userKey = System.Console.ReadLine();
             while (userKey != "u" && userKey != "s")
             {
-                System.Console.WriteLine("Unknown key, please enter again");
+                System.Console.Write("Unknown key, please enter again: ");
                 userKey = System.Console.ReadLine();
             }
 
@@ -62,13 +62,13 @@ namespace PL.Console.RoomsControl
             {
                 System.Console.WriteLine(
                     "Enter username / email that you want to invite(if many users enumerate them with \"space\")");
-                var userNames = System.Console.ReadLine().Split(" ");
+                var userNames = System.Console.ReadLine()?.Split(" ");
                 var usersToInvite = new List<string>();
                 var errors = new List<string>();
                 foreach (var name in userNames)
                 {
                     var validationsResult = _userValidator.ValidateUserNameOrEmail(name);
-                    if (validationsResult == true)
+                    if (validationsResult)
                     {
                         usersToInvite.Add(name);
                     }

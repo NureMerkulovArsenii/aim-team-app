@@ -43,7 +43,8 @@ namespace PL.Console.RoomsControl
                     "If you want to choose role - type its number or if you want to create new one - enter \"create\" or \"my role\" - to see your role or" +
                     " \"users roles\" - to see roles of all users in the room: ");
                 userInput = System.Console.ReadLine()?.Trim();
-            } while (userInput == null && userInput != "create" && userInput != "my role" && userInput != "users roles" && !int.TryParse(userInput, out var roleNumber));
+            } while (string.IsNullOrWhiteSpace(userInput) && userInput != "create" && userInput != "my role" && 
+                     userInput != "users roles" && !int.TryParse(userInput, out _));
 
             
             if (userInput == "create")
@@ -68,8 +69,12 @@ namespace PL.Console.RoomsControl
 
         private async Task<bool> CreateRole(Room room)
         {
-            System.Console.WriteLine("Enter role name: ");
-            var roleName = System.Console.ReadLine()?.Trim();
+            string roleName;
+            do
+            {
+                System.Console.WriteLine("Enter role name: ");
+                roleName = System.Console.ReadLine()?.Trim();
+            } while (string.IsNullOrWhiteSpace(roleName));
 
             var role = await _roleService.CreateNewRole(room, roleName);
             
@@ -115,11 +120,12 @@ namespace PL.Console.RoomsControl
         private async Task<bool> ChooseRoleAction(Room room, Role role)
         {
             string userInput;
-            do{
+            do
+            {
                 System.Console.WriteLine(
                 "If you want to edit permissions - type \"edit\" or if you want to delete role - type \"delete\"");
                 userInput = System.Console.ReadLine()?.Trim();
-            } while (userInput == null && userInput != "edit" && userInput != "delete");
+            } while (string.IsNullOrWhiteSpace(userInput) && userInput != "edit" && userInput != "delete");
 
             switch (userInput)
             {
@@ -143,6 +149,7 @@ namespace PL.Console.RoomsControl
                 {
                     System.Console.Write($"Choose permission for {pair.Key} (\"t\", \"f\" or empty): ");
                     stringValue = System.Console.ReadLine();
+                    stringValue = string.IsNullOrWhiteSpace(stringValue) ? null : stringValue;
                 } while (stringValue != null && stringValue != "t" && stringValue != "f");
 
                 if (stringValue == "t")
