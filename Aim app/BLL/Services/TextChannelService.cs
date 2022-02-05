@@ -10,18 +10,13 @@ namespace BLL.Services
 {
     public class TextChannelService : ITextChannelService
     {
+        private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUser _currentUser;
-        private readonly IGenericRepository<Role> _roleGenericRepository;
-        private readonly IGenericRepository<Room> _roomGenericRepository;
-        private readonly IGenericRepository<TextChannel> _textChatGenericRepository;
 
-        public TextChannelService(ICurrentUser currentUser, IGenericRepository<Role> roleGenericRepository,
-            IGenericRepository<Room> roomGenericRepository, IGenericRepository<TextChannel> textChatGenericRepository)
+        public TextChannelService(IUnitOfWork unitOfWork, ICurrentUser currentUser)
         {
+            _unitOfWork = unitOfWork;
             _currentUser = currentUser;
-            _roleGenericRepository = roleGenericRepository;
-            _roomGenericRepository = roomGenericRepository;
-            _textChatGenericRepository = textChatGenericRepository;
         }
 
         public async Task<bool> EditTextChannel(TextChannel textChannel, Room room, string name = null,
@@ -52,7 +47,7 @@ namespace BLL.Services
                     textChannel.IsAdminChannel = isAdmin.Value;
                 }
 
-                await _textChatGenericRepository.UpdateAsync(textChannel);
+                await _unitOfWork.TextChannelRepository.UpdateAsync(textChannel);
                 return true;
             }
             catch (Exception)
@@ -76,12 +71,22 @@ namespace BLL.Services
             };
             
             room.TextChannels.Add(newTextChannel);
-
-            await _textChatGenericRepository.CreateAsync(newTextChannel);
-
-            await _roomGenericRepository.UpdateAsync(room);
-
-            return true;
+            
+            await _unitOfWork.CreateTransactionAsync();
+            try
+            {
+                await _unitOfWork.TextChannelRepository.CreateAsync(newTextChannel);
+                await _unitOfWork.RoomRepository.UpdateAsync(room);
+                
+                await _unitOfWork.CommitAsync();
+                
+                return true;
+            }
+            catch (Exception)
+            {
+                await _unitOfWork.RollbackAsync();
+                return false;
+            }
         }
 
         public async Task<List<TextChannel>> GetTextChannels(Room room)
@@ -109,15 +114,19 @@ namespace BLL.Services
             
             room.TextChannels.Remove(textChannel);
 
+            await _unitOfWork.CreateTransactionAsync();
             try
             {
-                await _textChatGenericRepository.DeleteAsync(textChannel);
-                await _roomGenericRepository.UpdateAsync(room);
+                await _unitOfWork.TextChannelRepository.DeleteAsync(textChannel);
+                await _unitOfWork.RoomRepository.UpdateAsync(room);
+
+                await _unitOfWork.CommitAsync();
                 
                 return true;
             }
             catch (Exception)
             {
+                await _unitOfWork.RollbackAsync();
                 return false;
             }
         }

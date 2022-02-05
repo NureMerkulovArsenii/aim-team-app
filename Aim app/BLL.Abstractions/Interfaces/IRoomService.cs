@@ -6,6 +6,7 @@ namespace BLL.Abstractions.Interfaces
 {
     public interface IRoomService
     {
+        //ToDo: Make Async
         int CreateRoom(string name, string description);
 
         bool DeleteRoom(Room room);

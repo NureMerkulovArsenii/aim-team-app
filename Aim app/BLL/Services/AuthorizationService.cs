@@ -9,14 +9,14 @@ namespace BLL.Services
 {
     public class AuthorizationService : IAuthorizationService
     {
-        private readonly IGenericRepository<User> _userGenericRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IUserValidator _userValidator;
         private readonly IPasswordService _passwordService;
 
-        public AuthorizationService(IGenericRepository<User> userGenericRepository, IUserValidator userValidator,
+        public AuthorizationService(IUnitOfWork unitOfWork, IUserValidator userValidator,
             IPasswordService passwordService)
         {
-            _userGenericRepository = userGenericRepository;
+            _unitOfWork = unitOfWork;
             _userValidator = userValidator;
             _passwordService = passwordService;
         }
@@ -28,10 +28,10 @@ namespace BLL.Services
                 var tempUser = new User();
                 await _passwordService.SetPassword(tempUser, password);
                 var passwordHashed = tempUser.Password;
-                var receivedUsers = await _userGenericRepository.FindByConditionAsync(user =>
+                var receivedUsers = await _unitOfWork.UserRepository.FindByConditionAsync(user =>
                     user.Password == passwordHashed &&
                     (user.Email == usernameOrEmail || user.UserName == usernameOrEmail));
-
+                
                 return receivedUsers.Any();
             }
 
@@ -47,7 +47,7 @@ namespace BLL.Services
             }
 
             var userWithEmail =
-                await _userGenericRepository.FindByConditionAsync(user => user.UserName == usernameOrEmail);
+                await _unitOfWork.UserRepository.FindByConditionAsync(user => user.UserName == usernameOrEmail);
             
             return userWithEmail.FirstOrDefault()?.Email;
         }
@@ -63,12 +63,12 @@ namespace BLL.Services
         {
             user.LastAuth = DateTime.Now;
 
-            await _userGenericRepository.UpdateAsync(user);
+            await _unitOfWork.UserRepository.UpdateAsync(user);
         }
 
         public async Task<User> GetInfoAboutUser(string usernameOrEmail)
         {
-            var usersFromDb = await _userGenericRepository.FindByConditionAsync(user =>
+            var usersFromDb = await _unitOfWork.UserRepository.FindByConditionAsync(user =>
                 user.Email == usernameOrEmail || user.UserName == usernameOrEmail);
             
             return usersFromDb.FirstOrDefault();
