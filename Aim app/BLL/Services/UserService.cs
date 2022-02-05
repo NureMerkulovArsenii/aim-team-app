@@ -33,7 +33,7 @@ namespace BLL.Services
             }
 
             room.Participants.Remove(
-                room.Participants.FirstOrDefault(participant => participant.UserId == _currentUser.User.Id));
+                room.Participants.FirstOrDefault(participant => participant.User.Id == _currentUser.User.Id));
             await _roomGenericRepository.UpdateAsync(room);
             
             return true;
@@ -46,7 +46,7 @@ namespace BLL.Services
                 return false;
             }
 
-            room.Participants.FirstOrDefault(participant => participant.UserId == _currentUser.User.Id)!
+            room.Participants.FirstOrDefault(participant => participant.User.Id == _currentUser.User.Id)!
                     .Notifications =
                 stateOnOrOff;
             await _roomGenericRepository.UpdateAsync(room);
@@ -65,7 +65,7 @@ namespace BLL.Services
 
             var foundRooms = await _roomGenericRepository
                 .FindByConditionAsync(room =>
-                    room.Participants.Any(participant => participant.UserId == currentUser.Id));
+                    room.Participants.Any(participant => participant.User.Id == currentUser.Id));
 
             return foundRooms.ToList();
         }
@@ -90,10 +90,9 @@ namespace BLL.Services
         public async Task<Role> GetRoleInRoom(Room room)
         {
             var currentUser = _currentUser.User;
-            var roleId = room.Participants.FirstOrDefault(participantInfo => participantInfo.UserId == currentUser.Id)?.RoleId;
-            var roles = await _roleGenericRepository.FindByConditionAsync(role => role.Id == roleId);
-            
-            return roles.FirstOrDefault();
+            var role = room.Participants.FirstOrDefault(participantInfo => participantInfo.User.Id == currentUser.Id)?.Role;
+
+            return role;
         }
 
         public async Task<User> GetUserByUserNameOrEmail(string userName)

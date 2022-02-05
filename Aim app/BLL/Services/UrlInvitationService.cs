@@ -36,24 +36,24 @@ namespace BLL.Services
             var currentTime = DateTime.Now;
             var expirationTime = currentTime.AddMinutes(15).ToString(CultureInfo.InvariantCulture);
 
-            var result = new List<string>();
+            var result = new List<User>();
 
-            var url = new Urls {RoomId = room.Id, Url = _appSettings.Domain + Guid.NewGuid().ToString().Substring(0, 7),};
+            var url = new Urls {Room = room, Url = _appSettings.Domain + Guid.NewGuid().ToString().Substring(0, 7),};
 
 
             foreach (var user in users)
             {
-                var userId = _userService.GetUserByUserNameOrEmail(user).Result;
-                if (room.Participants.Any(info => info.UserId == userId.Id))
+                var inviteUser = _userService.GetUserByUserNameOrEmail(user).Result;
+                if (room.Participants.Any(info => info.User.Id == inviteUser.Id))
                 {
                     return;
                 }
 
-                result.Add(userId.Id);
-                await _mailWorker.SendInvitationEmailAsync(room, url.Url, userId.Email); //ToDO bool
+                result.Add(inviteUser);
+                await _mailWorker.SendInvitationEmailAsync(room, url.Url, inviteUser.Email); //ToDO bool
             }
 
-            url.UserId = result;
+            url.User = result;
             url.ExpirationTime = expirationTime;
 
             await _genericRepositoryUrls.CreateAsync(url);
@@ -67,8 +67,8 @@ namespace BLL.Services
             {
                 Url = _appSettings.Domain + Guid.NewGuid().ToString().Substring(0, 6),
                 ExpirationTime = expirationTime,
-                UserId = null,
-                RoomId = room.Id
+                User = null,
+                Room = room
             };
 
             _genericRepositoryUrls.CreateAsync(url);
@@ -87,19 +87,21 @@ namespace BLL.Services
                 var now = DateTime.Now;
                 var expirationTime = DateTime.Parse(responseUrl.ExpirationTime, CultureInfo.InvariantCulture);
 
-                if (responseUrl.UserId == null ||
-                    responseUrl.UserId.Contains(_currentUser.User.Id) && expirationTime >= now)
+                if (responseUrl.User == null ||
+                    responseUrl.User.Select(x => x.Id).Contains(_currentUser.User.Id) && expirationTime >= now)
                 {
                     var rooms =
-                        await _genericRepositoryRooms.FindByConditionAsync(room => room.Id == responseUrl.RoomId);
+                        await _genericRepositoryRooms.FindByConditionAsync(room => room.Id == responseUrl.Room.Id);
 
                     var room = rooms.FirstOrDefault();
                     var participantInfo = new ParticipantInfo()
                     {
-                        Notifications = true, UserId = _currentUser.User.Id, RoleId = room.BaseRoleId
+                        Notifications = true,
+                        User = _currentUser.User,
+                        Role = room.BaseRole
                     };
                     
-                    if (room.Participants.All(info => info.UserId != participantInfo.UserId))
+                    if (room.Participants.All(info => info.User.Id != participantInfo.User.Id))
                     {
                         room.Participants.Add(participantInfo);
                     }

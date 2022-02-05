@@ -26,10 +26,10 @@ namespace BLL.Services
         public async Task<bool> SetUpRole(Room room, Role role, IDictionary<string, bool?> permissions)
         {
             var user = _currentUser.User;
-            var participant = room.Participants.FirstOrDefault(participant => participant.UserId == user.Id);
-            var userRole = await _roleGenericRepository.GetEntityById(participant?.RoleId);
+            var participant = room.Participants.FirstOrDefault(participant => participant.User.Id == user.Id);
+            var userRole = participant?.Role;
 
-            if (!userRole.CanManageRoles || room.RoomRolesId.All(roomRoleId => roomRoleId != role.Id))
+            if (!userRole.CanManageRoles || room.RoomRoles.All(roomRole => roomRole.Id != role.Id))
             {
                 return false;
             }
@@ -55,8 +55,8 @@ namespace BLL.Services
             }
 
             var newRole = new Role(name);
-
-            room.RoomRolesId.Add(newRole.Id);
+            
+            room.RoomRoles.Add(newRole);
 
             await _roleGenericRepository.CreateAsync(newRole);
 
@@ -67,13 +67,13 @@ namespace BLL.Services
 
         public async Task<bool> DeleteRole(Room room, Role role)
         {
-            if (!CanManageRoles(room) || room.BaseRoleId == role.Id ||
-                room.RoomRolesId.Any(roleId => roleId == role.Id))
+            if (!CanManageRoles(room) || room.BaseRole.Id == role.Id ||
+                room.RoomRoles.Any(roomRole => roomRole.Id == role.Id))
             {
                 return false;
             }
-
-            room.RoomRolesId.Remove(role.Id);
+            
+            room.RoomRoles.Remove(role);
 
             await _roomGenericRepository.UpdateAsync(room);
 
@@ -86,9 +86,9 @@ namespace BLL.Services
         {
             var resultRoles = new List<Role>();
 
-            foreach (var roleId in room.RoomRolesId)
+            foreach (var role in room.RoomRoles)
             {
-                resultRoles.Add(await _roleGenericRepository.GetEntityById(roleId));
+                resultRoles.Add(role);
             }
 
             return resultRoles;
@@ -96,26 +96,26 @@ namespace BLL.Services
 
         public async Task<bool> SetRoleToUser(Room room, User user, Role role)
         {
-            if (!CanManageRoles(room) || room.RoomRolesId.Any(roleId => roleId == role.Id))
+            if (!CanManageRoles(room) || room.RoomRoles.Any(roomRole => roomRole.Id == role.Id))
             {
                 return false;
             }
 
-            var participant = room.Participants.FirstOrDefault(participant => participant.UserId == user.Id);
+            var participant = room.Participants.FirstOrDefault(participant => participant.User.Id == user.Id);
 
             if (participant == null)
             {
                 return false;
             }
-
-            participant.RoleId = role.Id;
+            
+            participant.Role = role;
 
             await _roomGenericRepository.UpdateAsync(room);
             
             return true;
         }
 
-        public async Task<Dictionary<string, string>> GetRolesOfUsers(string roomId)
+        public async Task<Dictionary<string, string>> GetRolesOfUsers(int roomId)
         {
             var result = new Dictionary<string, string>();
 
@@ -128,8 +128,8 @@ namespace BLL.Services
 
             foreach (var participant in roomParticipants)
             {
-                var user = await _userGenericRepository.GetEntityById(participant.UserId);
-                var role = await _roleGenericRepository.GetEntityById(participant.RoleId);
+                var user = participant.User;
+                var role = participant.Role;
 
                 result.Add(user.UserName, role.RoleName);
             }
@@ -140,8 +140,8 @@ namespace BLL.Services
         private bool CanManageRoles(Room room)
         {
             var user = _currentUser.User;
-            var participant = room.Participants.FirstOrDefault(participant => participant.UserId == user.Id);
-            var userRole = _roleGenericRepository.GetEntityById(participant?.RoleId).Result;
+            var participant = room.Participants.FirstOrDefault(participant => participant.User.Id == user.Id);
+            var userRole = participant?.Role;
 
             if (userRole.CanManageRoles)
             {

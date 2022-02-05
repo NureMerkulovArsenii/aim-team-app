@@ -2,10 +2,10 @@
 {
     public class ParticipantInfo
     {
-        public string UserId { get; set; }
-        
-        public string RoleId { get; set; }
+        public User User { get; set; }
 
+        public Role Role { get; set; }
+        
         public bool Notifications { get; set; }
     }
 }

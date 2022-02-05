@@ -7,10 +7,10 @@ namespace Core
         public string Url { get; set; }
         
         public string ExpirationTime { get; set; }
-        
-        public List<string> UserId { get; set; }
-        
-        public string RoomId { get; set; }
+
+        public List<User> User { get; set; }
+
+        public Room Room { get; set; }
         
         public bool IsUsed { get; set; }
     }

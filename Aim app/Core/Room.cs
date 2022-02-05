@@ -14,11 +14,11 @@ namespace Core
 
         public IList<ParticipantInfo> Participants { get; set; }
 
-        public IList<string> RoomRolesId { get; set; }
+        public IList<Role> RoomRoles { get; set; }
 
-        public IList<string> TextChannelsId { get; set; }
+        public IList<TextChannel> TextChannels { get; set; }
 
-        public string BaseRoleId { get; set; }
+        public Role BaseRole { get; set; }
 
         [JsonIgnore] public ReadOnlyCollection<byte> Photo { get; set; }
 

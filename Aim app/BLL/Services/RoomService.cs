@@ -26,7 +26,7 @@ namespace BLL.Services
             _roleGenericRepository = roleGenericRepository;
         }
 
-        public string CreateRoom(string name, string description) //TODO: Photo implementation
+        public int CreateRoom(string name, string description) //TODO: Photo implementation
         {
             var user = _currentUser.User;
 
@@ -47,17 +47,16 @@ namespace BLL.Services
 
             var adminParticipantInfo = new ParticipantInfo()
             {
-                UserId = user.Id, RoleId = adminRole.Id, Notifications = true
+                Notifications = true, User = user, Role = adminRole
             };
 
             var room = new Room()
             {
                 RoomName = name,
                 RoomDescription = description,
-                BaseRoleId = baseRole.Id,
                 Participants = new List<ParticipantInfo> {adminParticipantInfo},
-                RoomRolesId = new List<string>() {adminRole.Id, baseRole.Id},
-                TextChannelsId = new List<string>()
+                RoomRoles = new List<Role>() {adminRole, baseRole},
+                TextChannels = new List<TextChannel>()
             };
 
             _roleGenericRepository.CreateAsync(adminRole).Wait();
@@ -110,23 +109,21 @@ namespace BLL.Services
         private bool IsUserAdmin(Room room, User user)
         {
             var isUserAdmin = room.Participants
-                .Where(participant => _roleGenericRepository
-                    .GetEntityById(participant.RoleId).Result.CanManageRoom && participant.UserId == user.Id);
+                .Where(participant => participant.Role.CanManageRoom && participant.User.Id == user.Id);
 
             return isUserAdmin.Any();
         }
 
-        public async Task<List<User>> GetParticipantsOfRoom(string roomId)
+        public async Task<List<User>> GetParticipantsOfRoom(int roomId)
         {
             var room = _roomGenericRepository
                 .FindByConditionAsync(room => room.Id == roomId)
                 .Result
                 .FirstOrDefault();
 
-            var userIds = room?.Participants.Select(participant => participant.UserId).ToList();
+            var users = room?.Participants.Select(participant => participant.User).ToList();
 
-            return (List<User>)await _userGenericRepository
-                .FindByConditionAsync(user => userIds.Contains(user.Id));
+            return users;
         }
     }
 }

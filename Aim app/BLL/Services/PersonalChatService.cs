@@ -24,16 +24,16 @@ namespace BLL.Services
 
         public async Task CreatePersonalChat(List<string> userToChatWith)
         {
-            var participants = new List<string> {_currentUser.User.Id};
+            var participants = new List<User> {_currentUser.User};
 
             foreach (var userInPersonalChat in userToChatWith)
             {
                 var users = await _genericRepositoryUser.FindByConditionAsync(user =>
                     user.UserName == userInPersonalChat || user.Email == userInPersonalChat);
                 var user = users.FirstOrDefault();
-                if (user != null && !participants.Contains(user.Id))
+                if (user != null && !participants.Select(x => x.Id).Contains(user.Id))
                 {
-                    participants.Add(user.Id);
+                    participants.Add(user);
                 }
             }
 
@@ -56,7 +56,7 @@ namespace BLL.Services
             var personalChat = new PersonalChat
             {
                 ChatName = chatName,
-                ParticipantsIds = participants
+                Participants = participants
             };
 
             await _genericRepositoryChat.CreateAsync(personalChat);
@@ -75,11 +75,11 @@ namespace BLL.Services
             {
                 foreach (var participant in participants)
                 {
-                    var user = await _genericRepositoryUser.FindByConditionAsync(user =>
-                        user.UserName == participant || user.Email == participant);
-                    if (!chat.ParticipantsIds.Contains(user.FirstOrDefault().Id))
+                    var user = (await _genericRepositoryUser.FindByConditionAsync(user =>
+                        user.UserName == participant || user.Email == participant)).FirstOrDefault();
+                    if (!chat.Participants.Select(x => x.Id).Contains(user.Id))
                     {
-                        chat.ParticipantsIds.Add(user.FirstOrDefault().Id);
+                        chat.Participants.Add(user);
                     }
                 }
 
@@ -95,7 +95,7 @@ namespace BLL.Services
         {
             var userChats = await
                 _genericRepositoryChat.FindByConditionAsync(chat =>
-                    chat.ParticipantsIds.Contains(_currentUser.User.Id));
+                    chat.Participants.Select(x => x.Id).Contains(_currentUser.User.Id));
 
 
             return userChats.ToList();
@@ -103,28 +103,21 @@ namespace BLL.Services
 
         public async Task<IList<string>> GetUserNamesOfChat(PersonalChat chat)
         {
-            var users = new List<string>();
-            var ids = chat.ParticipantsIds;
+            var users = chat.Participants;
 
-            foreach (var id in ids)
-            {
-                var participants = await _genericRepositoryUser.FindByConditionAsync(user => user.Id == id);
-                users.Add(participants.FirstOrDefault()?.UserName);
-            }
-
-            return users;
+            return users.Select(user => user.UserName).ToList();
         }
 
         public async Task<bool> LeavePersonalChat(PersonalChat chat)
         {
             var user = _currentUser.User;
 
-            if (!chat.ParticipantsIds.Remove(user.Id))
+            if (!chat.Participants.Remove(user))
             {
                 return false;
             }
 
-            if (chat.ParticipantsIds.Count == 0)
+            if (chat.Participants.Count == 0)
             {
                 await _genericRepositoryChat.DeleteAsync(chat);
                 return true;

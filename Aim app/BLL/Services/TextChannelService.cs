@@ -74,8 +74,8 @@ namespace BLL.Services
             {
                 ChannelName = name, ChannelDescription = description, IsAdminChannel = isAdmin
             };
-
-            room.TextChannelsId.Add(newTextChannel.Id);
+            
+            room.TextChannels.Add(newTextChannel);
 
             await _textChatGenericRepository.CreateAsync(newTextChannel);
 
@@ -89,10 +89,8 @@ namespace BLL.Services
             var result = new List<TextChannel>();
             var user = _currentUser.User;
 
-            foreach (var chatId in room.TextChannelsId)
+            foreach (var chat in room.TextChannels)
             {
-                var chat = await _textChatGenericRepository.GetEntityById(chatId);
-
                 if ((chat.IsAdminChannel && await CanUseAdminChannels(room, user)) || !chat.IsAdminChannel)
                 {
                     result.Add(chat);
@@ -108,8 +106,8 @@ namespace BLL.Services
             {
                 return false;
             }
-
-            room.TextChannelsId.Remove(textChannel.Id);
+            
+            room.TextChannels.Remove(textChannel);
 
             try
             {
@@ -131,10 +129,10 @@ namespace BLL.Services
                 user = _currentUser.User;
             }
 
-            var participant = room.Participants.FirstOrDefault(participant => participant.UserId == user.Id);
-            var userRole = await _roleGenericRepository.GetEntityById(participant?.RoleId);
+            var participant = room.Participants.FirstOrDefault(participant => participant.User.Id == user.Id);
+            var userRole = participant?.Role;
 
-            return userRole.CanManageChannels;
+            return userRole!.CanManageChannels;
         }
 
         public async Task<bool> CanUseAdminChannels(Room room, User user = null)
@@ -144,10 +142,10 @@ namespace BLL.Services
                 user = _currentUser.User;
             }
 
-            var participant = room.Participants.FirstOrDefault(participant => participant.UserId == user.Id);
-            var userRole = await _roleGenericRepository.GetEntityById(participant?.RoleId);
+            var participant = room.Participants.FirstOrDefault(participant => participant.User.Id == user.Id);
+            var userRole = participant?.Role;
 
-            return userRole.CanUseAdminChannels;
+            return userRole!.CanUseAdminChannels;
         }
     }
 }
