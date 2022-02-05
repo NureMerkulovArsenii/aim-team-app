@@ -26,7 +26,7 @@ namespace BLL.Services
             if (_passwordService.HasPasswordCorrectFormat(usernameOrEmail, password))
             {
                 var tempUser = new User();
-                _passwordService.SetPassword(tempUser, password);
+                await _passwordService.SetPassword(tempUser, password);
                 var passwordHashed = tempUser.Password;
                 var receivedUsers = await _userGenericRepository.FindByConditionAsync(user =>
                     user.Password == passwordHashed &&
@@ -40,13 +40,15 @@ namespace BLL.Services
 
         public async Task<string> GetEmailByUsernameOrEmail(string usernameOrEmail)
         {
-            if (await _userValidator.IsEmailValid(usernameOrEmail) == 1)
+            var response = await _userValidator.IsEmailValid(usernameOrEmail);
+            if (response == 1)
             {
                 return usernameOrEmail;
             }
 
             var userWithEmail =
                 await _userGenericRepository.FindByConditionAsync(user => user.UserName == usernameOrEmail);
+            
             return userWithEmail.FirstOrDefault()?.Email;
         }
 
@@ -68,6 +70,7 @@ namespace BLL.Services
         {
             var usersFromDb = await _userGenericRepository.FindByConditionAsync(user =>
                 user.Email == usernameOrEmail || user.UserName == usernameOrEmail);
+            
             return usersFromDb.FirstOrDefault();
         }
     }
