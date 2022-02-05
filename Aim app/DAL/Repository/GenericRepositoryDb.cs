@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Core;
 using DAL.Abstractions.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repository
 {
-    public class GenericRepositoryDb<TEntity> : IGenericRepository<TEntity> where TEntity : class
+    public class GenericRepositoryDb<TEntity> : IGenericRepository<TEntity> where TEntity : BaseEntity
     {
         private readonly AppContext _appContext;
         private readonly DbSet<TEntity> _dbSet;
