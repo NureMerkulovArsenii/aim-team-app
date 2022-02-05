@@ -5,13 +5,11 @@ using System.Threading.Tasks;
 
 namespace DAL.Abstractions.Interfaces
 {
-    public interface IGenericRepository<TEntity>
+    public interface IGenericRepository<TEntity> where TEntity : class
     {
-        Task<IEnumerable<TEntity>> FindAllAsync();
-        
         Task<IEnumerable<TEntity>> FindByConditionAsync(Expression<Func<TEntity, bool>> expression);
         
-        Task<TEntity> GetEntityById(string id);
+        Task<TEntity> GetEntityById(int id);
         
         Task CreateAsync(TEntity entity);
         

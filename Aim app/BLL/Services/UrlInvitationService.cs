@@ -12,14 +12,14 @@ namespace BLL.Services
 {
     public class UrlInvitationService : IUrlInvitationService
     {
-        private readonly IGenericRepository<Urls> _genericRepositoryUrls;
+        private readonly IGenericRepository<InviteLink> _genericRepositoryUrls;
         private readonly IGenericRepository<Room> _genericRepositoryRooms;
         private readonly ICurrentUser _currentUser;
         private readonly IMailWorker _mailWorker;
         private readonly IUserService _userService;
         private readonly AppSettings _appSettings;
 
-        public UrlInvitationService(IGenericRepository<Urls> genericRepositoryUrls,
+        public UrlInvitationService(IGenericRepository<InviteLink> genericRepositoryUrls,
             IGenericRepository<Room> genericRepositoryRooms, ICurrentUser currentUser,
             IMailWorker mailWorker, IUserService userService, IOptions<AppSettings> appSettings)
         {
@@ -38,7 +38,7 @@ namespace BLL.Services
 
             var result = new List<User>();
 
-            var url = new Urls {Room = room, Url = _appSettings.Domain + Guid.NewGuid().ToString().Substring(0, 7),};
+            var url = new InviteLink {Room = room, Url = _appSettings.Domain + Guid.NewGuid().ToString().Substring(0, 7),};
 
 
             foreach (var user in users)
@@ -63,7 +63,7 @@ namespace BLL.Services
         {
             var currentTime = DateTime.Now;
             var expirationTime = currentTime.AddHours(5).ToString(CultureInfo.InvariantCulture);
-            var url = new Urls
+            var url = new InviteLink
             {
                 Url = _appSettings.Domain + Guid.NewGuid().ToString().Substring(0, 6),
                 ExpirationTime = expirationTime,

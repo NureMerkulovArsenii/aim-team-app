@@ -24,14 +24,14 @@ namespace DAL.Repository
             _allData = new List<TEntity>();
         }
 
-        public async Task<IEnumerable<TEntity>> FindAllAsync()
+        private async Task<IEnumerable<TEntity>> FindAllAsync()
         {
             var file = GetFile(typeof(TEntity));
 
             return await _jsonWorker.LoadFromFileAsync<IEnumerable<TEntity>>(_appSettings.JsonDirectory + file);
         }
 
-        public async Task<TEntity> GetEntityById(string id)
+        public async Task<TEntity> GetEntityById(int id)
         {
             var entities = await FindByConditionAsync(entity => entity.Id == id);
 
@@ -87,7 +87,7 @@ namespace DAL.Repository
             {
                 return "room.json";
             }
-            else if (fileType == typeof(Urls))
+            else if (fileType == typeof(InviteLink))
             {
                 return "urls.json";
             }

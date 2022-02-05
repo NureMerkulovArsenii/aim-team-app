@@ -2,7 +2,7 @@
 
 namespace Core
 {
-    public class Urls : BaseEntity
+    public class InviteLink : BaseEntity
     {
         public string Url { get; set; }
         
