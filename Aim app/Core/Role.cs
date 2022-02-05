@@ -1,10 +1,26 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 
 namespace Core
 {
     public class Role : BaseEntity
     {
+        public Role()
+        {
+            RoleName = "New Role";
+            Permissions = new Dictionary<string, bool>();
+            CanPin = false;
+            CanInvite = false;
+            CanDeleteOthersMessages = false;
+            CanModerateParticipants = false;
+            CanManageRoles = false;
+            CanManageChannels = false;
+            CanManageRoom = false;
+            CanUseAdminChannels = false;
+            CanViewAuditLog = false;
+        }
+        
         public Role(string name = "New Role")
         {
             RoleName = name;
@@ -21,6 +37,7 @@ namespace Core
         }
 
         [JsonIgnore]
+        [NotMapped]
         public IDictionary<string, bool> Permissions { get; set; }
 
         public string RoleName { get; set; }

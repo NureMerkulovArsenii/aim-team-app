@@ -8,7 +8,7 @@ namespace Core
         
         public string ExpirationTime { get; set; }
 
-        public List<User> User { get; set; }
+        public List<InviteLinksUsers> User { get; set; }
 
         public Room Room { get; set; }
         

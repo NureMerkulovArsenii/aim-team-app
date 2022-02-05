@@ -4,11 +4,6 @@ using System.Drawing;
 
 namespace Core
 {
-    public class Users
-    {
-        public List<User> ListOfUsers { get; set; }
-    }
-    
     public class User : BaseEntity
     {
         public string UserName { get; set; }

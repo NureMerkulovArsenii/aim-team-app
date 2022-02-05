@@ -4,7 +4,7 @@
     {
         public string JsonDirectory { get; set; }
         
-        public string ConnectionString { get; set; }
+        public ConnectionStrings ConnectionStrings { get; set; }
         
         public string Email { get; set; }
         

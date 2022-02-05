@@ -6,6 +6,6 @@ namespace Core
     {
         public string ChatName { get; set; }
 
-        public IList<User> Participants { get; set; }
+        public IList<UsersPersonalChats> Participants { get; set; }
     }
 }

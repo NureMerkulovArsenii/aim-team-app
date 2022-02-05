@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using Newtonsoft.Json;
 
@@ -20,7 +21,9 @@ namespace Core
 
         public Role BaseRole { get; set; }
 
-        [JsonIgnore] public ReadOnlyCollection<byte> Photo { get; set; }
+        [JsonIgnore]
+        [NotMapped]
+        public ReadOnlyCollection<byte> Photo { get; set; }
 
         public string PhotoSource
         {
