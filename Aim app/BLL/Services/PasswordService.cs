@@ -50,18 +50,7 @@ namespace BLL.Services
 
                 if (toSaveUser)
                 {
-                    try
-                    {
-                        await _unitOfWork.CreateTransactionAsync();
-
-                        await _unitOfWork.UserRepository.UpdateAsync(user);
-
-                        await _unitOfWork.CommitAsync();
-                    }
-                    catch
-                    {
-                        await _unitOfWork.RollbackAsync();
-                    }
+                    await _unitOfWork.UserRepository.UpdateAsync(user);
                 }
 
                 return true;

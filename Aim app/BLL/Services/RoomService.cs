@@ -78,18 +78,7 @@ namespace BLL.Services
 
             if (IsUserAdmin(room, user))
             {
-                try
-                {
-                    await _unitOfWork.CreateTransactionAsync();
-
-                    await _unitOfWork.RoomRepository.DeleteAsync(room);
-
-                    await _unitOfWork.CommitAsync();
-                }
-                catch
-                {
-                    await _unitOfWork.RollbackAsync();
-                }
+                await _unitOfWork.RoomRepository.DeleteAsync(room);
 
                 return true;
             }
@@ -112,19 +101,8 @@ namespace BLL.Services
                 {
                     room.RoomDescription = description;
                 }
-
-                try
-                {
-                    await _unitOfWork.CreateTransactionAsync();
-
-                    await _unitOfWork.RoomRepository.UpdateAsync(room);
-
-                    await _unitOfWork.CommitAsync();
-                }
-                catch
-                {
-                    await _unitOfWork.RollbackAsync();
-                }
+                
+                await _unitOfWork.RoomRepository.UpdateAsync(room);
 
                 return true;
             }

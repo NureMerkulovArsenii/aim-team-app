@@ -36,19 +36,8 @@ namespace BLL.Services
                     role.Permissions[pair.Key] = value;
                 }
             }
-
-            try
-            {
-                await _unitOfWork.CreateTransactionAsync();
-
-                await _unitOfWork.RoleRepository.UpdateAsync(role);
-
-                await _unitOfWork.CommitAsync();
-            }
-            catch
-            {
-                await _unitOfWork.RollbackAsync();
-            }
+            
+            await _unitOfWork.RoleRepository.UpdateAsync(role);
 
             return true;
         }
@@ -138,19 +127,7 @@ namespace BLL.Services
             
             participant.Role = role;
             
-            
-            try
-            {
-                await _unitOfWork.CreateTransactionAsync();
-
-                await _unitOfWork.RoomRepository.UpdateAsync(room);
-
-                await _unitOfWork.CommitAsync();
-            }
-            catch
-            {
-                await _unitOfWork.RollbackAsync();
-            }
+            await _unitOfWork.RoomRepository.UpdateAsync(room);
             
             return true;
         }
