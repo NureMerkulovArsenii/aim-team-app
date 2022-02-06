@@ -12,7 +12,7 @@ namespace DAL
         {
             services.AddDbContext<AppContext>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositoryDb<>));
+            // services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositoryDb<>));
             services.AddScoped<IJsonWorker, JsonWorker>();
         }
     }

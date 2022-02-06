@@ -9,42 +9,44 @@ namespace DAL.Repository;
 
 public class UnitOfWork : IUnitOfWork
 {
-    private AppContext _context;
-
+    private readonly AppContext _context;
     private IDbContextTransaction _objTran;
     // private Dictionary<string, object> _repositories;
+    private readonly IGenericRepository<User> _userRepository;
+    private readonly IGenericRepository<Role> _roleRepository;
+    private readonly IGenericRepository<Room> _roomRepository;
+    private readonly IGenericRepository<TextChannel> _textChannelRepository;
+    private readonly IGenericRepository<PersonalChat> _personalChatRepository;
+    private readonly IGenericRepository<InviteLink> _inviteLinkRepository;
+    private readonly IGenericRepository<InviteLinksUsers> _inviteLinksUsersRepository;
+    private readonly IGenericRepository<UsersPersonalChats> _usersPersonalChatsRepository;
 
-    public UnitOfWork(AppContext context, IGenericRepository<User> userRepository,
-        IGenericRepository<Role> roleRepository, IGenericRepository<Room> roomRepository,
-        IGenericRepository<TextChannel> textChannelRepository, IGenericRepository<PersonalChat> personalChatRepository,
-        IGenericRepository<InviteLink> inviteLinkRepository, IGenericRepository<InviteLinksUsers> inviteLinksUsers, IGenericRepository<UsersPersonalChats> usersPersonalChats)
+    public UnitOfWork(AppContext context)
     {
         this._context = context;
-        this.UserRepository = userRepository;
-        this.RoleRepository = roleRepository;
-        this.RoomRepository = roomRepository;
-        this.TextChannelRepository = textChannelRepository;
-        this.PersonalChatRepository = personalChatRepository;
-        this.InviteLinkRepository = inviteLinkRepository;
-        this.InviteLinksUsersRepository = inviteLinksUsers;
-        UsersPersonalChats = usersPersonalChats;
     }
 
-    public IGenericRepository<User> UserRepository { get; }
+    public IGenericRepository<User> UserRepository => _userRepository ?? new GenericRepositoryDb<User>(_context);
 
-    public IGenericRepository<Role> RoleRepository { get; }
+    public IGenericRepository<Role> RoleRepository => _roleRepository ?? new GenericRepositoryDb<Role>(_context);
 
-    public IGenericRepository<Room> RoomRepository { get; }
+    public IGenericRepository<Room> RoomRepository => _roomRepository ?? new GenericRepositoryDb<Room>(_context);
 
-    public IGenericRepository<TextChannel> TextChannelRepository { get; }
+    public IGenericRepository<TextChannel> TextChannelRepository =>
+        _textChannelRepository ?? new GenericRepositoryDb<TextChannel>(_context);
 
-    public IGenericRepository<PersonalChat> PersonalChatRepository { get; }
+    public IGenericRepository<PersonalChat> PersonalChatRepository =>
+        _personalChatRepository ?? new GenericRepositoryDb<PersonalChat>(_context);
 
-    public IGenericRepository<InviteLink> InviteLinkRepository { get; }
-    public IGenericRepository<InviteLinksUsers> InviteLinksUsersRepository { get; }
-    public IGenericRepository<UsersPersonalChats> UsersPersonalChats { get; }
+    public IGenericRepository<InviteLink> InviteLinkRepository =>
+        _inviteLinkRepository ?? new GenericRepositoryDb<InviteLink>(_context);
 
+    public IGenericRepository<InviteLinksUsers> InviteLinksUsersRepository =>
+        _inviteLinksUsersRepository ?? new GenericRepositoryDb<InviteLinksUsers>(_context);
 
+    public IGenericRepository<UsersPersonalChats> UsersPersonalChats =>
+        _usersPersonalChatsRepository ?? new GenericRepositoryDb<UsersPersonalChats>(_context);
+    
     // public AppContext Context
     // {
     //     get { return _context; }

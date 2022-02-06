@@ -49,18 +49,19 @@ namespace BLL.Services
                 RoomDescription = description,
                 Participants = new List<ParticipantInfo> {adminParticipantInfo},
                 RoomRoles = new List<Role>() {adminRole, baseRole},
-                TextChannels = new List<TextChannel>()
+                TextChannels = new List<TextChannel>(),
+                BaseRole = baseRole
             };
 
             try
             {
                 await _unitOfWork.CreateTransactionAsync();
 
-                await _unitOfWork.RoomRepository.UpdateAsync(room);
-
                 await _unitOfWork.RoleRepository.CreateAsync(baseRole);
                 
                 await _unitOfWork.RoleRepository.CreateAsync(adminRole);
+                
+                await _unitOfWork.RoomRepository.UpdateAsync(room);
 
                 await _unitOfWork.CommitAsync();
             }

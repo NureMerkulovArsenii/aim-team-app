@@ -11,14 +11,11 @@ namespace BLL.Services
 {
     public class PersonalChatService : IPersonalChatService
     {
-        private readonly IGenericRepository<PersonalChat> _genericRepositoryChat;
         private readonly ICurrentUser _currentUser;
         private readonly IUnitOfWork _unitOfWork;
 
-        public PersonalChatService(IGenericRepository<PersonalChat> genericRepository,
-            ICurrentUser currentUser, IUnitOfWork unitOfWork)
+        public PersonalChatService(ICurrentUser currentUser, IUnitOfWork unitOfWork)
         {
-            this._genericRepositoryChat = genericRepository;
             this._currentUser = currentUser;
             _unitOfWork = unitOfWork;
         }
@@ -137,7 +134,7 @@ namespace BLL.Services
 
             if (chat.Participants.Count == 0)
             {
-                await _genericRepositoryChat.DeleteAsync(chat);
+                await _unitOfWork.PersonalChatRepository.DeleteAsync(chat);
                 return true;
             }
 

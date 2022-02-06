@@ -12,28 +12,19 @@ namespace BLL.Services
 {
     public class UrlInvitationService : IUrlInvitationService
     {
-        private readonly IGenericRepository<InviteLink> _genericRepositoryUrls;
-        private readonly IGenericRepository<Room> _genericRepositoryRooms;
-        private readonly IGenericRepository<InviteLinksUsers> _genericRepositoryLinksUsers;
-
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUser _currentUser;
         private readonly IMailWorker _mailWorker;
         private readonly IUserService _userService;
         private readonly AppSettings _appSettings;
 
-        public UrlInvitationService(IGenericRepository<InviteLink> genericRepositoryUrls,
-            IGenericRepository<Room> genericRepositoryRooms,
-            IGenericRepository<InviteLinksUsers> genericRepositoryLinksUsers, ICurrentUser currentUser,
+        public UrlInvitationService(ICurrentUser currentUser,
             IMailWorker mailWorker, IUserService userService, IOptions<AppSettings> appSettings, IUnitOfWork unitOfWork)
         {
-            this._genericRepositoryUrls = genericRepositoryUrls;
-            this._genericRepositoryRooms = genericRepositoryRooms;
             this._currentUser = currentUser;
             this._mailWorker = mailWorker;
             this._userService = userService;
             this._unitOfWork = unitOfWork;
-            this._genericRepositoryLinksUsers = genericRepositoryLinksUsers;
             this._appSettings = appSettings?.Value ?? throw new ArgumentNullException(nameof(appSettings));
         }
 

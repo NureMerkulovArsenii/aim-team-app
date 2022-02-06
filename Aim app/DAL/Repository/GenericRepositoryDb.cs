@@ -13,6 +13,7 @@ namespace DAL.Repository
     {
         private readonly AppContext _appContext;
         private readonly DbSet<TEntity> _dbSet;
+        
         public GenericRepositoryDb(AppContext appContext)
         {
             this._appContext = appContext;
