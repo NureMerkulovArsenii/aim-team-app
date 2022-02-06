@@ -10,13 +10,14 @@ namespace DAL.Repository;
 public class UnitOfWork : IUnitOfWork
 {
     private AppContext _context;
+
     private IDbContextTransaction _objTran;
     // private Dictionary<string, object> _repositories;
 
     public UnitOfWork(AppContext context, IGenericRepository<User> userRepository,
         IGenericRepository<Role> roleRepository, IGenericRepository<Room> roomRepository,
         IGenericRepository<TextChannel> textChannelRepository, IGenericRepository<PersonalChat> personalChatRepository,
-        IGenericRepository<InviteLink> inviteLinkRepository)
+        IGenericRepository<InviteLink> inviteLinkRepository, IGenericRepository<InviteLinksUsers> inviteLinksUsers)
     {
         this._context = context;
         this.UserRepository = userRepository;
@@ -25,6 +26,7 @@ public class UnitOfWork : IUnitOfWork
         this.TextChannelRepository = textChannelRepository;
         this.PersonalChatRepository = personalChatRepository;
         this.InviteLinkRepository = inviteLinkRepository;
+        this.InviteLinksUsersRepository = inviteLinksUsers;
     }
 
     public IGenericRepository<User> UserRepository { get; }
@@ -38,34 +40,35 @@ public class UnitOfWork : IUnitOfWork
     public IGenericRepository<PersonalChat> PersonalChatRepository { get; }
 
     public IGenericRepository<InviteLink> InviteLinkRepository { get; }
+    public IGenericRepository<InviteLinksUsers> InviteLinksUsersRepository { get; }
 
 
     // public AppContext Context
     // {
     //     get { return _context; }
     // }
-    
+
     public async Task CreateTransactionAsync()
     {
         _objTran = await _context.Database.BeginTransactionAsync();
     }
-    
+
     public async Task CommitAsync()
     {
         await _objTran.CommitAsync();
     }
-    
+
     public async Task RollbackAsync()
     {
         await _objTran.RollbackAsync();
         await _objTran.DisposeAsync();
     }
-    
+
     public async Task SaveAsync()
     {
         // try
         // {
-            await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
         // }
         // catch (DbEntityValidationException dbEx)
         // {
@@ -75,7 +78,7 @@ public class UnitOfWork : IUnitOfWork
         //     throw new Exception(_errorMessage, dbEx);
         // }
     }
-    
+
     // public IGenericRepository<T> GenericRepository<T>() where T : class
     // {
     //     _repositories ??= new Dictionary<string, object>();
@@ -105,9 +108,9 @@ public class UnitOfWork : IUnitOfWork
     //     
     //     return (GenericRepositoryDb<T>)_repositories[type];
     // }
-    
+
     private bool _disposed = false;
-    
+
     protected virtual async Task Dispose(bool disposing)
     {
         if (!this._disposed)
@@ -117,10 +120,10 @@ public class UnitOfWork : IUnitOfWork
                 await _context.DisposeAsync();
             }
         }
-        
+
         this._disposed = true;
     }
-    
+
     public async void Dispose()
     {
         await Dispose(true);
