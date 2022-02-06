@@ -133,7 +133,7 @@ namespace PL.Console.RoomsControl
             if (userInput == "invite")
             {
                 System.Console.WriteLine("Enumerate users to invite with space ");
-                var usersToInvite = System.Console.ReadLine()?.Split(" ");
+                var usersToInvite = System.Console.ReadLine()?.Split(" ").ToList();
                 _chatService.AddParticipantsToPersonalChat(chat, usersToInvite).Wait();
             }
         }

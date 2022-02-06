@@ -17,7 +17,7 @@ public class UnitOfWork : IUnitOfWork
     public UnitOfWork(AppContext context, IGenericRepository<User> userRepository,
         IGenericRepository<Role> roleRepository, IGenericRepository<Room> roomRepository,
         IGenericRepository<TextChannel> textChannelRepository, IGenericRepository<PersonalChat> personalChatRepository,
-        IGenericRepository<InviteLink> inviteLinkRepository, IGenericRepository<InviteLinksUsers> inviteLinksUsers)
+        IGenericRepository<InviteLink> inviteLinkRepository, IGenericRepository<InviteLinksUsers> inviteLinksUsers, IGenericRepository<UsersPersonalChats> usersPersonalChats)
     {
         this._context = context;
         this.UserRepository = userRepository;
@@ -27,6 +27,7 @@ public class UnitOfWork : IUnitOfWork
         this.PersonalChatRepository = personalChatRepository;
         this.InviteLinkRepository = inviteLinkRepository;
         this.InviteLinksUsersRepository = inviteLinksUsers;
+        UsersPersonalChats = usersPersonalChats;
     }
 
     public IGenericRepository<User> UserRepository { get; }
@@ -41,6 +42,7 @@ public class UnitOfWork : IUnitOfWork
 
     public IGenericRepository<InviteLink> InviteLinkRepository { get; }
     public IGenericRepository<InviteLinksUsers> InviteLinksUsersRepository { get; }
+    public IGenericRepository<UsersPersonalChats> UsersPersonalChats { get; }
 
 
     // public AppContext Context

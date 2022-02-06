@@ -28,4 +28,5 @@ public interface IUnitOfWork : IDisposable
 
     IGenericRepository<InviteLink> InviteLinkRepository { get; }
     IGenericRepository<InviteLinksUsers> InviteLinksUsersRepository { get; }
+    IGenericRepository<UsersPersonalChats> UsersPersonalChats { get; }
 }
