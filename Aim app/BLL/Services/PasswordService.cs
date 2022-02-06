@@ -11,12 +11,12 @@ namespace BLL.Services
     public class PasswordService : IPasswordService
     {
         private readonly ICurrentUser _currentUser;
-        private readonly IGenericRepository<User> _userGenericRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public PasswordService(ICurrentUser currentUser, IGenericRepository<User> userGenericRepository)
+        public PasswordService(ICurrentUser currentUser, IUnitOfWork unitOfWork)
         {
             _currentUser = currentUser;
-            _userGenericRepository = userGenericRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<bool> ChangePassword(string oldPassword, string newPassword)
@@ -25,7 +25,19 @@ namespace BLL.Services
 
             var result = IsPasswordCorrect(user, oldPassword) ? await SetPassword(user, newPassword) : false;
 
-            await _userGenericRepository.UpdateAsync(user);
+            try
+            {
+                await _unitOfWork.CreateTransactionAsync();
+
+                await _unitOfWork.UserRepository.UpdateAsync(user);
+
+                await _unitOfWork.CommitAsync();
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+            }
+            
 
             return result;
         }
@@ -38,7 +50,18 @@ namespace BLL.Services
 
                 if (toSaveUser)
                 {
-                    await _userGenericRepository.UpdateAsync(user);
+                    try
+                    {
+                        await _unitOfWork.CreateTransactionAsync();
+
+                        await _unitOfWork.UserRepository.UpdateAsync(user);
+
+                        await _unitOfWork.CommitAsync();
+                    }
+                    catch
+                    {
+                        await _unitOfWork.RollbackAsync();
+                    }
                 }
 
                 return true;

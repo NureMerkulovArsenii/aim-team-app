@@ -10,17 +10,12 @@ namespace BLL.Services
     public class RoleService : IRoleService
     {
         private readonly ICurrentUser _currentUser;
-        private readonly IGenericRepository<Role> _roleGenericRepository;
-        private readonly IGenericRepository<Room> _roomGenericRepository;
-        private readonly IGenericRepository<User> _userGenericRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public RoleService(ICurrentUser currentUser, IGenericRepository<Role> roleGenericRepository,
-            IGenericRepository<Room> roomGenericRepository, IGenericRepository<User> userGenericRepository)
+        public RoleService(ICurrentUser currentUser, IUnitOfWork unitOfWork)
         {
             _currentUser = currentUser;
-            _roleGenericRepository = roleGenericRepository;
-            _roomGenericRepository = roomGenericRepository;
-            _userGenericRepository = userGenericRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<bool> SetUpRole(Room room, Role role, IDictionary<string, bool?> permissions)
@@ -42,7 +37,18 @@ namespace BLL.Services
                 }
             }
 
-            await _roleGenericRepository.UpdateAsync(role);
+            try
+            {
+                await _unitOfWork.CreateTransactionAsync();
+
+                await _unitOfWork.RoleRepository.UpdateAsync(role);
+
+                await _unitOfWork.CommitAsync();
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+            }
 
             return true;
         }
@@ -58,9 +64,20 @@ namespace BLL.Services
             
             room.RoomRoles.Add(newRole);
 
-            await _roleGenericRepository.CreateAsync(newRole);
+            try
+            {
+                await _unitOfWork.CreateTransactionAsync();
 
-            await _roomGenericRepository.UpdateAsync(room);
+                await _unitOfWork.RoleRepository.CreateAsync(newRole);
+
+                await _unitOfWork.RoomRepository.UpdateAsync(room);
+
+                await _unitOfWork.CommitAsync();
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+            }
 
             return newRole;
         }
@@ -75,9 +92,20 @@ namespace BLL.Services
             
             room.RoomRoles.Remove(role);
 
-            await _roomGenericRepository.UpdateAsync(room);
+            try
+            {
+                await _unitOfWork.CreateTransactionAsync();
 
-            await _roleGenericRepository.DeleteAsync(role);
+                await _unitOfWork.RoleRepository.DeleteAsync(role);
+                
+                await _unitOfWork.RoomRepository.UpdateAsync(room);
+
+                await _unitOfWork.CommitAsync();
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+            }
 
             return true;
         }
@@ -109,8 +137,20 @@ namespace BLL.Services
             }
             
             participant.Role = role;
+            
+            
+            try
+            {
+                await _unitOfWork.CreateTransactionAsync();
 
-            await _roomGenericRepository.UpdateAsync(room);
+                await _unitOfWork.RoomRepository.UpdateAsync(room);
+
+                await _unitOfWork.CommitAsync();
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+            }
             
             return true;
         }
@@ -119,7 +159,7 @@ namespace BLL.Services
         {
             var result = new Dictionary<string, string>();
 
-            var room = _roomGenericRepository
+            var room = _unitOfWork.RoomRepository
                 .FindByConditionAsync(room => room.Id == roomId)
                 .Result
                 .FirstOrDefault();

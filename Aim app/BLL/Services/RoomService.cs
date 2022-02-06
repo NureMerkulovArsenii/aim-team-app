@@ -9,24 +9,17 @@ namespace BLL.Services
 {
     public class RoomService : IRoomService
     {
-        private readonly IGenericRepository<Room> _roomGenericRepository;
-        private readonly IGenericRepository<User> _userGenericRepository;
-        private readonly IGenericRepository<Role> _roleGenericRepository;
         private readonly ICurrentUser _currentUser;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public RoomService(IGenericRepository<Room> roomGenericRepository, ICurrentUser currentUser,
-            IGenericRepository<User> userGenericRepository, IGenericRepository<Role> roleGenericRepository)
+        public RoomService(ICurrentUser currentUser, IUnitOfWork unitOfWork)
         {
-            _roomGenericRepository = roomGenericRepository;
-
             _currentUser = currentUser;
 
-            _userGenericRepository = userGenericRepository;
-
-            _roleGenericRepository = roleGenericRepository;
+            _unitOfWork = unitOfWork;
         }
 
-        public int CreateRoom(string name, string description) //TODO: Photo implementation
+        public async Task<int> CreateRoom(string name, string description) //TODO: Photo implementation
         {
             var user = _currentUser.User;
 
@@ -59,22 +52,44 @@ namespace BLL.Services
                 TextChannels = new List<TextChannel>()
             };
 
-            _roleGenericRepository.CreateAsync(adminRole).Wait();
+            try
+            {
+                await _unitOfWork.CreateTransactionAsync();
 
-            _roleGenericRepository.CreateAsync(baseRole).Wait();
+                await _unitOfWork.RoomRepository.UpdateAsync(room);
 
-            _roomGenericRepository.CreateAsync(room).Wait();
+                await _unitOfWork.RoleRepository.CreateAsync(baseRole);
+                
+                await _unitOfWork.RoleRepository.CreateAsync(adminRole);
+
+                await _unitOfWork.CommitAsync();
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+            }
 
             return room.Id;
         }
 
-        public bool DeleteRoom(Room room)
+        public async Task<bool> DeleteRoom(Room room)
         {
             var user = _currentUser.User;
 
             if (IsUserAdmin(room, user))
             {
-                _roomGenericRepository.DeleteAsync(room).Wait();
+                try
+                {
+                    await _unitOfWork.CreateTransactionAsync();
+
+                    await _unitOfWork.RoomRepository.DeleteAsync(room);
+
+                    await _unitOfWork.CommitAsync();
+                }
+                catch
+                {
+                    await _unitOfWork.RollbackAsync();
+                }
 
                 return true;
             }
@@ -82,7 +97,7 @@ namespace BLL.Services
             return false;
         }
 
-        public bool ChangeRoomSettings(Room room, string name, string description) //TODO: photo implementation
+        public async Task<bool> ChangeRoomSettings(Room room, string name, string description) //TODO: photo implementation
         {
             var user = _currentUser.User;
 
@@ -98,7 +113,18 @@ namespace BLL.Services
                     room.RoomDescription = description;
                 }
 
-                _roomGenericRepository.UpdateAsync(room).Wait();
+                try
+                {
+                    await _unitOfWork.CreateTransactionAsync();
+
+                    await _unitOfWork.RoomRepository.UpdateAsync(room);
+
+                    await _unitOfWork.CommitAsync();
+                }
+                catch
+                {
+                    await _unitOfWork.RollbackAsync();
+                }
 
                 return true;
             }
@@ -116,7 +142,7 @@ namespace BLL.Services
 
         public async Task<List<User>> GetParticipantsOfRoom(int roomId)
         {
-            var room = _roomGenericRepository
+            var room = _unitOfWork.RoomRepository
                 .FindByConditionAsync(room => room.Id == roomId)
                 .Result
                 .FirstOrDefault();

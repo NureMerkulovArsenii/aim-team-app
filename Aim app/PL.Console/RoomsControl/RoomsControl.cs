@@ -136,7 +136,7 @@ namespace PL.Console.RoomsControl
                 description = System.Console.ReadLine()?.Trim();
             } while (string.IsNullOrWhiteSpace(description));
 
-            var roomId = _roomService.CreateRoom(name, description);
+            var roomId = _roomService.CreateRoom(name, description).Result;
 
             if (roomId != null)
             {
@@ -152,7 +152,7 @@ namespace PL.Console.RoomsControl
 
         private bool DeleteRoom(Room room)
         {
-            if (_roomService.DeleteRoom(room))
+            if (_roomService.DeleteRoom(room).Result)
             {
                 System.Console.WriteLine("Room successfully deleted!");
 
@@ -190,7 +190,7 @@ namespace PL.Console.RoomsControl
                 description = System.Console.ReadLine();
             }
 
-            if (_roomService.ChangeRoomSettings(room, name, description))
+            if (_roomService.ChangeRoomSettings(room, name, description).Result)
             {
                 System.Console.WriteLine("Room settings successfully changed!");
 

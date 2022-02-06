@@ -6,12 +6,11 @@ namespace BLL.Abstractions.Interfaces
 {
     public interface IRoomService
     {
-        //ToDo: Make Async
-        int CreateRoom(string name, string description);
-
-        bool DeleteRoom(Room room);
-
-        bool ChangeRoomSettings(Room room, string name, string description);
+        Task<int> CreateRoom(string name, string description);
+        
+        Task<bool> DeleteRoom(Room room);
+        
+        Task<bool> ChangeRoomSettings(Room room, string name, string description);
         
         Task<List<User>> GetParticipantsOfRoom(int roomId);
     }
