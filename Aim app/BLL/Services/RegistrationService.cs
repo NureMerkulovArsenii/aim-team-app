@@ -11,15 +11,14 @@ namespace BLL.Services
         public string Code { get; set; }
 
         private readonly IPasswordService _passwordService;
-        private readonly IGenericRepository<User> _genericRepository;
         private readonly ICurrentUser _currentUser;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public RegistrationService(IPasswordService passwordService, IGenericRepository<User> genericRepository,
-            ICurrentUser currentUser)
+        public RegistrationService(IPasswordService passwordService, ICurrentUser currentUser, IUnitOfWork unitOfWork)
         {
             this._passwordService = passwordService;
-            this._genericRepository = genericRepository;
             this._currentUser = currentUser;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task RegisterAsync(string userMail, string name, string surname, string nickName, string password,
@@ -36,9 +35,9 @@ namespace BLL.Services
             };
 
             await _passwordService.SetPassword(user, password);
-            
-            await _genericRepository.CreateAsync(user);
-            
+
+            await _unitOfWork.UserRepository.CreateAsync(user);
+
             _currentUser.User = user;
         }
     }
