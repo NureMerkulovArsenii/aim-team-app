@@ -1,6 +1,5 @@
 ﻿using System;
 using BLL.Abstractions.Interfaces;
-using Core;
 using DAL.Abstractions.Interfaces;
 using System.Linq;
 using System.Net.Mail;
@@ -10,18 +9,18 @@ namespace BLL.Helpers
 {
     public class UserValidator : IUserValidator
     {
-        private readonly IGenericRepository<User> _genericRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public UserValidator(IGenericRepository<User> genericRepository)
+        public UserValidator(IUnitOfWork unitOfWork)
         {
-            _genericRepository = genericRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<int> IsEmailValid(string email)
         {
             try
             {
-                var users = await _genericRepository.FindByConditionAsync(user => user.Email == email);
+                var users = await _unitOfWork.UserRepository.FindByConditionAsync(user => user.Email == email);
                 if (users.Any())
                 {
                     return 1;
@@ -40,7 +39,7 @@ namespace BLL.Helpers
 
         public async Task<bool> ValidateUserNick(string nick)
         {
-            var result = await _genericRepository.FindByConditionAsync(user => user.UserName == nick);
+            var result = await _unitOfWork.UserRepository.FindByConditionAsync(user => user.UserName == nick);
             if (result.Any())
             {
                 return false;
@@ -51,7 +50,7 @@ namespace BLL.Helpers
 
         public async Task<bool> ValidateUserNameOrEmail(string userName)
         {
-            var result = await _genericRepository
+            var result = await _unitOfWork.UserRepository
                 .FindByConditionAsync(user => user.UserName == userName || user.Email == userName);
             
             return result.Any();
