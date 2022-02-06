@@ -8,8 +8,8 @@ namespace BLL.Abstractions.Interfaces
     {
         Task InviteUsersByEmailWithUrlAsync(Room room, List<string> users);
         
-        public Task<bool> JoinByUrl(string url);
+        Task<bool> JoinByUrl(string url);
         
-        string InviteUsersByUrl(Room room);
+        Task<string> InviteUsersByUrl(Room room);
     }
 }

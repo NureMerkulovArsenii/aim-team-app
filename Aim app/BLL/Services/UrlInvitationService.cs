@@ -14,21 +14,27 @@ namespace BLL.Services
     {
         private readonly IGenericRepository<InviteLink> _genericRepositoryUrls;
         private readonly IGenericRepository<Room> _genericRepositoryRooms;
+        private readonly IGenericRepository<InviteLinksUsers> _genericRepositoryLinksUsers;
+
+        private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUser _currentUser;
         private readonly IMailWorker _mailWorker;
         private readonly IUserService _userService;
         private readonly AppSettings _appSettings;
 
         public UrlInvitationService(IGenericRepository<InviteLink> genericRepositoryUrls,
-            IGenericRepository<Room> genericRepositoryRooms, ICurrentUser currentUser,
-            IMailWorker mailWorker, IUserService userService, IOptions<AppSettings> appSettings)
+            IGenericRepository<Room> genericRepositoryRooms,
+            IGenericRepository<InviteLinksUsers> genericRepositoryLinksUsers, ICurrentUser currentUser,
+            IMailWorker mailWorker, IUserService userService, IOptions<AppSettings> appSettings, IUnitOfWork unitOfWork)
         {
             this._genericRepositoryUrls = genericRepositoryUrls;
             this._genericRepositoryRooms = genericRepositoryRooms;
             this._currentUser = currentUser;
             this._mailWorker = mailWorker;
             this._userService = userService;
-            this._appSettings  = appSettings?.Value ?? throw new ArgumentNullException(nameof(appSettings));
+            this._unitOfWork = unitOfWork;
+            this._genericRepositoryLinksUsers = genericRepositoryLinksUsers;
+            this._appSettings = appSettings?.Value ?? throw new ArgumentNullException(nameof(appSettings));
         }
 
         public async Task InviteUsersByEmailWithUrlAsync(Room room, List<string> users)
@@ -36,54 +42,64 @@ namespace BLL.Services
             var currentTime = DateTime.Now;
             var expirationTime = currentTime.AddMinutes(15).ToString(CultureInfo.InvariantCulture);
 
-            var result = new List<User>();
+            var url = new InviteLink
+            {
+                Room = room, Url = string.Concat(_appSettings.Domain, Guid.NewGuid().ToString().AsSpan(0, 7)),
+            };
 
-            var url = new InviteLink {Room = room, Url = _appSettings.Domain + Guid.NewGuid().ToString().Substring(0, 7),};
+            var listOfUsersLinks = new List<InviteLinksUsers>();
 
+            await _unitOfWork.CreateTransactionAsync();
 
             foreach (var user in users)
             {
-                var inviteUser = _userService.GetUserByUserNameOrEmail(user).Result;
+                var inviteUser = await _userService.GetUserByUserNameOrEmail(user);
+                var usersLink = new InviteLinksUsers() {User = inviteUser, InviteLink = url};
                 if (room.Participants.Any(info => info.User.Id == inviteUser.Id))
                 {
                     return;
                 }
 
-                result.Add(inviteUser);
+                listOfUsersLinks.Add(usersLink);
+                await _unitOfWork.InviteLinksUsersRepository.UpdateAsync(usersLink);
+                await _unitOfWork.SaveAsync();
+
                 await _mailWorker.SendInvitationEmailAsync(room, url.Url, inviteUser.Email); //ToDO bool
             }
 
-            url.User = result;
+            url.User = listOfUsersLinks;
             url.ExpirationTime = expirationTime;
+            await _unitOfWork.InviteLinkRepository.CreateAsync(url);
+            await _unitOfWork.SaveAsync();
 
-            await _genericRepositoryUrls.CreateAsync(url);
+            await _unitOfWork.CommitAsync();
         }
 
-        public string InviteUsersByUrl(Room room)
+        public async Task<string> InviteUsersByUrl(Room room)
         {
             var currentTime = DateTime.Now;
             var expirationTime = currentTime.AddHours(5).ToString(CultureInfo.InvariantCulture);
             var url = new InviteLink
             {
-                Url = _appSettings.Domain + Guid.NewGuid().ToString().Substring(0, 6),
+                Url = string.Concat(_appSettings.Domain, Guid.NewGuid().ToString().AsSpan(0, 6)),
                 ExpirationTime = expirationTime,
                 User = null,
                 Room = room
             };
 
-            _genericRepositoryUrls.CreateAsync(url);
-            
+            await _unitOfWork.InviteLinkRepository.CreateAsync(url);
+
             return url.Url;
         }
 
         public async Task<bool> JoinByUrl(string url)
         {
-            var urlFromDb = await _genericRepositoryUrls.FindByConditionAsync(urls => urls.Url == url);
+            var urlFromDb = await _unitOfWork.InviteLinkRepository.FindByConditionAsync(urls => urls.Url == url);
 
             var urlsEnumerable = urlFromDb.ToList();
             if (urlsEnumerable.Any())
             {
-                var responseUrl = urlsEnumerable.FirstOrDefault();
+                var responseUrl = urlsEnumerable.First();
                 var now = DateTime.Now;
                 var expirationTime = DateTime.Parse(responseUrl.ExpirationTime, CultureInfo.InvariantCulture);
 
@@ -91,23 +107,21 @@ namespace BLL.Services
                     responseUrl.User.Select(x => x.Id).Contains(_currentUser.User.Id) && expirationTime >= now)
                 {
                     var rooms =
-                        await _genericRepositoryRooms.FindByConditionAsync(room => room.Id == responseUrl.Room.Id);
+                        await _unitOfWork.RoomRepository.FindByConditionAsync(room => room.Id == responseUrl.Room.Id);
 
                     var room = rooms.FirstOrDefault();
                     var participantInfo = new ParticipantInfo()
                     {
-                        Notifications = true,
-                        User = _currentUser.User,
-                        Role = room.BaseRole
+                        Notifications = true, User = _currentUser.User, Role = room?.BaseRole
                     };
-                    
+
                     if (room.Participants.All(info => info.User.Id != participantInfo.User.Id))
                     {
                         room.Participants.Add(participantInfo);
                     }
-
-                    await _genericRepositoryRooms.UpdateAsync(room);
                     
+                    await _unitOfWork.RoomRepository.UpdateAsync(room);
+
                     return true;
                 }
             }

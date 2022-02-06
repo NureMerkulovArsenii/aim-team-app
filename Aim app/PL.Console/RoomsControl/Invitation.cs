@@ -51,7 +51,7 @@ namespace PL.Console.RoomsControl
 
             if (userKey == "u")
             {
-                var url = _invitationService.InviteUsersByUrl(room);
+                var url = _invitationService.InviteUsersByUrl(room).Result;
                 System.Console.WriteLine(url);
             }
 
