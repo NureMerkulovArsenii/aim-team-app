@@ -3,12 +3,26 @@ using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Linq.Expressions;
 using Newtonsoft.Json;
 
 namespace Core
 {
     public class Room : BaseEntity
     {
+        [NotMapped]
+        public static Expression<Func<Room, Room>> Selector { get; } = q => new Room()
+        {
+            Participants = q.Participants,
+            Photo = q.Photo,
+            BaseRole = q.BaseRole,
+            PhotoSource = q.PhotoSource,
+            RoomDescription = q.PhotoSource,
+            RoomName = q.PhotoSource,
+            RoomRoles = q.RoomRoles,
+            TextChannels = q.TextChannels,
+            Id = q.Id
+        };
         public string RoomName { get; set; }
 
         public string RoomDescription { get; set; }
