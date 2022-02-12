@@ -24,7 +24,7 @@ namespace BLL.Services
             var participant = room.Participants.FirstOrDefault(participant => participant.User.Id == user.Id);
             var userRole = participant?.Role;
 
-            if (!userRole.CanManageRoles || room.RoomRoles.All(roomRole => roomRole.Id != role.Id))
+            if (!userRole!.CanManageRoles || room.RoomRoles.All(roomRole => roomRole.Id != role.Id))
             {
                 return false;
             }
@@ -73,8 +73,9 @@ namespace BLL.Services
 
         public async Task<bool> DeleteRole(Room room, Role role)
         {
-            if (!CanManageRoles(room) || room.BaseRole.Id == role.Id ||
-                room.RoomRoles.Any(roomRole => roomRole.Id == role.Id))
+            if (!CanManageRoles(room) || room.BaseRole.Id == role.Id || 
+                room.RoomRoles.All(roomRole => role.Id != roomRole.Id) ||
+                room.Participants.Select(participant => participant.Role).Any(roomRole => roomRole.Id == role.Id))
             {
                 return false;
             }
@@ -113,7 +114,7 @@ namespace BLL.Services
 
         public async Task<bool> SetRoleToUser(Room room, User user, Role role)
         {
-            if (!CanManageRoles(room) || room.RoomRoles.Any(roomRole => roomRole.Id == role.Id))
+            if (!CanManageRoles(room) || room.RoomRoles.All(roomRole => roomRole.Id != role.Id))
             {
                 return false;
             }
@@ -143,7 +144,7 @@ namespace BLL.Services
 
             var roomParticipants = room?.Participants;
 
-            foreach (var participant in roomParticipants)
+            foreach (var participant in roomParticipants!)
             {
                 var user = participant.User;
                 var role = participant.Role;
@@ -160,7 +161,7 @@ namespace BLL.Services
             var participant = room.Participants.FirstOrDefault(participant => participant.User.Id == user.Id);
             var userRole = participant?.Role;
 
-            if (userRole.CanManageRoles)
+            if (userRole!.CanManageRoles)
             {
                 return true;
             }
