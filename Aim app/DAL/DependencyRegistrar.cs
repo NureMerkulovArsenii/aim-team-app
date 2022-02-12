@@ -11,7 +11,7 @@ namespace DAL
         public static void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<AppContext>();
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddSingleton<IUnitOfWork, UnitOfWork>();
             // services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositoryDb<>));
             services.AddScoped<IJsonWorker, JsonWorker>();
         }

@@ -28,7 +28,7 @@ namespace BLL.Services
                 var tempUser = new User();
                 await _passwordService.SetPassword(tempUser, password);
                 var passwordHashed = tempUser.Password;
-                var receivedUsers = await _unitOfWork.UserRepository.FindByConditionAsync(user =>
+                var receivedUsers = _unitOfWork.UserRepository.FindByCondition(user =>
                     user.Password == passwordHashed &&
                     (user.Email == usernameOrEmail || user.UserName == usernameOrEmail));
                 
@@ -47,7 +47,7 @@ namespace BLL.Services
             }
 
             var userWithEmail =
-                await _unitOfWork.UserRepository.FindByConditionAsync(user => user.UserName == usernameOrEmail);
+                _unitOfWork.UserRepository.FindByCondition(user => user.UserName == usernameOrEmail);
             
             return userWithEmail.FirstOrDefault()?.Email;
         }
@@ -63,12 +63,13 @@ namespace BLL.Services
         {
             user.LastAuth = DateTime.Now;
 
-            await _unitOfWork.UserRepository.UpdateAsync(user);
+            _unitOfWork.UserRepository.Update(user);
+            _unitOfWork.Save();
         }
 
         public async Task<User> GetInfoAboutUser(string usernameOrEmail)
         {
-            var usersFromDb = await _unitOfWork.UserRepository.FindByConditionAsync(user =>
+            var usersFromDb = _unitOfWork.UserRepository.FindByCondition(user =>
                 user.Email == usernameOrEmail || user.UserName == usernameOrEmail);
             
             return usersFromDb.FirstOrDefault();

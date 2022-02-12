@@ -28,7 +28,7 @@ namespace BLL.Services
 
             foreach (var userInPersonalChat in userToChatWith)
             {
-                var users = await _unitOfWork.UserRepository.FindByConditionAsync(user =>
+                var users = _unitOfWork.UserRepository.FindByCondition(user =>
                     user.UserName == userInPersonalChat || user.Email == userInPersonalChat);
                 var user = users.FirstOrDefault();
                 if (user != null && !participants.Select(x => x.Id).Contains(user.Id))
@@ -47,7 +47,7 @@ namespace BLL.Services
             var personalChat = new PersonalChat {ChatName = chatName, Participants = new List<UsersPersonalChats>()};
 
 
-            await _unitOfWork.CreateTransactionAsync();
+            _unitOfWork.CreateTransaction();
 
             foreach (var participant in participants)
             {
@@ -55,9 +55,16 @@ namespace BLL.Services
                 personalChat.Participants.Add(userOfPersonalChat);
             }
 
-            await _unitOfWork.PersonalChatRepository.CreateAsync(personalChat);
-            await _unitOfWork.SaveAsync();
-            await _unitOfWork.CommitAsync();
+            try
+            {
+                await _unitOfWork.PersonalChatRepository.CreateAsync(personalChat);
+                _unitOfWork.Commit();
+            }
+            catch
+            {
+                _unitOfWork.Rollback();
+            }
+            
 
             // foreach (var userOfPersonalChat in personalChat.Participants)
             // {
@@ -75,7 +82,10 @@ namespace BLL.Services
         public async Task<bool> ChangeNameOfPersonalChat(PersonalChat chat, string name)
         {
             chat.ChatName = name;
-            await _unitOfWork.PersonalChatRepository.UpdateAsync(chat);
+            
+            _unitOfWork.PersonalChatRepository.Update(chat);
+            _unitOfWork.Save();
+            
             return true;
         }
 
@@ -83,31 +93,28 @@ namespace BLL.Services
         {
             try
             {
-                await _unitOfWork.CreateTransactionAsync();
+                _unitOfWork.CreateTransaction();
 
                 foreach (var participant in participants)
                 {
                     var usersOfPersonalChats = new UsersPersonalChats();
-                    var user = (await _unitOfWork.UserRepository.FindByConditionAsync(user =>
+                    var user = (_unitOfWork.UserRepository.FindByCondition(user =>
                         user.UserName == participant || user.Email == participant)).FirstOrDefault();
 
                     if (!chat.Participants.Select(x => x.User.Id).Contains(user.Id))
                     {
                         usersOfPersonalChats.PersonalChat = chat;
                         usersOfPersonalChats.User = user;
-                        await _unitOfWork.UsersPersonalChats.UpdateAsync(usersOfPersonalChats);
-                        await _unitOfWork.SaveAsync();
+                        _unitOfWork.UsersPersonalChats.Update(usersOfPersonalChats);
                     }
                 }
 
-                await _unitOfWork.PersonalChatRepository.UpdateAsync(chat);
-                await _unitOfWork.SaveAsync();
-                await _unitOfWork.CommitAsync();
+                _unitOfWork.PersonalChatRepository.Update(chat);
+                _unitOfWork.Commit();
             }
-            catch (NullReferenceException e)
+            catch (Exception)
             {
-                await _unitOfWork.RollbackAsync();
-                Console.WriteLine(e);
+                _unitOfWork.Rollback();
             }
         }
 
@@ -119,7 +126,7 @@ namespace BLL.Services
             //         .Contains(_currentUser.User.Id));
 
 
-            var users = await _unitOfWork.PersonalChatRepository.FindByConditionAsync(q => q.Participants
+            var users = _unitOfWork.PersonalChatRepository.FindByCondition(q => q.Participants
                 .Select(chats => chats.User.Id)
                 .Contains(_currentUser.User.Id), PersonalChat.Selector);
 
@@ -139,27 +146,30 @@ namespace BLL.Services
             //var participant = chat.Participants.FirstOrDefault(chats => chats.User.Id == user.Id);
             var participant = chat.Participants.First(personalChats => personalChats.User.Id == user.Id);
 
-            await _unitOfWork.CreateTransactionAsync();
-
-            if (!chat.Participants.Remove(participant))
+            try
             {
-                return false;
-            }
+                _unitOfWork.CreateTransaction();
 
-            if (chat.Participants.Count == 0)
+                if (!chat.Participants.Remove(participant))
+                {
+                    return false;
+                }
+
+                if (chat.Participants.Count == 0)
+                {
+                    _unitOfWork.PersonalChatRepository.Delete(chat);
+                    return true;
+                }
+
+                _unitOfWork.UsersPersonalChats.Delete(participant);
+                _unitOfWork.PersonalChatRepository.Update(chat);
+                
+                _unitOfWork.Commit();
+            }
+            catch (Exception)
             {
-                await _unitOfWork.PersonalChatRepository.DeleteAsync(chat);
-                return true;
+                _unitOfWork.Rollback();
             }
-
-            await _unitOfWork.UsersPersonalChats.DeleteAsync(participant);
-            await _unitOfWork.SaveAsync();
-
-            await _unitOfWork.PersonalChatRepository.UpdateAsync(chat);
-            await _unitOfWork.SaveAsync();
-
-
-            await _unitOfWork.CommitAsync();
 
             return true;
         }

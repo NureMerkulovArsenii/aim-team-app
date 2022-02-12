@@ -47,7 +47,8 @@ namespace BLL.Services
                     textChannel.IsAdminChannel = isAdmin.Value;
                 }
 
-                await _unitOfWork.TextChannelRepository.UpdateAsync(textChannel);
+                _unitOfWork.TextChannelRepository.Update(textChannel);
+                _unitOfWork.Save();
                 return true;
             }
             catch (Exception)
@@ -72,19 +73,19 @@ namespace BLL.Services
             
             room.TextChannels.Add(newTextChannel);
             
-            await _unitOfWork.CreateTransactionAsync();
+            _unitOfWork.CreateTransaction();
             try
             {
                 await _unitOfWork.TextChannelRepository.CreateAsync(newTextChannel);
-                await _unitOfWork.RoomRepository.UpdateAsync(room);
+                _unitOfWork.RoomRepository.Update(room);
                 
-                await _unitOfWork.CommitAsync();
+                _unitOfWork.Commit();
                 
                 return true;
             }
             catch (Exception)
             {
-                await _unitOfWork.RollbackAsync();
+                _unitOfWork.Rollback();
                 return false;
             }
         }
@@ -114,19 +115,19 @@ namespace BLL.Services
             
             room.TextChannels.Remove(textChannel);
 
-            await _unitOfWork.CreateTransactionAsync();
+            _unitOfWork.CreateTransaction();
             try
             {
-                await _unitOfWork.TextChannelRepository.DeleteAsync(textChannel);
-                await _unitOfWork.RoomRepository.UpdateAsync(room);
+                _unitOfWork.TextChannelRepository.Delete(textChannel);
+                _unitOfWork.RoomRepository.Update(room);
 
-                await _unitOfWork.CommitAsync();
+                _unitOfWork.Commit();
                 
                 return true;
             }
             catch (Exception)
             {
-                await _unitOfWork.RollbackAsync();
+                _unitOfWork.Rollback();
                 return false;
             }
         }

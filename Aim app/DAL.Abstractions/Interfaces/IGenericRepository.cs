@@ -8,7 +8,7 @@ namespace DAL.Abstractions.Interfaces
 {
     public interface IGenericRepository<TEntity> where TEntity : BaseEntity
     {
-        Task<IList<TEntity>> FindByConditionAsync(Expression<Func<TEntity, bool>> predicate,
+        IList<TEntity> FindByCondition(Expression<Func<TEntity, bool>> predicate,
             Expression<Func<TEntity, TEntity>> selector = null);
 
         //Task<IList<TEntity>> Get(Expression<Func<TEntity, TEntity>> selector,
@@ -18,8 +18,8 @@ namespace DAL.Abstractions.Interfaces
 
         Task CreateAsync(TEntity entity);
 
-        Task UpdateAsync(TEntity entity);
+        void Update(TEntity entity);
 
-        Task DeleteAsync(TEntity entity);
+        void Delete(TEntity entity);
     }
 }

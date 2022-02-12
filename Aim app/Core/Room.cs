@@ -17,8 +17,8 @@ namespace Core
             Photo = q.Photo,
             BaseRole = q.BaseRole,
             PhotoSource = q.PhotoSource,
-            RoomDescription = q.PhotoSource,
-            RoomName = q.PhotoSource,
+            RoomDescription = q.RoomDescription,
+            RoomName = q.RoomName,
             RoomRoles = q.RoomRoles,
             TextChannels = q.TextChannels,
             Id = q.Id

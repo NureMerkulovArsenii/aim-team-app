@@ -6,13 +6,13 @@ namespace DAL.Abstractions.Interfaces;
 
 public interface IUnitOfWork : IDisposable
 {
-    Task CreateTransactionAsync();
+    void CreateTransaction();
 
-    Task CommitAsync();
+    void Commit();
 
-    Task RollbackAsync();
+    void Rollback();
 
-    Task SaveAsync();
+    void Save();
 
     // IGenericRepository<T> GenericRepositoryDb<T>() where T : class;
 

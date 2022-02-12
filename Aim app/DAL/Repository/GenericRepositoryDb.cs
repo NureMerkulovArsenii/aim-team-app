@@ -34,7 +34,7 @@ namespace DAL.Repository
         //     return result;
         // }
 
-        public async Task<IList<TEntity>> FindByConditionAsync(Expression<Func<TEntity, bool>> predicate,
+        public IList<TEntity> FindByCondition(Expression<Func<TEntity, bool>> predicate,
             Expression<Func<TEntity, TEntity>> selector = null)
         {
             IQueryable<TEntity> query = _dbSet;
@@ -68,13 +68,11 @@ namespace DAL.Repository
         public async Task CreateAsync(TEntity entity)
         {
             await _dbSet.AddAsync(entity);
-            await _appContext.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(TEntity entityToUpdate)
+        public async void Update(TEntity entityToUpdate)
         {
             _dbSet.Update(entityToUpdate);
-            await _appContext.SaveChangesAsync();
         }
 
         // public void Update(TEntity entityToUpdate)
@@ -83,10 +81,9 @@ namespace DAL.Repository
         //     _appContext.Entry(entityToUpdate).State = EntityState.Modified;
         // }
 
-        public async Task DeleteAsync(TEntity entityToDelete)
+        public async void Delete(TEntity entityToDelete)
         {
             _dbSet.Remove(entityToDelete);
-            await _appContext.SaveChangesAsync();
         }
 
         // public async Task Delete(TEntity entityToDelete)

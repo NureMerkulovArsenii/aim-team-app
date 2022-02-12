@@ -37,7 +37,8 @@ namespace BLL.Services
                 }
             }
 
-            await _unitOfWork.RoleRepository.UpdateAsync(role);
+            _unitOfWork.RoleRepository.Update(role);
+            _unitOfWork.Save();
 
             return true;
         }
@@ -55,17 +56,17 @@ namespace BLL.Services
 
             try
             {
-                await _unitOfWork.CreateTransactionAsync();
+                _unitOfWork.CreateTransaction();
 
                 await _unitOfWork.RoleRepository.CreateAsync(newRole);
 
-                await _unitOfWork.RoomRepository.UpdateAsync(room);
+                _unitOfWork.RoomRepository.Update(room);
 
-                await _unitOfWork.CommitAsync();
+                _unitOfWork.Commit();
             }
             catch
             {
-                await _unitOfWork.RollbackAsync();
+                _unitOfWork.Rollback();
             }
 
             return newRole;
@@ -84,17 +85,17 @@ namespace BLL.Services
 
             try
             {
-                await _unitOfWork.CreateTransactionAsync();
+                _unitOfWork.CreateTransaction();
 
-                await _unitOfWork.RoleRepository.DeleteAsync(role);
+                _unitOfWork.RoleRepository.Delete(role);
 
-                await _unitOfWork.RoomRepository.UpdateAsync(room);
+                _unitOfWork.RoomRepository.Update(room);
 
-                await _unitOfWork.CommitAsync();
+                _unitOfWork.Commit();
             }
             catch
             {
-                await _unitOfWork.RollbackAsync();
+                _unitOfWork.Rollback();
             }
 
             return true;
@@ -128,7 +129,8 @@ namespace BLL.Services
 
             participant.Role = role;
 
-            await _unitOfWork.RoomRepository.UpdateAsync(room);
+            _unitOfWork.RoomRepository.Update(room);
+            _unitOfWork.Save();
 
             return true;
         }
@@ -137,8 +139,8 @@ namespace BLL.Services
         {
             var result = new Dictionary<string, string>();
 
-            var rooms = await _unitOfWork.RoomRepository
-                .FindByConditionAsync(room => room.Id == roomId, Room.Selector);
+            var rooms = _unitOfWork.RoomRepository
+                .FindByCondition(room => room.Id == roomId, Room.Selector);
             var room = rooms.FirstOrDefault();
 
             var roomParticipants = room?.Participants;

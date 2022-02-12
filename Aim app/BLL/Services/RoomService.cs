@@ -53,19 +53,19 @@ namespace BLL.Services
 
             try
             {
-                await _unitOfWork.CreateTransactionAsync();
+                _unitOfWork.CreateTransaction();
 
                 await _unitOfWork.RoleRepository.CreateAsync(baseRole);
 
                 await _unitOfWork.RoleRepository.CreateAsync(adminRole);
 
-                await _unitOfWork.RoomRepository.UpdateAsync(room);
+                _unitOfWork.RoomRepository.Update(room);
 
-                await _unitOfWork.CommitAsync();
+                _unitOfWork.Commit();
             }
             catch
             {
-                await _unitOfWork.RollbackAsync();
+                _unitOfWork.Rollback();
             }
 
             return room.Id;
@@ -77,7 +77,8 @@ namespace BLL.Services
 
             if (IsUserAdmin(room, user))
             {
-                await _unitOfWork.RoomRepository.DeleteAsync(room);
+                _unitOfWork.RoomRepository.Delete(room);
+                _unitOfWork.Save();
 
                 return true;
             }
@@ -102,7 +103,8 @@ namespace BLL.Services
                     room.RoomDescription = description;
                 }
 
-                await _unitOfWork.RoomRepository.UpdateAsync(room);
+                _unitOfWork.RoomRepository.Update(room);
+                _unitOfWork.Save();
 
                 return true;
             }
@@ -120,8 +122,8 @@ namespace BLL.Services
 
         public async Task<List<User>> GetParticipantsOfRoom(int roomId)
         {
-            var rooms = await _unitOfWork.RoomRepository
-                .FindByConditionAsync(room => room.Id == roomId, Room.Selector);
+            var rooms = _unitOfWork.RoomRepository
+                .FindByCondition(room => room.Id == roomId, Room.Selector);
 
             var room = rooms.FirstOrDefault();
 

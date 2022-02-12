@@ -20,7 +20,7 @@ namespace BLL.Helpers
         {
             try
             {
-                var users = await _unitOfWork.UserRepository.FindByConditionAsync(user => user.Email == email);
+                var users = _unitOfWork.UserRepository.FindByCondition(user => user.Email == email);
                 if (users.Any())
                 {
                     return 1;
@@ -39,7 +39,7 @@ namespace BLL.Helpers
 
         public async Task<bool> ValidateUserNick(string nick)
         {
-            var result = await _unitOfWork.UserRepository.FindByConditionAsync(user => user.UserName == nick);
+            var result = _unitOfWork.UserRepository.FindByCondition(user => user.UserName == nick);
             if (result.Any())
             {
                 return false;
@@ -50,8 +50,8 @@ namespace BLL.Helpers
 
         public async Task<bool> ValidateUserNameOrEmail(string userName)
         {
-            var result = await _unitOfWork.UserRepository
-                .FindByConditionAsync(user => user.UserName == userName || user.Email == userName);
+            var result = _unitOfWork.UserRepository
+                .FindByCondition(user => user.UserName == userName || user.Email == userName);
             
             return result.Any();
         }

@@ -31,8 +31,8 @@ namespace DAL.Repository
             return await _jsonWorker.LoadFromFileAsync<IEnumerable<TEntity>>(_appSettings.JsonDirectory + file);
         }
 
-
-        public Task<IList<TEntity>> FindByConditionAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TEntity>> selector = null)
+        public IList<TEntity> FindByCondition(Expression<Func<TEntity, bool>> predicate,
+            Expression<Func<TEntity, TEntity>> selector = null)
         {
             throw new NotImplementedException();
         }
@@ -67,13 +67,13 @@ namespace DAL.Repository
             }
         }
 
-        public async Task UpdateAsync(TEntity entity)
+        public async void Update(TEntity entity)
         {
-            await DeleteAsync(entity);
+            Delete(entity);
             await CreateAsync(entity);
         }
 
-        public async Task DeleteAsync(TEntity entity)
+        public async void Delete(TEntity entity)
         {
             var file = GetFile(typeof(TEntity));
 

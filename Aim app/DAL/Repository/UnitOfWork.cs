@@ -11,7 +11,6 @@ public class UnitOfWork : IUnitOfWork
 {
     private readonly AppContext _context;
     private IDbContextTransaction _objTran;
-    // private Dictionary<string, object> _repositories;
     private readonly IGenericRepository<User> _userRepository;
     private readonly IGenericRepository<Role> _roleRepository;
     private readonly IGenericRepository<Room> _roomRepository;
@@ -46,33 +45,36 @@ public class UnitOfWork : IUnitOfWork
 
     public IGenericRepository<UsersPersonalChats> UsersPersonalChats =>
         _usersPersonalChatsRepository ?? new GenericRepositoryDb<UsersPersonalChats>(_context);
-    
-    // public AppContext Context
-    // {
-    //     get { return _context; }
-    // }
 
-    public async Task CreateTransactionAsync()
+    public void CreateTransaction()
     {
-        _objTran = await _context.Database.BeginTransactionAsync();
+        _objTran = _context.Database.BeginTransaction();
     }
 
-    public async Task CommitAsync()
+    public void Commit()
     {
-        await _objTran.CommitAsync();
+        try
+        {
+            _context.SaveChanges();
+            _objTran.Commit();
+        }
+        catch
+        {
+            this.Rollback();
+        }
     }
 
-    public async Task RollbackAsync()
+    public void Rollback()
     {
-        await _objTran.RollbackAsync();
-        await _objTran.DisposeAsync();
+        _objTran.Rollback();
+        _objTran.Dispose();
     }
 
-    public async Task SaveAsync()
+    public void Save()
     {
         // try
         // {
-        await _context.SaveChangesAsync();
+        _context.SaveChanges();
         // }
         // catch (DbEntityValidationException dbEx)
         // {
@@ -82,36 +84,6 @@ public class UnitOfWork : IUnitOfWork
         //     throw new Exception(_errorMessage, dbEx);
         // }
     }
-
-    // public IGenericRepository<T> GenericRepository<T>() where T : class
-    // {
-    //     _repositories ??= new Dictionary<string, object>();
-    //         
-    //     var type = typeof(T).Name;
-    //     if (!_repositories.ContainsKey(type))
-    //     {
-    //         var repositoryType = typeof(IGenericRepository<T>);
-    //         var repositoryInstance = Activator.CreateInstance(repositoryType.MakeGenericType(typeof(T)), _context);
-    //         _repositories.Add(type, repositoryInstance);
-    //     }
-    //     
-    //     return (IGenericRepository<T>)_repositories[type];
-    // }
-
-    // public GenericRepositoryDb<T> GenericRepositoryDb<T>() where T : class
-    // {
-    //     _repositories ??= new Dictionary<string, object>();
-    //         
-    //     var type = typeof(T).Name;
-    //     if (!_repositories.ContainsKey(type))
-    //     {
-    //         var repositoryType = typeof(GenericRepositoryDb<T>);
-    //         var repositoryInstance = Activator.CreateInstance(repositoryType.MakeGenericType(typeof(T)), _context);
-    //         _repositories.Add(type, repositoryInstance);
-    //     }
-    //     
-    //     return (GenericRepositoryDb<T>)_repositories[type];
-    // }
 
     private bool _disposed = false;
 

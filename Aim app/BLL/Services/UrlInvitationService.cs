@@ -40,30 +40,34 @@ namespace BLL.Services
 
             var listOfUsersLinks = new List<InviteLinksUsers>();
 
-            await _unitOfWork.CreateTransactionAsync();
-
-            foreach (var user in users)
+            _unitOfWork.CreateTransaction();
+            try
             {
-                var inviteUser = await _userService.GetUserByUserNameOrEmail(user);
-                var usersLink = new InviteLinksUsers() {User = inviteUser, InviteLink = url};
-                if (room.Participants.Any(info => info.User.Id == inviteUser.Id))
+                foreach (var user in users)
                 {
-                    return;
+                    var inviteUser = await _userService.GetUserByUserNameOrEmail(user);
+                    var usersLink = new InviteLinksUsers() {User = inviteUser, InviteLink = url};
+                    if (room.Participants.Any(info => info.User.Id == inviteUser.Id))
+                    {
+                        return;
+                    }
+
+                    listOfUsersLinks.Add(usersLink);
+                    _unitOfWork.InviteLinksUsersRepository.Update(usersLink);
+
+                    await _mailWorker.SendInvitationEmailAsync(room, url.Url, inviteUser.Email); //ToDO bool
                 }
 
-                listOfUsersLinks.Add(usersLink);
-                await _unitOfWork.InviteLinksUsersRepository.UpdateAsync(usersLink);
-                await _unitOfWork.SaveAsync();
+                url.User = listOfUsersLinks;
+                url.ExpirationTime = expirationTime;
+                await _unitOfWork.InviteLinkRepository.CreateAsync(url);
 
-                await _mailWorker.SendInvitationEmailAsync(room, url.Url, inviteUser.Email); //ToDO bool
+                _unitOfWork.Commit();
             }
-
-            url.User = listOfUsersLinks;
-            url.ExpirationTime = expirationTime;
-            await _unitOfWork.InviteLinkRepository.CreateAsync(url);
-            await _unitOfWork.SaveAsync();
-
-            await _unitOfWork.CommitAsync();
+            catch (Exception)
+            {
+                _unitOfWork.Rollback();
+            }
         }
 
         public async Task<string> InviteUsersByUrl(Room room)
@@ -86,7 +90,7 @@ namespace BLL.Services
         public async Task<bool> JoinByUrl(string url)
         {
             var urlFromDb =
-                await _unitOfWork.InviteLinkRepository.FindByConditionAsync(urls => urls.Url == url,
+                _unitOfWork.InviteLinkRepository.FindByCondition(urls => urls.Url == url,
                     InviteLink.Selector);
 
             var urlsEnumerable = urlFromDb.ToList();
@@ -100,7 +104,7 @@ namespace BLL.Services
                     responseUrl.User.Select(x => x.Id).Contains(_currentUser.User.Id) && expirationTime >= now)
                 {
                     var rooms =
-                        await _unitOfWork.RoomRepository.FindByConditionAsync(room => room.Id == responseUrl.Room.Id, Room.Selector);
+                        _unitOfWork.RoomRepository.FindByCondition(room => room.Id == responseUrl.Room.Id, Room.Selector);
 
                     var room = rooms.FirstOrDefault();
                     var participantInfo = new ParticipantInfo()
@@ -113,7 +117,8 @@ namespace BLL.Services
                         room.Participants.Add(participantInfo);
                     }
 
-                    await _unitOfWork.RoomRepository.UpdateAsync(room);
+                    _unitOfWork.RoomRepository.Update(room);
+                    _unitOfWork.Save();
 
                     return true;
                 }

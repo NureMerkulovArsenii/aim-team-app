@@ -37,6 +37,7 @@ namespace BLL.Services
             await _passwordService.SetPassword(user, password);
 
             await _unitOfWork.UserRepository.CreateAsync(user);
+            _unitOfWork.Save();
 
             _currentUser.User = user;
         }

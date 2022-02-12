@@ -29,7 +29,8 @@ namespace BLL.Services
 
             room.Participants.Remove(
                 room.Participants.FirstOrDefault(participant => participant.User.Id == _currentUser.User.Id));
-            await _unitOfWork.RoomRepository.UpdateAsync(room);
+            _unitOfWork.RoomRepository.Update(room);
+            _unitOfWork.Save();
 
             return true;
         }
@@ -44,7 +45,8 @@ namespace BLL.Services
             room.Participants.FirstOrDefault(participant => participant.User.Id == _currentUser.User.Id)!
                     .Notifications =
                 stateOnOrOff;
-            await _unitOfWork.RoomRepository.UpdateAsync(room);
+            _unitOfWork.RoomRepository.Update(room);
+            _unitOfWork.Save();
 
             return true;
         }
@@ -58,15 +60,7 @@ namespace BLL.Services
         {
             var currentUser = _currentUser.User;
 
-            Expression<Func<Room, Room>> selector = q => new Room()
-            {
-                Participants = q.Participants,
-                RoomRoles = q.RoomRoles,
-                TextChannels = q.TextChannels,
-                BaseRole = q.BaseRole
-            };
-
-            var foundRooms = await _unitOfWork.RoomRepository.FindByConditionAsync(room =>
+            var foundRooms = _unitOfWork.RoomRepository.FindByCondition(room =>
                 room.Participants.Any(participant => participant.User.Id == currentUser.Id), Room.Selector);
 
             // var foundRooms = await _unitOfWork.RoomRepository
@@ -90,7 +84,8 @@ namespace BLL.Services
                 user.LastName = lastName;
             }
 
-            await _unitOfWork.UserRepository.UpdateAsync(user);
+            _unitOfWork.UserRepository.Update(user);
+            _unitOfWork.Save();
         }
 
         public async Task<Role> GetRoleInRoom(Room room)
@@ -104,7 +99,7 @@ namespace BLL.Services
 
         public async Task<User> GetUserByUserNameOrEmail(string userName)
         {
-            var users = await _unitOfWork.UserRepository.FindByConditionAsync(user =>
+            var users = _unitOfWork.UserRepository.FindByCondition(user =>
                 user.UserName == userName || user.Email == userName);
 
             return users.FirstOrDefault();
