@@ -34,20 +34,26 @@ namespace DAL.Repository
         //     return result;
         // }
 
-        public async Task<IList<TEntity>> FindByConditionAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TEntity>> selector = null)
+        public async Task<IList<TEntity>> FindByConditionAsync(Expression<Func<TEntity, bool>> predicate,
+            Expression<Func<TEntity, TEntity>> selector = null)
         {
             IQueryable<TEntity> query = _dbSet;
 
-            var type = typeof(TEntity);
-            var props = type.GetProperties();
-            
-            
-            
+            // var type = typeof(TEntity);
+            // var props = type.GetProperties();
 
-            var result = query
-                .Where(predicate)
-                .Select(selector)
-                .ToList();
+            List<TEntity> result;
+
+            if (selector != null)
+            {
+                result = query.Where(predicate)
+                    .Select(selector)
+                    .ToList();
+            }
+            else
+            {
+                result = query.Where(predicate).ToList();
+            }
 
             return result;
         }

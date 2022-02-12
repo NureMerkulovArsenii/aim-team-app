@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
@@ -42,27 +44,32 @@ namespace BLL.Services
 
             var chatName = GenerateChatName(userToChatWith);
 
-            var personalChat = new PersonalChat {ChatName = chatName};
+            var personalChat = new PersonalChat {ChatName = chatName, Participants = new List<UsersPersonalChats>()};
 
-            var usersOfPersonalChat = new List<UsersPersonalChats>();
+
             await _unitOfWork.CreateTransactionAsync();
 
             foreach (var participant in participants)
             {
                 var userOfPersonalChat = new UsersPersonalChats() {User = participant, PersonalChat = personalChat};
-
-                await _unitOfWork.UsersPersonalChats.CreateAsync(userOfPersonalChat);
-                await _unitOfWork.SaveAsync();
-
-                usersOfPersonalChat.Add(userOfPersonalChat);
+                personalChat.Participants.Add(userOfPersonalChat);
             }
-
-            personalChat.Participants = usersOfPersonalChat;
 
             await _unitOfWork.PersonalChatRepository.CreateAsync(personalChat);
             await _unitOfWork.SaveAsync();
-
             await _unitOfWork.CommitAsync();
+
+            // foreach (var userOfPersonalChat in personalChat.Participants)
+            // {
+            //     await _unitOfWork.UsersPersonalChats.CreateAsync(userOfPersonalChat);
+            //     await _unitOfWork.SaveAsync();
+            // }
+
+
+            //await _unitOfWork.PersonalChatRepository.CreateAsync(personalChat);
+            //await _unitOfWork.SaveAsync();
+
+            // await _unitOfWork.CommitAsync();
         }
 
         public async Task<bool> ChangeNameOfPersonalChat(PersonalChat chat, string name)
@@ -106,11 +113,17 @@ namespace BLL.Services
 
         public async Task<IList<PersonalChat>> GetUserPersonalChats()
         {
-            var userChats = await
-                _unitOfWork.PersonalChatRepository.FindByConditionAsync(chat =>
-                    chat.Participants.Select(x => x.Id).Contains(_currentUser.User.Id));
+            // var users = await
+            //     _unitOfWork.PersonalChatRepository.FindByConditionAsync(chat => chat.Participants
+            //         .Select(x => x.User.Id)
+            //         .Contains(_currentUser.User.Id));
 
-            return userChats.ToList();
+
+            var users = await _unitOfWork.PersonalChatRepository.FindByConditionAsync(q => q.Participants
+                .Select(chats => chats.User.Id)
+                .Contains(_currentUser.User.Id), PersonalChat.Selector);
+
+            return users.ToList();
         }
 
         public async Task<IList<string>> GetUserNamesOfChat(PersonalChat chat)
@@ -123,7 +136,8 @@ namespace BLL.Services
         public async Task<bool> LeavePersonalChat(PersonalChat chat)
         {
             var user = _currentUser.User;
-            var participant = chat.Participants.FirstOrDefault(chats => chats.User.Id == user.Id);
+            //var participant = chat.Participants.FirstOrDefault(chats => chats.User.Id == user.Id);
+            var participant = chat.Participants.First(personalChats => personalChats.User.Id == user.Id);
 
             await _unitOfWork.CreateTransactionAsync();
 
@@ -138,10 +152,12 @@ namespace BLL.Services
                 return true;
             }
 
-            await _unitOfWork.PersonalChatRepository.UpdateAsync(chat);
-            await _unitOfWork.SaveAsync();
             await _unitOfWork.UsersPersonalChats.DeleteAsync(participant);
             await _unitOfWork.SaveAsync();
+
+            await _unitOfWork.PersonalChatRepository.UpdateAsync(chat);
+            await _unitOfWork.SaveAsync();
+
 
             await _unitOfWork.CommitAsync();
 

@@ -23,7 +23,7 @@ namespace BLL.Services
         {
             var user = _currentUser.User;
 
-            var result = IsPasswordCorrect(user, oldPassword) ? await SetPassword(user, newPassword) : false;
+            var result = IsPasswordCorrect(user, oldPassword) && await SetPassword(user, newPassword);
 
             try
             {

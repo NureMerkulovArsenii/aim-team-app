@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
@@ -38,10 +39,7 @@ namespace BLL.Services
 
             var baseRole = new Role("User");
 
-            var adminParticipantInfo = new ParticipantInfo()
-            {
-                Notifications = true, User = user, Role = adminRole
-            };
+            var adminParticipantInfo = new ParticipantInfo() {Notifications = true, User = user, Role = adminRole};
 
             var room = new Room()
             {
@@ -58,9 +56,9 @@ namespace BLL.Services
                 await _unitOfWork.CreateTransactionAsync();
 
                 await _unitOfWork.RoleRepository.CreateAsync(baseRole);
-                
+
                 await _unitOfWork.RoleRepository.CreateAsync(adminRole);
-                
+
                 await _unitOfWork.RoomRepository.UpdateAsync(room);
 
                 await _unitOfWork.CommitAsync();
@@ -87,7 +85,8 @@ namespace BLL.Services
             return false;
         }
 
-        public async Task<bool> ChangeRoomSettings(Room room, string name, string description) //TODO: photo implementation
+        public async Task<bool>
+            ChangeRoomSettings(Room room, string name, string description) //TODO: photo implementation
         {
             var user = _currentUser.User;
 
@@ -102,7 +101,7 @@ namespace BLL.Services
                 {
                     room.RoomDescription = description;
                 }
-                
+
                 await _unitOfWork.RoomRepository.UpdateAsync(room);
 
                 return true;
@@ -121,10 +120,10 @@ namespace BLL.Services
 
         public async Task<List<User>> GetParticipantsOfRoom(int roomId)
         {
-            var room = _unitOfWork.RoomRepository
-                .FindByConditionAsync(room => room.Id == roomId)
-                .Result
-                .FirstOrDefault();
+            var rooms = await _unitOfWork.RoomRepository
+                .FindByConditionAsync(room => room.Id == roomId, Room.Selector);
+
+            var room = rooms.FirstOrDefault();
 
             var users = room?.Participants.Select(participant => participant.User).ToList();
 

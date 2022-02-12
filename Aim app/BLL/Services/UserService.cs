@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using BLL.Abstractions.Interfaces;
 using Core;
@@ -29,7 +30,7 @@ namespace BLL.Services
             room.Participants.Remove(
                 room.Participants.FirstOrDefault(participant => participant.User.Id == _currentUser.User.Id));
             await _unitOfWork.RoomRepository.UpdateAsync(room);
-            
+
             return true;
         }
 
@@ -44,7 +45,7 @@ namespace BLL.Services
                     .Notifications =
                 stateOnOrOff;
             await _unitOfWork.RoomRepository.UpdateAsync(room);
-            
+
             return true;
         }
 
@@ -57,9 +58,20 @@ namespace BLL.Services
         {
             var currentUser = _currentUser.User;
 
-            var foundRooms = await _unitOfWork.RoomRepository
-                .FindByConditionAsync(room =>
-                    room.Participants.Any(participant => participant.User.Id == currentUser.Id));
+            Expression<Func<Room, Room>> selector = q => new Room()
+            {
+                Participants = q.Participants,
+                RoomRoles = q.RoomRoles,
+                TextChannels = q.TextChannels,
+                BaseRole = q.BaseRole
+            };
+
+            var foundRooms = await _unitOfWork.RoomRepository.FindByConditionAsync(room =>
+                room.Participants.Any(participant => participant.User.Id == currentUser.Id), Room.Selector);
+
+            // var foundRooms = await _unitOfWork.RoomRepository
+            //      .FindByConditionAsync(room =>
+            //          room.Participants.Any(participant => participant.User.Id == currentUser.Id));
 
             return foundRooms.ToList();
         }
@@ -80,11 +92,12 @@ namespace BLL.Services
 
             await _unitOfWork.UserRepository.UpdateAsync(user);
         }
-        
+
         public async Task<Role> GetRoleInRoom(Room room)
         {
             var currentUser = _currentUser.User;
-            var role = room.Participants.FirstOrDefault(participantInfo => participantInfo.User.Id == currentUser.Id)?.Role;
+            var role = room.Participants.FirstOrDefault(participantInfo => participantInfo.User.Id == currentUser.Id)
+                ?.Role;
 
             return role;
         }
@@ -93,7 +106,7 @@ namespace BLL.Services
         {
             var users = await _unitOfWork.UserRepository.FindByConditionAsync(user =>
                 user.UserName == userName || user.Email == userName);
-            
+
             return users.FirstOrDefault();
         }
     }

@@ -85,7 +85,9 @@ namespace BLL.Services
 
         public async Task<bool> JoinByUrl(string url)
         {
-            var urlFromDb = await _unitOfWork.InviteLinkRepository.FindByConditionAsync(urls => urls.Url == url);
+            var urlFromDb =
+                await _unitOfWork.InviteLinkRepository.FindByConditionAsync(urls => urls.Url == url,
+                    InviteLink.Selector);
 
             var urlsEnumerable = urlFromDb.ToList();
             if (urlsEnumerable.Any())
@@ -98,7 +100,7 @@ namespace BLL.Services
                     responseUrl.User.Select(x => x.Id).Contains(_currentUser.User.Id) && expirationTime >= now)
                 {
                     var rooms =
-                        await _unitOfWork.RoomRepository.FindByConditionAsync(room => room.Id == responseUrl.Room.Id);
+                        await _unitOfWork.RoomRepository.FindByConditionAsync(room => room.Id == responseUrl.Room.Id, Room.Selector);
 
                     var room = rooms.FirstOrDefault();
                     var participantInfo = new ParticipantInfo()
@@ -106,11 +108,11 @@ namespace BLL.Services
                         Notifications = true, User = _currentUser.User, Role = room?.BaseRole
                     };
 
-                    if (room.Participants.All(info => info.User.Id != participantInfo.User.Id))
+                    if (room != null && room.Participants.All(info => info.User.Id != participantInfo.User.Id))
                     {
                         room.Participants.Add(participantInfo);
                     }
-                    
+
                     await _unitOfWork.RoomRepository.UpdateAsync(room);
 
                     return true;

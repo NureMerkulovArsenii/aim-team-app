@@ -36,7 +36,7 @@ namespace BLL.Services
                     role.Permissions[pair.Key] = value;
                 }
             }
-            
+
             await _unitOfWork.RoleRepository.UpdateAsync(role);
 
             return true;
@@ -50,7 +50,7 @@ namespace BLL.Services
             }
 
             var newRole = new Role(name);
-            
+
             room.RoomRoles.Add(newRole);
 
             try
@@ -73,13 +73,13 @@ namespace BLL.Services
 
         public async Task<bool> DeleteRole(Room room, Role role)
         {
-            if (!CanManageRoles(room) || room.BaseRole.Id == role.Id || 
+            if (!CanManageRoles(room) || room.BaseRole.Id == role.Id ||
                 room.RoomRoles.All(roomRole => role.Id != roomRole.Id) ||
                 room.Participants.Select(participant => participant.Role).Any(roomRole => roomRole.Id == role.Id))
             {
                 return false;
             }
-            
+
             room.RoomRoles.Remove(role);
 
             try
@@ -87,7 +87,7 @@ namespace BLL.Services
                 await _unitOfWork.CreateTransactionAsync();
 
                 await _unitOfWork.RoleRepository.DeleteAsync(role);
-                
+
                 await _unitOfWork.RoomRepository.UpdateAsync(room);
 
                 await _unitOfWork.CommitAsync();
@@ -125,11 +125,11 @@ namespace BLL.Services
             {
                 return false;
             }
-            
+
             participant.Role = role;
-            
+
             await _unitOfWork.RoomRepository.UpdateAsync(room);
-            
+
             return true;
         }
 
@@ -137,10 +137,9 @@ namespace BLL.Services
         {
             var result = new Dictionary<string, string>();
 
-            var room = _unitOfWork.RoomRepository
-                .FindByConditionAsync(room => room.Id == roomId)
-                .Result
-                .FirstOrDefault();
+            var rooms = await _unitOfWork.RoomRepository
+                .FindByConditionAsync(room => room.Id == roomId, Room.Selector);
+            var room = rooms.FirstOrDefault();
 
             var roomParticipants = room?.Participants;
 
@@ -161,12 +160,7 @@ namespace BLL.Services
             var participant = room.Participants.FirstOrDefault(participant => participant.User.Id == user.Id);
             var userRole = participant?.Role;
 
-            if (userRole!.CanManageRoles)
-            {
-                return true;
-            }
-
-            return false;
+            return userRole!.CanManageRoles;
         }
     }
 }
