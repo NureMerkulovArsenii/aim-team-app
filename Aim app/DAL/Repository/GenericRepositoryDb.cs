@@ -20,24 +20,29 @@ namespace DAL.Repository
             this._dbSet = appContext.Set<TEntity>();
         }
 
-        public async Task<IEnumerable<TEntity>> FindByConditionAsync(Expression<Func<TEntity, bool>> expression)
+        // public async Task<IEnumerable<TEntity>> FindByConditionAsync(Expression<Func<TEntity, bool>> expression)
+        // {
+        //     IQueryable<TEntity> query = _dbSet;
+        //
+        //     if (expression != null)
+        //     {
+        //         query = query.Where(expression);
+        //     }
+        //
+        //     IEnumerable<TEntity> result = query;
+        //
+        //     return result;
+        // }
+
+        public async Task<IList<TEntity>> FindByConditionAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TEntity>> selector = null)
         {
             IQueryable<TEntity> query = _dbSet;
 
-            if (expression != null)
-            {
-                query = query.Where(expression);
-            }
-
-            IEnumerable<TEntity> result = query;
-
-            return result;
-        }
-
-        public async Task<IList<TEntity>> Get(Expression<Func<TEntity, TEntity>> selector,
-            Expression<Func<TEntity, bool>> predicate)
-        {
-            IQueryable<TEntity> query = _dbSet;
+            var type = typeof(TEntity);
+            var props = type.GetProperties();
+            
+            
+            
 
             var result = query
                 .Where(predicate)
@@ -46,6 +51,7 @@ namespace DAL.Repository
 
             return result;
         }
+
 
         public async Task<TEntity> GetEntityById(int id)
         {

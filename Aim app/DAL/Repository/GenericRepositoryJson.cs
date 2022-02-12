@@ -32,7 +32,7 @@ namespace DAL.Repository
         }
 
 
-        public Task<IList<TEntity>> Get(Expression<Func<TEntity, TEntity>> selector, Expression<Func<TEntity, bool>> predicate)
+        public Task<IList<TEntity>> FindByConditionAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TEntity>> selector = null)
         {
             throw new NotImplementedException();
         }
