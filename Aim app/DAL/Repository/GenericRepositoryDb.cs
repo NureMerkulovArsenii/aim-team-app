@@ -13,7 +13,7 @@ namespace DAL.Repository
     {
         private readonly AppContext _appContext;
         private readonly DbSet<TEntity> _dbSet;
-        
+
         public GenericRepositoryDb(AppContext appContext)
         {
             this._appContext = appContext;
@@ -33,19 +33,32 @@ namespace DAL.Repository
 
             return result;
         }
-        
+
+        public async Task<IList<TEntity>> Get(Expression<Func<TEntity, TEntity>> selector,
+            Expression<Func<TEntity, bool>> predicate)
+        {
+            IQueryable<TEntity> query = _dbSet;
+
+            var result = query
+                .Where(predicate)
+                .Select(selector)
+                .ToList();
+
+            return result;
+        }
+
         public async Task<TEntity> GetEntityById(int id)
         {
             var queryResult = await _dbSet.FindAsync(id);
             return queryResult;
         }
-        
+
         public async Task CreateAsync(TEntity entity)
         {
             await _dbSet.AddAsync(entity);
             await _appContext.SaveChangesAsync();
         }
-        
+
         public async Task UpdateAsync(TEntity entityToUpdate)
         {
             _dbSet.Update(entityToUpdate);
@@ -57,9 +70,9 @@ namespace DAL.Repository
         //     _dbSet.Attach(entityToUpdate);
         //     _appContext.Entry(entityToUpdate).State = EntityState.Modified;
         // }
-        
+
         public async Task DeleteAsync(TEntity entityToDelete)
-        {    
+        {
             _dbSet.Remove(entityToDelete);
             await _appContext.SaveChangesAsync();
         }
