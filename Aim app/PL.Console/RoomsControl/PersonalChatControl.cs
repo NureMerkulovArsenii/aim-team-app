@@ -48,7 +48,7 @@ namespace PL.Console.RoomsControl
                 }
             }
 
-            _chatService.CreatePersonalChat(usersToInvite);
+            _chatService.CreatePersonalChat(usersToInvite).Wait();
         }
 
         public async Task<IList<PersonalChat>> GetUserPersonalChats()
